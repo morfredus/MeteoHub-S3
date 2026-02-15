@@ -1,6 +1,6 @@
 # Hardware Wiring
 
-Minimum valid version: 1.0.20
+Minimum valid version: 1.0.22
 
 ## Overview
 This page explains the exact GPIO mapping used by the firmware.

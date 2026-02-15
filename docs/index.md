@@ -1,6 +1,6 @@
 # Documentation Index
 
-Minimum valid version: 1.0.20
+Minimum valid version: 1.0.22
 
 This folder contains the complete user documentation for MeteoHub S3.
 

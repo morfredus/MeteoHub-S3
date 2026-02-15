@@ -3,4 +3,6 @@ void neoInit();
 void neoWifiOK();
 void neoWifiKO();
 void neoOff();
-void neoAlert();
+void neoAlertYellow();
+void neoAlertOrange();
+void neoAlertRed();
