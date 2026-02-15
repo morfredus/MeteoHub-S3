@@ -1,6 +1,9 @@
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.21
+Version minimale valide : 1.0.22
+
+## Version 1.0.22
+- **Logique d’alerte** : Amélioration de la visualisation des alertes météo avec des couleurs NeoPixel distinctes Jaune/Orange/Rouge selon les mots-clés de description d’événement.
 
 ## Version 1.0.21
 - **Documentation sécurité** : Précision que `include/secrets.h` doit être créé à partir de `include/secrets_example.h`, ne doit jamais être poussé sur GitHub et ne doit jamais être partagé.
