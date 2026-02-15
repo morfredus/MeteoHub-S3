@@ -1,6 +1,7 @@
-#include "board_config.h"        // doit être en premier
-#include "neopixel_status.h"
 #include <Adafruit_NeoPixel.h>
+
+#include "board_config.h"
+#include "neopixel_status.h"
 
 // IMPORTANT : la déclaration doit être APRÈS les includes
 static Adafruit_NeoPixel neo(1, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);

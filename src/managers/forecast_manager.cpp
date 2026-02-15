@@ -1,8 +1,11 @@
+#include <cctype>
+#include <string>
+#include <ArduinoJson.h>
+#include <HTTPClient.h>
+
 #include "forecast_manager.h"
 #include "secrets.h"
-#include "logs.h"
-#include <HTTPClient.h>
-#include <ArduinoJson.h>
+#include "../utils/logs.h"
 
 // Mettre à jour toutes les 30 minutes
 const unsigned long UPDATE_INTERVAL = 30 * 60 * 1000;
@@ -18,10 +21,10 @@ void ForecastManager::update() {
     }
     lastUpdate = now;
 
-    addLog("Fetching forecast...");
+    LOG_DEBUG("Fetching forecast...");
 
     HTTPClient http;
-    String url = "https://api.openweathermap.org/data/3.0/onecall?lat=";
+    std::string url = "https://api.openweathermap.org/data/3.0/onecall?lat=";
     url += OWM_LAT;
     url += "&lon=";
     url += OWM_LON;
@@ -33,26 +36,26 @@ void ForecastManager::update() {
     url += OWM_LANG;
     url += "&exclude=minutely,hourly,current";
 
-    http.begin(url);
+    http.begin(url.c_str());
     int httpCode = http.GET();
 
     if (httpCode == HTTP_CODE_OK) {
-        String payload = http.getString();
+        std::string payload = http.getString().c_str();
         parseResponse(payload);
-        addLog("Forecast OK");
+        LOG_INFO("Forecast OK");
     } else {
-        addLog("Forecast fail: " + String(httpCode));
+        LOG_WARNING(std::string("Forecast fail: ") + std::to_string(httpCode));
     }
 
     http.end();
 }
 
-void ForecastManager::parseResponse(const String& payload) {
+void ForecastManager::parseResponse(const std::string& payload) {
     DynamicJsonDocument doc(8192); // Allocate enough memory for the response
-    DeserializationError error = deserializeJson(doc, payload);
+    DeserializationError error = deserializeJson(doc, payload.c_str());
 
     if (error) {
-        addLog("JSON parse err");
+        LOG_ERROR("JSON parse err");
         return;
     }
 
@@ -60,25 +63,25 @@ void ForecastManager::parseResponse(const String& payload) {
     JsonObject daily_0 = doc["daily"][0];
     today.temp_min = daily_0["temp"]["min"];
     today.temp_max = daily_0["temp"]["max"];
-    today.description = daily_0["weather"][0]["description"].as<String>();
-    if (today.description.length() > 0) {
-        today.description.setCharAt(0, toupper(today.description.charAt(0)));
+    today.description = daily_0["weather"][0]["description"].as<const char*>();
+    if (!today.description.empty()) {
+        today.description[0] = static_cast<char>(std::toupper(static_cast<unsigned char>(today.description[0])));
     }
 
     // Tomorrow's Forecast (index 1 of daily array)
     JsonObject daily_1 = doc["daily"][1];
     tomorrow.temp_min = daily_1["temp"]["min"];
     tomorrow.temp_max = daily_1["temp"]["max"];
-    tomorrow.description = daily_1["weather"][0]["description"].as<String>();
-    if (tomorrow.description.length() > 0) {
-        tomorrow.description.setCharAt(0, toupper(tomorrow.description.charAt(0)));
+    tomorrow.description = daily_1["weather"][0]["description"].as<const char*>();
+    if (!tomorrow.description.empty()) {
+        tomorrow.description[0] = static_cast<char>(std::toupper(static_cast<unsigned char>(tomorrow.description[0])));
     }
 
     // Alerts
     if (doc.containsKey("alerts")) {
         alert_active = true;
-        alert.sender = doc["alerts"][0]["sender_name"].as<String>();
-        alert.event = doc["alerts"][0]["event"].as<String>();
+        alert.sender = doc["alerts"][0]["sender_name"].as<const char*>();
+        alert.event = doc["alerts"][0]["event"].as<const char*>();
     } else {
         alert_active = false;
     }

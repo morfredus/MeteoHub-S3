@@ -1,12 +1,14 @@
-#include <Arduino.h>
-#include "sh1106_display.h"
-#include "wifi_manager.h"
-#include "ui_manager.h"
-#include "neopixel_status.h"
-#include "sensors.h"
-#include "logs.h"
-#include "forecast_manager.h"
+#include <string>
 #include <time.h>
+#include <Arduino.h>
+
+#include "managers/forecast_manager.h"
+#include "managers/ui_manager.h"
+#include "managers/wifi_manager.h"
+#include "modules/neopixel_status.h"
+#include "modules/sensors.h"
+#include "modules/sh1106_display.h"
+#include "utils/logs.h"
 
 Sh1106Display display;
 WifiManager wifi;
@@ -14,7 +16,7 @@ UiManager ui;
 SensorManager sensors;
 ForecastManager forecast;
 
-void drawBootStep(const String& label, int percent) {
+void drawBootStep(const std::string& label, int percent) {
     display.clear();
     display.center(10, PROJECT_NAME);
     display.center(30, label);
@@ -30,7 +32,7 @@ void setup() {
     
     // Etape 1 : Demarrage
     drawBootStep("Booting...", 0);
-    addLog("System Boot");
+    LOG_INFO("System Boot");
 
     // Etape 2 : Capteurs
     drawBootStep("Init Sensors...", 20);
@@ -64,9 +66,9 @@ void setup() {
     }
     
     if (getLocalTime(&timeinfo, 0)) {
-        addLog("NTP Sync OK");
+        LOG_INFO("NTP Sync OK");
     } else {
-        addLog("NTP Sync Fail");
+        LOG_WARNING("NTP Sync Fail");
     }
 
     // Etape 5 : Pret

@@ -1,16 +1,16 @@
 #pragma once
-#include <Arduino.h>
+#include <string>
 
 class WifiManager {
 public:
     void begin();
     void update();
 
-    String ssid() const { return currentSSID; }
-    String ip() const;
+    std::string ssid() const { return currentSSID; }
+    std::string ip() const;
     int rssi() const;
 
 private:
-    String currentSSID;
+    std::string currentSSID;
     unsigned long lastAttempt = 0;
 };

@@ -1,11 +1,13 @@
-#include "ui_manager.h"
-#include "pages.h"
-#include "config.h"
-#include "board_config.h"
-#include "neopixel_status.h"
-#include "logs.h"
-#include <WiFi.h>   // <-- indispensable
+#include <string>
 #include <Preferences.h>
+#include <WiFi.h>
+
+#include "ui_manager.h"
+#include "board_config.h"
+#include "config.h"
+#include "../modules/neopixel_status.h"
+#include "../modules/pages.h"
+#include "../utils/logs.h"
 
 
 void UiManager::begin(Sh1106Display& display, WifiManager& wifiRef, SensorManager& sensorRef, ForecastManager& forecastRef) {
@@ -205,13 +207,13 @@ void UiManager::handleButtons() {
                     ESP.restart();
                     break;
                 case MENU_CLEAR_LOGS:
-                    addLog("Logs cleared");
+                    LOG_INFO("Logs cleared");
                     menuMode = false;
                     drawPage();
                     break;
                 case MENU_CLEAR_HISTORY:
                     history.clear();
-                    addLog("History cleared");
+                    LOG_INFO("History cleared");
                     menuMode = false;
                     drawPage();
                     break;
@@ -234,7 +236,7 @@ void UiManager::drawMenu() {
     const char* items[MENU_COUNT] = { "Retour", "Reboot", "Clear logs", "Clear History" };
 
     for (int i = 0; i < MENU_COUNT; i++) {
-        String line = (i == menuIndex ? "> " : "  ");
+        std::string line = (i == menuIndex ? "> " : "  ");
         line += items[i];
         d->text(0, 14 + i * 12, line);
     }

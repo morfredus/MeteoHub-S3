@@ -1,6 +1,7 @@
-#include "sensors.h"
 #include <Wire.h>
-#include "logs.h"
+
+#include "sensors.h"
+#include "../utils/logs.h"
 
 bool SensorManager::begin() {
     // Initialisation AHT20 (Adresse 0x38 par défaut)
@@ -20,9 +21,9 @@ bool SensorManager::begin() {
     }
 
     if (ahtFound || bmpFound) {
-        addLog("Sensors OK");
+        LOG_INFO("Sensors OK");
     } else {
-        addLog("Sensors Missing");
+        LOG_WARNING("Sensors Missing");
     }
 
     return ahtFound || bmpFound;

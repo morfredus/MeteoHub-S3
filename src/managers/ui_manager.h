@@ -1,10 +1,10 @@
 #pragma once
-#include "sh1106_display.h"
-#include "encoder.h"
-#include "wifi_manager.h"
-#include "sensors.h"
-#include "history.h"
+#include "../modules/encoder.h"
+#include "../modules/sensors.h"
+#include "../modules/sh1106_display.h"
 #include "forecast_manager.h"
+#include "history.h"
+#include "wifi_manager.h"
 
 class UiManager {
 public:

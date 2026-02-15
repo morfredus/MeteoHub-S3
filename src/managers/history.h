@@ -1,6 +1,7 @@
 #pragma once
-#include "sensors.h"
 #include <time.h> // For time_t
+
+#include "../modules/sensors.h"
 
 // On garde 128 points (largeur de l'écran)
 #define HISTORY_SIZE 128 

@@ -1,5 +1,6 @@
-#include "system_info.h"
 #include <Esp.h>
+
+#include "system_info.h"
 
 SystemInfo getSystemInfo() {
     SystemInfo s;
