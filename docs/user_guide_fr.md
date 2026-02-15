@@ -1,6 +1,6 @@
 # Guide utilisateur
 
-Version minimale valide : 1.0.22
+Version minimale valide : 1.0.23
 
 ## Objectif
 Apprendre à utiliser le dashboard une fois le firmware démarré.
@@ -42,6 +42,10 @@ Le gestionnaire UI fait défiler ces pages :
 - **Clignotement rouge** : alerte locale température élevée (> 28°C)
 - **Vert fixe** : Wi-Fi connecté sans alerte
 - **Rouge fixe** : Wi-Fi déconnecté sans alerte météo
+
+## Comportement de sélection des alertes météo
+- Le système analyse toutes les alertes météo renvoyées par l’API et conserve la plus critique pour l’affichage.
+- À sévérité équivalente, les alertes liées aux crues/inondations sont prioritaires sur les alertes pluie génériques.
 
 ## Actions menu
 Le menu contient :

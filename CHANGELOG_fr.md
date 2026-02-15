@@ -1,6 +1,11 @@
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.22
+Version minimale valide : 1.0.23
+
+## Version 1.0.23
+- **Priorisation des alertes** : La sélection d’alerte météo évalue désormais toutes les alertes reçues et conserve la plus critique.
+- **Priorité crues** : Les événements crues/inondations sont explicitement priorisés devant les événements pluie à sévérité égale.
+- **Traduction affichage** : La traduction des libellés d’alerte reconnaît aussi les mots-clés français `crue`, `inondation` et `pluie`.
 
 ## Version 1.0.22
 - **Logique d’alerte** : Amélioration de la visualisation des alertes météo avec des couleurs NeoPixel distinctes Jaune/Orange/Rouge selon les mots-clés de description d’événement.

@@ -1,6 +1,6 @@
 # User Guide
 
-Minimum valid version: 1.0.22
+Minimum valid version: 1.0.23
 
 ## Goal
 Learn how to use the dashboard once firmware is running.
@@ -42,6 +42,10 @@ The UI manager cycles through these pages:
 - **Red blinking**: local high temperature alert (> 28°C)
 - **Green steady**: Wi-Fi connected and no alert
 - **Red steady**: Wi-Fi disconnected and no weather alert
+
+## Weather alert selection behavior
+- The system reviews all weather alerts returned by the API and keeps the most critical one for display.
+- When two alerts have equivalent severity, flood/rising-water related alerts are prioritized over generic rain alerts.
 
 ## Menu actions
 Menu contains:

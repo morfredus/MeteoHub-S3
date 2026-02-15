@@ -1,6 +1,11 @@
 # Project Changelog
 
-Minimum valid version: 1.0.22
+Minimum valid version: 1.0.23
+
+## Version 1.0.23
+- **Alert Prioritization**: Weather alert selection now evaluates all received alerts and keeps the most critical one.
+- **Flood Priority**: Flood/rising-water events are explicitly prioritized over generic rain events at the same severity level.
+- **Display Translation**: Alert label translation now supports French keywords such as `crue`, `inondation`, and `pluie`.
 
 ## Version 1.0.22
 - **Alert Logic**: Improved weather alert visualization with distinct Yellow/Orange/Red NeoPixel colors based on event description keywords.

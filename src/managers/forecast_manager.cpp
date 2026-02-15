@@ -10,6 +10,57 @@
 // Mettre à jour toutes les 30 minutes
 const unsigned long UPDATE_INTERVAL = 30 * 60 * 1000;
 
+static std::string toLowerCopy(const std::string& text) {
+    std::string lower = text;
+    for (auto& character : lower) {
+        character = static_cast<char>(std::tolower(static_cast<unsigned char>(character)));
+    }
+    return lower;
+}
+
+static int detectSeverityFromText(const std::string& text) {
+    std::string lower = toLowerCopy(text);
+
+    if (lower.find("rouge") != std::string::npos ||
+        lower.find("red") != std::string::npos ||
+        lower.find("extreme") != std::string::npos) {
+        return 3;
+    }
+
+    if (lower.find("orange") != std::string::npos ||
+        lower.find("severe") != std::string::npos ||
+        lower.find("high") != std::string::npos) {
+        return 2;
+    }
+
+    if (lower.find("jaune") != std::string::npos ||
+        lower.find("yellow") != std::string::npos ||
+        lower.find("moderate") != std::string::npos ||
+        lower.find("minor") != std::string::npos) {
+        return 1;
+    }
+
+    return 1;
+}
+
+static int detectHazardPriority(const std::string& text) {
+    std::string lower = toLowerCopy(text);
+
+    if (lower.find("crue") != std::string::npos ||
+        lower.find("flood") != std::string::npos ||
+        lower.find("inond") != std::string::npos ||
+        lower.find("river") != std::string::npos) {
+        return 3;
+    }
+
+    if (lower.find("rain") != std::string::npos ||
+        lower.find("pluie") != std::string::npos) {
+        return 2;
+    }
+
+    return 1;
+}
+
 void ForecastManager::begin() {
     lastUpdate = -UPDATE_INTERVAL; // Force an update on first run
 }
@@ -78,20 +129,38 @@ void ForecastManager::parseResponse(const std::string& payload) {
     }
 
     // Alerts
-    if (doc.containsKey("alerts")) {
+    JsonArray alerts = doc["alerts"].as<JsonArray>();
+    if (!alerts.isNull() && alerts.size() > 0) {
         alert_active = true;
-        alert.sender = doc["alerts"][0]["sender_name"].as<const char*>();
-        alert.event = doc["alerts"][0]["event"].as<const char*>();
-        
-        // Tentative de déduction de la sévérité basée sur le texte (simplifié)
-        std::string evt = alert.event;
-        // Conversion en minuscules pour la recherche
-        for (auto& c : evt) c = std::tolower((unsigned char)c);
 
-        if (evt.find("rouge") != std::string::npos || evt.find("red") != std::string::npos) alert.severity = 3;
-        else if (evt.find("orange") != std::string::npos) alert.severity = 2;
-        else alert.severity = 1; // Jaune par défaut
+        int bestScore = -1;
+        std::string bestSender;
+        std::string bestEvent;
+        int bestSeverity = 1;
 
+        int index = 0;
+        for (JsonObject item : alerts) {
+            std::string sender = item["sender_name"] | "";
+            std::string event = item["event"] | "";
+            std::string description = item["description"] | "";
+
+            std::string combined = event + " " + description;
+            int severity = detectSeverityFromText(combined);
+            int hazardPriority = detectHazardPriority(combined);
+
+            int score = (severity * 100) + (hazardPriority * 10) - index;
+            if (score > bestScore) {
+                bestScore = score;
+                bestSender = sender;
+                bestEvent = event;
+                bestSeverity = severity;
+            }
+            index++;
+        }
+
+        alert.sender = bestSender;
+        alert.event = bestEvent;
+        alert.severity = bestSeverity;
     } else {
         alert_active = false;
         alert.severity = 0;

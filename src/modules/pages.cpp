@@ -32,11 +32,12 @@ std::string translateAlert(const std::string& event) {
         return static_cast<char>(std::tolower(character));
     });
 
-    if (lowerEvent.find("wind") != std::string::npos) return "Vigilance Vent";
-    if (lowerEvent.find("rain") != std::string::npos) return "Vigilance Pluie";
+    if (lowerEvent.find("crue") != std::string::npos) return "Vigilance Crues";
+    if (lowerEvent.find("flood") != std::string::npos || lowerEvent.find("inond") != std::string::npos) return "Vigilance Inondation";
+    if (lowerEvent.find("rain") != std::string::npos || lowerEvent.find("pluie") != std::string::npos) return "Vigilance Pluie";
+    if (lowerEvent.find("wind") != std::string::npos || lowerEvent.find("vent") != std::string::npos) return "Vigilance Vent";
     if (lowerEvent.find("thunderstorm") != std::string::npos) return "Vigilance Orages";
     if (lowerEvent.find("snow") != std::string::npos) return "Vigilance Neige";
-    if (lowerEvent.find("flood") != std::string::npos) return "Vigilance Inondation";
     if (lowerEvent.find("heat") != std::string::npos) return "Vigilance Canicule";
     if (lowerEvent.find("cold") != std::string::npos) return "Vigilance Grand Froid";
     if (lowerEvent.find("ice") != std::string::npos) return "Vigilance Verglas";
