@@ -1,6 +1,6 @@
 # Project Architecture
 
-Minimum valid version: 1.0.20
+Minimum valid version: 1.0.22
 
 ## Goal
 Explain how source code is organized and how data flows across the system.

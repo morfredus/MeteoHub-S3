@@ -1,6 +1,6 @@
 # Architecture du projet
 
-Version minimale valide : 1.0.20
+Version minimale valide : 1.0.22
 
 ## Objectif
 Expliquer l’organisation du code source et le flux de données dans le système.

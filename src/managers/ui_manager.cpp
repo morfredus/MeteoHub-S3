@@ -63,7 +63,13 @@ void UiManager::update() {
         if (now - lastBlink > 400) { // Clignotement plus rapide pour l'alerte
             lastBlink = now;
             blinkState = !blinkState;
-            if (blinkState) neoAlert(); else neoOff(); // Clignotement Orange
+            if (blinkState) {
+                if (forecast->alert.severity == 3) neoAlertRed();
+                else if (forecast->alert.severity == 2) neoAlertOrange();
+                else neoAlertYellow();
+            } else {
+                neoOff();
+            }
         }
     } else if (tempAlert) { // Priorité 2: Alerte température locale
         if (now - lastBlink > 500) {

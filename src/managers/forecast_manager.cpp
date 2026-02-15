@@ -82,7 +82,18 @@ void ForecastManager::parseResponse(const std::string& payload) {
         alert_active = true;
         alert.sender = doc["alerts"][0]["sender_name"].as<const char*>();
         alert.event = doc["alerts"][0]["event"].as<const char*>();
+        
+        // Tentative de déduction de la sévérité basée sur le texte (simplifié)
+        std::string evt = alert.event;
+        // Conversion en minuscules pour la recherche
+        for (auto& c : evt) c = std::tolower((unsigned char)c);
+
+        if (evt.find("rouge") != std::string::npos || evt.find("red") != std::string::npos) alert.severity = 3;
+        else if (evt.find("orange") != std::string::npos) alert.severity = 2;
+        else alert.severity = 1; // Jaune par défaut
+
     } else {
         alert_active = false;
+        alert.severity = 0;
     }
 }

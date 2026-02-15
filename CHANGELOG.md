@@ -1,6 +1,9 @@
 # Project Changelog
 
-Minimum valid version: 1.0.21
+Minimum valid version: 1.0.22
+
+## Version 1.0.22
+- **Alert Logic**: Improved weather alert visualization with distinct Yellow/Orange/Red NeoPixel colors based on event description keywords.
 
 ## Version 1.0.21
 - **Security Documentation**: Clarified that `include/secrets.h` must be created from `include/secrets_example.h`, must never be pushed to GitHub, and must never be shared.
