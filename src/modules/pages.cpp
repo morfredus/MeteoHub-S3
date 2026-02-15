@@ -119,19 +119,6 @@ void pageGraph(Sh1106Display& d, HistoryManager& history, int type, int pageInde
         return;
     }
 
-    // Calculate min/max from the data
-    float minVal = FLT_MAX;
-    float maxVal = -FLT_MAX;
-    for (int i = 0; i < count; i++) {
-        float val;
-        if (type == 0) val = records[i].t;
-        else if (type == 1) val = records[i].h;
-        else val = records[i].p;
-        if (val < minVal) minVal = val;
-        if (val > maxVal) maxVal = val;
-    }
-    if (minVal == maxVal) { minVal -= 1; maxVal += 1; }
-
     // Layout : Graphique a gauche, Valeurs a droite, Temps en bas
     int graphX = 0;
     int graphY = 14;
@@ -139,16 +126,55 @@ void pageGraph(Sh1106Display& d, HistoryManager& history, int type, int pageInde
     int graphH = 38; // Hauteur reduite pour laisser place au temps en bas
     int bottomY = graphY + graphH;
 
+    // N'utiliser que la fenetre affichee (points les plus recents)
+    int visibleCount = count;
+    if (visibleCount > graphW + 1) {
+        visibleCount = graphW + 1;
+    }
+    int startIndex = count - visibleCount;
+
+    // Calculate min/max from displayed data window
+    float minVal = FLT_MAX;
+    float maxVal = -FLT_MAX;
+    for (int i = startIndex; i < count; i++) {
+        float val;
+        if (type == 0) val = records[i].t;
+        else if (type == 1) val = records[i].h;
+        else val = records[i].p;
+        if (val < minVal) minVal = val;
+        if (val > maxVal) maxVal = val;
+    }
+    if (minVal == maxVal) {
+        float margin = (type == 2) ? 0.5f : 0.3f;
+        minVal -= margin;
+        maxVal += margin;
+    }
+
+    int labelPrecision = 0;
+    if (type == 0) {
+        labelPrecision = 1;
+    } else if (type == 2) {
+        labelPrecision = 1;
+    }
+
+    std::string maxLabel = formatFloat(maxVal, labelPrecision);
+    std::string minLabel = formatFloat(minVal, labelPrecision);
+    if (maxLabel == minLabel && labelPrecision < 2) {
+        labelPrecision++;
+        maxLabel = formatFloat(maxVal, labelPrecision);
+        minLabel = formatFloat(minVal, labelPrecision);
+    }
+
     // Affichage Echelle Valeurs (Droite)
-    d.text(92, graphY, formatFloat(maxVal, 0));
-    d.text(92, bottomY - 8, formatFloat(minVal, 0));
+    d.text(92, graphY, maxLabel);
+    d.text(92, bottomY - 8, minLabel);
 
     // Affichage Echelle Temps (Bas)
     d.text(0, 54, "-2h");
     d.text(70, 54, "now");
     
     // Drawing loop with gap detection
-    for (int i = 1; i < count; i++) {
+    for (int i = startIndex + 1; i < count; i++) {
         // If gap is > 90 seconds, don't draw the connecting line
         if (records[i].timestamp - records[i-1].timestamp > 90) {
             continue;
@@ -159,8 +185,10 @@ void pageGraph(Sh1106Display& d, HistoryManager& history, int type, int pageInde
         else if (type == 1) { val1 = records[i-1].h; val2 = records[i].h; }
         else { val1 = records[i-1].p; val2 = records[i].p; }
 
-        int x1 = map(i - 1, 0, count - 1, graphX, graphX + graphW);
-        int x2 = map(i, 0, count - 1, graphX, graphX + graphW);
+        int localIndex1 = (i - 1) - startIndex;
+        int localIndex2 = i - startIndex;
+        int x1 = map(localIndex1, 0, visibleCount - 1, graphX, graphX + graphW);
+        int x2 = map(localIndex2, 0, visibleCount - 1, graphX, graphX + graphW);
         int y1 = bottomY - (int)(((val1 - minVal) / (maxVal - minVal)) * graphH);
         int y2 = bottomY - (int)(((val2 - minVal) / (maxVal - minVal)) * graphH);
         d.drawLine(x1, y1, x2, y2);

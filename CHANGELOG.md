@@ -1,6 +1,14 @@
 # Project Changelog
 
-Minimum valid version: 1.0.23
+Minimum valid version: 1.0.25
+
+## Version 1.0.25
+- **Graph Scale Fix**: Min/max values for Temperature, Humidity, and Pressure graphs are now computed from the displayed history window.
+- **Pressure Readability**: Graph side labels now use adaptive precision to prevent visually identical min/max values caused by rounding.
+
+## Version 1.0.24
+- **User Documentation**: Added practical guidance to read Temperature, Humidity, and especially Pressure values.
+- **Weather Interpretation**: Documented how to interpret pressure trends and combine Temp/Humidity/Pressure to infer short-term weather evolution.
 
 ## Version 1.0.23
 - **Alert Prioritization**: Weather alert selection now evaluates all received alerts and keeps the most critical one.

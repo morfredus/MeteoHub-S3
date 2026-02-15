@@ -1,6 +1,6 @@
 # User Guide
 
-Minimum valid version: 1.0.23
+Minimum valid version: 1.0.25
 
 ## Goal
 Learn how to use the dashboard once firmware is running.
@@ -30,6 +30,10 @@ The UI manager cycles through these pages:
 - Logs
 - System
 
+### Graph scale behavior
+- Graph min/max labels are computed from the history currently displayed on screen.
+- Temperature and Pressure labels can show decimals to keep visible separation when values are close.
+
 ## Forecast page behavior
 - Auto-cycles every ~5 seconds between:
   - Today
@@ -57,6 +61,34 @@ Menu contains:
 ## Data persistence
 - Last page is stored in Preferences (NVS).
 - Sensor history is stored in LittleFS (`/history.dat`).
+
+## Reading weather values and interpretation
+### Temperature (Temp)
+- Indicates local ambient air temperature around the device.
+- Fast rises during the day are normal with sun exposure; compare with humidity and pressure trend before concluding a weather change.
+- For comfort, combine with humidity: warm + humid usually feels hotter than the raw temperature value.
+
+### Humidity (Hum)
+- Relative humidity (%) shows how close air is to saturation.
+- High humidity (often > 70%) can indicate muggy conditions and a higher chance of fog/drizzle when temperatures drop.
+- Very low humidity (often < 35%) usually corresponds to drier air and larger day/night temperature swings.
+
+### Pressure (Pres) — key indicator
+- Pressure trend is usually more informative than a single value.
+- Falling pressure over several hours often suggests weather deterioration (wind/rain risk increasing).
+- Rising pressure over several hours often suggests improving and more stable weather.
+- Stable pressure usually indicates limited short-term weather change.
+
+### Quick pressure reference (approximate)
+- Around 1013 hPa: neutral baseline.
+- Clearly below baseline (for example < 1005 hPa): unsettled/depression-like context more likely.
+- Clearly above baseline (for example > 1020 hPa): more stable anticyclonic context more likely.
+- These thresholds are indicative and should be interpreted together with local altitude and trend.
+
+### Practical method for this dashboard
+- First read the pressure graph trend over the last 1–2 hours.
+- Then confirm with humidity direction (rising or falling) and current temperature behavior.
+- Finally cross-check with Forecast/Alerts page before making a decision.
 
 ## Good usage practices
 - Let the system run a few minutes before judging graph trends.

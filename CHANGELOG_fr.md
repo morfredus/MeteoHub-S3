@@ -1,6 +1,14 @@
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.23
+Version minimale valide : 1.0.25
+
+## Version 1.0.25
+- **Correctif échelle graphes** : Les valeurs min/max des graphes Température, Humidité et Pression sont désormais calculées sur l’historique affiché.
+- **Lisibilité pression** : Les libellés latéraux utilisent une précision adaptative pour éviter un min/max visuellement identique à cause de l’arrondi.
+
+## Version 1.0.24
+- **Documentation utilisateur** : Ajout d’un guide pratique pour lire les valeurs Température, Humidité et surtout Pression.
+- **Interprétation météo** : Documentation de la lecture des tendances de pression et du croisement Temp/Hum/Pression pour estimer l’évolution météo à court terme.
 
 ## Version 1.0.23
 - **Priorisation des alertes** : La sélection d’alerte météo évalue désormais toutes les alertes reçues et conserve la plus critique.

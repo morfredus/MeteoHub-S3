@@ -1,6 +1,6 @@
 # Guide utilisateur
 
-Version minimale valide : 1.0.23
+Version minimale valide : 1.0.25
 
 ## Objectif
 Apprendre à utiliser le dashboard une fois le firmware démarré.
@@ -30,6 +30,10 @@ Le gestionnaire UI fait défiler ces pages :
 - Logs
 - Système
 
+### Comportement de l’échelle des graphes
+- Les libellés min/max des graphes sont calculés à partir de l’historique actuellement affiché à l’écran.
+- Les graphes Température et Pression peuvent afficher des décimales pour conserver une différence visible quand les valeurs sont proches.
+
 ## Comportement page prévisions
 - Défilement automatique toutes les ~5 secondes entre :
   - Aujourd’hui
@@ -57,6 +61,34 @@ Le menu contient :
 ## Persistance des données
 - La dernière page est stockée dans Preferences (NVS).
 - L’historique capteurs est stocké dans LittleFS (`/history.dat`).
+
+## Lecture des valeurs météo et interprétation
+### Température (Temp)
+- Représente la température locale de l’air autour de l’appareil.
+- Une hausse rapide en journée peut être normale avec l’ensoleillement ; il faut croiser avec l’humidité et la tendance de pression avant de conclure à un changement météo.
+- Pour le ressenti, combiner avec l’humidité : chaud + humide est souvent perçu comme plus chaud que la valeur brute.
+
+### Humidité (Hum)
+- L’humidité relative (%) indique la proximité de saturation de l’air.
+- Une humidité élevée (souvent > 70 %) peut signaler une ambiance lourde et un risque accru de brume/pluie fine quand la température baisse.
+- Une humidité faible (souvent < 35 %) correspond en général à un air plus sec et à des écarts jour/nuit plus marqués.
+
+### Pression (Pres) — indicateur principal
+- La tendance de pression est en général plus utile qu’une valeur instantanée.
+- Une pression qui baisse sur plusieurs heures indique souvent une dégradation météo (risque vent/pluie en hausse).
+- Une pression qui monte sur plusieurs heures indique souvent une amélioration et une météo plus stable.
+- Une pression stable suggère peu de changement météo à court terme.
+
+### Repères rapides pression (approximatifs)
+- Autour de 1013 hPa : référence neutre.
+- Nettement sous cette référence (par exemple < 1005 hPa) : contexte plus perturbé/dépressionnaire probable.
+- Nettement au-dessus (par exemple > 1020 hPa) : contexte plus stable/anticyclonique probable.
+- Ces seuils sont indicatifs et doivent être interprétés avec l’altitude locale et la tendance.
+
+### Méthode pratique sur ce dashboard
+- Lire d’abord la tendance du graphe de pression sur les 1 à 2 dernières heures.
+- Confirmer ensuite avec l’évolution de l’humidité (hausse/baisse) et le comportement de la température.
+- Vérifier enfin la page Prévisions/Alertes avant de décider.
 
 ## Bonnes pratiques d’utilisation
 - Laisser le système tourner quelques minutes avant d’interpréter les tendances des graphes.
