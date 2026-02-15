@@ -1,6 +1,14 @@
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.19
+Version minimale valide : 1.0.21
+
+## Version 1.0.21
+- **Documentation sécurité** : Précision que `include/secrets.h` doit être créé à partir de `include/secrets_example.h`, ne doit jamais être poussé sur GitHub et ne doit jamais être partagé.
+
+## Version 1.0.20
+- **Documentation** : Ajout d’un jeu complet de documentation orientée débutant dans `docs/`.
+- **Cohérence bilingue** : Ajout d’équivalents stricts en anglais et en français pour tous les nouveaux documents utilisateur.
+- **Guides projet** : Documentation des workflows d’installation, câblage, configuration, utilisation, architecture et dépannage.
 
 ## Version 1.0.19
 - **Discipline mémoire** : Remplacement de la gestion texte principale par `std::string` dans les managers, pages et logs.

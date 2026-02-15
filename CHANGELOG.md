@@ -1,6 +1,14 @@
 # Project Changelog
 
-Minimum valid version: 1.0.19
+Minimum valid version: 1.0.21
+
+## Version 1.0.21
+- **Security Documentation**: Clarified that `include/secrets.h` must be created from `include/secrets_example.h`, must never be pushed to GitHub, and must never be shared.
+
+## Version 1.0.20
+- **Documentation**: Added a complete beginner-oriented documentation set in `docs/`.
+- **Bilingual Consistency**: Added strict English/French equivalents for all new user-facing docs.
+- **Project Guidance**: Documented setup, wiring, configuration, usage, architecture, and troubleshooting workflows.
 
 ## Version 1.0.19
 - **Memory Discipline**: Replaced core runtime text handling with `std::string` in managers, pages, and logging.
