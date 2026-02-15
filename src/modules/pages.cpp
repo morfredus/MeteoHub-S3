@@ -1,33 +1,45 @@
-#include "pages.h"
-#include "logs.h"
+#include <algorithm>
+#include <cctype>
 #include <float.h>
+#include <iomanip>
+#include <sstream>
+#include <string>
 #include <time.h>
 
-// Helper pour afficher l'heure dans le titre
-String getHeader(const String& title, int pageIndex, int pageCount) {
+#include "pages.h"
+#include "../utils/logs.h"
+
+std::string formatFloat(float value, int precision) {
+    std::ostringstream stream;
+    stream << std::fixed << std::setprecision(precision) << value;
+    return stream.str();
+}
+
+std::string getHeader(const std::string& title, int pageIndex, int pageCount) {
     struct tm timeinfo;
     char timeStr[6];
-    if(getLocalTime(&timeinfo)){
+    if (getLocalTime(&timeinfo)) {
         strftime(timeStr, sizeof(timeStr), "%H:%M", &timeinfo);
     } else {
         strcpy(timeStr, "--:--");
     }
-    return title + " " + String(timeStr) + " (" + String(pageIndex) + "/" + String(pageCount) + ")";
+    return title + " " + std::string(timeStr) + " (" + std::to_string(pageIndex) + "/" + std::to_string(pageCount) + ")";
 }
 
-// Helper pour traduire les alertes en français
-String translateAlert(const String& event) {
-    String lowerEvent = event;
-    lowerEvent.toLowerCase();
+std::string translateAlert(const std::string& event) {
+    std::string lowerEvent = event;
+    std::transform(lowerEvent.begin(), lowerEvent.end(), lowerEvent.begin(), [](unsigned char character) {
+        return static_cast<char>(std::tolower(character));
+    });
 
-    if (lowerEvent.indexOf("wind") != -1) return "Vigilance Vent";
-    if (lowerEvent.indexOf("rain") != -1) return "Vigilance Pluie";
-    if (lowerEvent.indexOf("thunderstorm") != -1) return "Vigilance Orages";
-    if (lowerEvent.indexOf("snow") != -1) return "Vigilance Neige";
-    if (lowerEvent.indexOf("flood") != -1) return "Vigilance Inondation";
-    if (lowerEvent.indexOf("heat") != -1) return "Vigilance Canicule";
-    if (lowerEvent.indexOf("cold") != -1) return "Vigilance Grand Froid";
-    if (lowerEvent.indexOf("ice") != -1) return "Vigilance Verglas";
+    if (lowerEvent.find("wind") != std::string::npos) return "Vigilance Vent";
+    if (lowerEvent.find("rain") != std::string::npos) return "Vigilance Pluie";
+    if (lowerEvent.find("thunderstorm") != std::string::npos) return "Vigilance Orages";
+    if (lowerEvent.find("snow") != std::string::npos) return "Vigilance Neige";
+    if (lowerEvent.find("flood") != std::string::npos) return "Vigilance Inondation";
+    if (lowerEvent.find("heat") != std::string::npos) return "Vigilance Canicule";
+    if (lowerEvent.find("cold") != std::string::npos) return "Vigilance Grand Froid";
+    if (lowerEvent.find("ice") != std::string::npos) return "Vigilance Verglas";
     return event; // Fallback si aucune traduction
 }
 
@@ -35,9 +47,9 @@ void pageNetwork(Sh1106Display& d, WifiManager& wifi, int pageIndex, int pageCou
     d.clear();
     d.text(0, 0, getHeader("Net.", pageIndex, pageCount));
 
-    d.text(0, 16, "SSID: " + wifi.ssid());
-    d.text(0, 28, "IP:   " + wifi.ip());
-    d.text(0, 40, "RSSI: " + String(wifi.rssi()) + " dBm");
+    d.text(0, 16, std::string("SSID: ") + wifi.ssid());
+    d.text(0, 28, std::string("IP:   ") + wifi.ip());
+    d.text(0, 40, std::string("RSSI: ") + std::to_string(wifi.rssi()) + " dBm");
 
     d.show();
 }
@@ -48,10 +60,10 @@ void pageSystem(Sh1106Display& d, int pageIndex, int pageCount) {
     d.clear();
     d.text(0, 0, getHeader("Sys.", pageIndex, pageCount));
 
-    d.text(0, 16, "Heap:  " + String(s.heapFree / 1024) + " KB");
-    d.text(0, 28, "PSRAM: " + String(s.psramFree / 1024) + " KB");
-    d.text(0, 40, "Flash: " + String(s.flashSize / 1024 / 1024) + " MB");
-    d.text(0, 52, "Ver:   " + String(PROJECT_VERSION));
+    d.text(0, 16, std::string("Heap:  ") + std::to_string(s.heapFree / 1024) + " KB");
+    d.text(0, 28, std::string("PSRAM: ") + std::to_string(s.psramFree / 1024) + " KB");
+    d.text(0, 40, std::string("Flash: ") + std::to_string(s.flashSize / 1024 / 1024) + " MB");
+    d.text(0, 52, std::string("Ver:   ") + std::string(PROJECT_VERSION));
 
     d.show();
 }
@@ -76,9 +88,9 @@ void pageWeather(Sh1106Display& d, SensorManager& sensors, int pageIndex, int pa
     d.text(0, 0, getHeader("Meteo", pageIndex, pageCount));
 
     if (data.valid) {
-        d.text(0, 16, "Temp: " + String(data.temperature, 1) + " C");
-        d.text(0, 28, "Hum:  " + String(data.humidity, 0) + " %");
-        d.text(0, 40, "Pres: " + String(data.pressure, 0) + " hPa");
+        d.text(0, 16, std::string("Temp: ") + formatFloat(data.temperature, 1) + " C");
+        d.text(0, 28, std::string("Hum:  ") + formatFloat(data.humidity, 0) + " %");
+        d.text(0, 40, std::string("Pres: ") + formatFloat(data.pressure, 0) + " hPa");
     } else {
         d.center(30, "AHT20 / BMP280");
         d.center(42, "Non detecte");
@@ -89,7 +101,7 @@ void pageWeather(Sh1106Display& d, SensorManager& sensors, int pageIndex, int pa
 void pageGraph(Sh1106Display& d, HistoryManager& history, int type, int pageIndex, int pageCount) {
     d.clear();
     
-    String title;
+    std::string title;
     if (type == 0) title = "Temp. (C)";
     else if (type == 1) title = "Hum. (%)";
     else title = "Pres. (hPa)";
@@ -127,8 +139,8 @@ void pageGraph(Sh1106Display& d, HistoryManager& history, int type, int pageInde
     int bottomY = graphY + graphH;
 
     // Affichage Echelle Valeurs (Droite)
-    d.text(92, graphY, String(maxVal, 0));
-    d.text(92, bottomY - 8, String(minVal, 0));
+    d.text(92, graphY, formatFloat(maxVal, 0));
+    d.text(92, bottomY - 8, formatFloat(minVal, 0));
 
     // Affichage Echelle Temps (Bas)
     d.text(0, 54, "-2h");
@@ -161,12 +173,12 @@ void pageForecast(Sh1106Display& d, ForecastManager& forecast, int view, int pag
 
     if (view == 0) { // Vue "Aujourd'hui"
         d.center(14, "Aujourd'hui");
-        d.text(0, 28, "Min: " + String(forecast.today.temp_min, 0) + "C / Max: " + String(forecast.today.temp_max, 0) + "C");
+        d.text(0, 28, std::string("Min: ") + formatFloat(forecast.today.temp_min, 0) + "C / Max: " + formatFloat(forecast.today.temp_max, 0) + "C");
         d.center(42, forecast.today.description);
 
     } else if (view == 1) { // Vue "Demain"
         d.center(14, "Demain");
-        d.text(0, 28, "Min: " + String(forecast.tomorrow.temp_min, 0) + "C / Max: " + String(forecast.tomorrow.temp_max, 0) + "C");
+        d.text(0, 28, std::string("Min: ") + formatFloat(forecast.tomorrow.temp_min, 0) + "C / Max: " + formatFloat(forecast.tomorrow.temp_max, 0) + "C");
         d.center(42, forecast.tomorrow.description);
 
     } else { // Vue "Alertes"
@@ -175,12 +187,14 @@ void pageForecast(Sh1106Display& d, ForecastManager& forecast, int view, int pag
             d.center(28, forecast.alert.sender);
             
             // Traduction et affichage de l'alerte
-            String event = translateAlert(forecast.alert.event);
-            if (event.length() > 20) {
-                int split = event.lastIndexOf(' ', 20);
-                if (split == -1) split = 20;
-                d.center(40, event.substring(0, split));
-                d.center(50, event.substring(split + 1));
+            std::string event = translateAlert(forecast.alert.event);
+            if (event.size() > 20) {
+                size_t split = event.rfind(' ', 20);
+                if (split == std::string::npos) split = 20;
+                d.center(40, event.substr(0, split));
+                if (split + 1 < event.size()) {
+                    d.center(50, event.substr(split + 1));
+                }
             } else {
                 d.center(42, event);
             }

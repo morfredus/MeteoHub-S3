@@ -1,8 +1,10 @@
-#include "wifi_manager.h"
-#include "secrets.h"
-#include "config.h"
+#include <string>
 #include <WiFi.h>
-#include "logs.h"
+
+#include "wifi_manager.h"
+#include "config.h"
+#include "secrets.h"
+#include "../utils/logs.h"
 
 void WifiManager::begin() {
     WiFi.mode(WIFI_STA);
@@ -22,7 +24,7 @@ void WifiManager::update() {
         while (millis() - t0 < 3000) {
             if (WiFi.status() == WL_CONNECTED) {
                 currentSSID = WIFI_CREDENTIALS[i].ssid;
-                addLog("WiFi: " + currentSSID);
+                LOG_INFO(std::string("WiFi: ") + currentSSID);
                 return;
             }
             delay(100);
@@ -30,9 +32,9 @@ void WifiManager::update() {
     }
 }
 
-String WifiManager::ip() const {
+std::string WifiManager::ip() const {
     if (WiFi.status() != WL_CONNECTED) return "0.0.0.0";
-    return WiFi.localIP().toString();
+    return WiFi.localIP().toString().c_str();
 }
 
 int WifiManager::rssi() const {

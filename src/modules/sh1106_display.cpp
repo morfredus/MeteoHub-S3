@@ -1,3 +1,5 @@
+#include <string>
+
 #include "sh1106_display.h"
 #include "board_config.h"
 #include "config.h"
@@ -15,16 +17,16 @@ bool Sh1106Display::begin() {
 void Sh1106Display::clear() { d->clear(); }
 void Sh1106Display::show() { d->display(); }
 
-void Sh1106Display::text(int x, int y, const String& s) {
+void Sh1106Display::text(int x, int y, const std::string& s) {
     d->setFont(ArialMT_Plain_10);
-    d->drawString(x, y, s);
+    d->drawString(x, y, s.c_str());
 }
 
-void Sh1106Display::center(int y, const String& s) {
+void Sh1106Display::center(int y, const std::string& s) {
     d->setFont(ArialMT_Plain_10);
-    int w = d->getStringWidth(s);
+    int w = d->getStringWidth(s.c_str());
     int x = (128 - w) / 2;
-    d->drawString(x, y, s);
+    d->drawString(x, y, s.c_str());
 }
 
 void Sh1106Display::bar(int x, int y, int w, int h, int value, int max) {

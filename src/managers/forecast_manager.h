@@ -1,18 +1,18 @@
 #pragma once
-#include <Arduino.h>
+#include <string>
 
 struct Forecast {
     // Daily
     float temp_day;
     float temp_min;
     float temp_max;
-    String description;
+    std::string description;
     int weather_id;
 };
 
 struct Alert {
-    String sender;
-    String event;
+    std::string sender;
+    std::string event;
 };
 
 class ForecastManager {
@@ -27,5 +27,5 @@ public:
 
 private:
     unsigned long lastUpdate = 0;
-    void parseResponse(const String& payload);
+    void parseResponse(const std::string& payload);
 };

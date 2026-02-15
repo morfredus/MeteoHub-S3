@@ -1,5 +1,18 @@
 # Project Changelog
 
+Minimum valid version: 1.0.19
+
+## Version 1.0.19
+- **Memory Discipline**: Replaced core runtime text handling with `std::string` in managers, pages, and logging.
+- **Display Interface**: Updated `Sh1106Display` API to accept `std::string` and centralized conversion at display driver boundary.
+- **Code Consistency**: Harmonized include ordering across updated files to match project include rules.
+
+## Version 1.0.18
+- **Architecture**: Reorganized source files into `src/modules`, `src/managers`, and `src/utils`.
+- **Build Consistency**: Updated all local include paths to match the new folder structure.
+- **Project Hygiene**: Removed duplicate `forecast_manager` files at project root and restricted `include/` to reserved files only.
+- **Logging**: Standardized runtime logs through `LOG_DEBUG`, `LOG_INFO`, `LOG_WARNING`, and `LOG_ERROR` macros.
+
 ## Version 1.0.17
 - **Bug Fixes**: Resolved String capitalization compilation errors and fixed button pin conflicts.
 
