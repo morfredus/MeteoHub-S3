@@ -2,9 +2,11 @@
 #include "neopixel_status.h"
 #include <Adafruit_NeoPixel.h>
 
-// IMPORTANT : la déclaration doit être APRÈS les includes
+#if defined(ESP32_S3_OLED)
 static Adafruit_NeoPixel neo(1, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
+#endif
 
+#if defined(ESP32_S3_OLED)
 void neoInit() {
     neo.begin();
     neo.setBrightness(40);
@@ -40,3 +42,4 @@ void neoAlertRed() {
     neo.setPixelColor(0, neo.Color(255, 0, 0)); // rouge pur
     neo.show();
 }
+#endif

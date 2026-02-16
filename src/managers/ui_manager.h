@@ -1,5 +1,11 @@
 #pragma once
+#if defined(ESP32_S3_OLED)
 #include "../modules/sh1106_display.h"
+#endif
+#if defined(ESP32_S3_LCD)
+#include "../modules/st7789_display.h"
+#endif
+#include "../modules/pages.h"
 #include "../modules/encoder.h"
 #include "wifi_manager.h"
 #include "../modules/sensors.h"
@@ -8,7 +14,7 @@
 
 class UiManager {
 public:
-    void begin(Sh1106Display& display, WifiManager& wifi, SensorManager& sensors, ForecastManager& forecast);
+    void begin(DisplayInterface& display, WifiManager& wifi, SensorManager& sensors, ForecastManager& forecast);
     void update();
 
 private:
@@ -36,7 +42,7 @@ private:
         MENU_COUNT
     };
 
-    Sh1106Display* d;
+    DisplayInterface* d;
     WifiManager* wifi;
     SensorManager* sensors;
     HistoryManager history;

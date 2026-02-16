@@ -7,29 +7,41 @@
 #include "managers/wifi_manager.h"
 #include "modules/neopixel_status.h"
 #include "modules/sensors.h"
+#if defined(ESP32_S3_OLED)
 #include "modules/sh1106_display.h"
+#endif
+#if defined(ESP32_S3_LCD)
+#include "modules/st7789_display.h"
+#endif
 #include "utils/logs.h"
 
-Sh1106Display display;
+DisplayInterface* display = nullptr;
 WifiManager wifi;
 UiManager ui;
 SensorManager sensors;
 ForecastManager forecast;
 
 void drawBootStep(const std::string& label, int percent) {
-    display.clear();
-    display.center(10, PROJECT_NAME);
-    display.center(30, label);
-    display.bar(10, 50, 108, 8, percent, 100);
-    display.show();
+    display->clear();
+    display->center(10, PROJECT_NAME);
+    display->center(30, label);
+    display->bar(10, 50, 108, 8, percent, 100);
+    display->show();
 }
 
 void setup() {
     Serial.begin(115200);
 
-    display.begin();
+#if defined(ESP32_S3_OLED)
+    static Sh1106Display oled;
+    display = &oled;
+#elif defined(ESP32_S3_LCD)
+    static St7789Display lcd;
+    display = &lcd;
+#endif
+    display->begin();
     neoInit();
-    
+
     // Etape 1 : Demarrage
     drawBootStep("Booting...", 0);
     LOG_INFO("System Boot");
@@ -42,7 +54,7 @@ void setup() {
     // Etape 3 : WiFi
     drawBootStep("Connecting WiFi...", 40);
     wifi.begin();
-    
+
     // Boucle d'attente WiFi (Max ~10s)
     int w = 0;
     while (wifi.ip() == "0.0.0.0" && w < 100) {
@@ -51,11 +63,11 @@ void setup() {
         delay(100);
         w++;
     }
-    
+
     // Etape 4 : Heure
     drawBootStep("Sync Time...", 60);
     configTime(3600, 3600, "pool.ntp.org");
-    
+
     // Boucle d'attente NTP (Max 10s)
     struct tm timeinfo;
     int t = 0;
@@ -80,7 +92,7 @@ void setup() {
     // Lancement des modules principaux
     forecast.begin();
 
-    ui.begin(display, wifi, sensors, forecast);
+    ui.begin(*display, wifi, sensors, forecast);
 }
 
 void loop() {

@@ -1,6 +1,10 @@
 # Project Changelog
 
-Minimum valid version: 1.0.25
+Minimum valid version: 1.0.26
+## Version 1.0.26
+- **Multi-écrans** : Ajout d'un environnement LCD (TFT ST7789) avec gestion conditionnelle du code et du brochage.
+- **Protection compilation** : Ajout de conditions dans tous les fichiers d'affichage pour éviter les conflits entre OLED et LCD.
+- **Documentation** : Mise à jour de tous les documents utilisateur pour refléter la nouvelle architecture.
 
 ## Version 1.0.25
 - **Graph Scale Fix**: Min/max values for Temperature, Humidity, and Pressure graphs are now computed from the displayed history window.
