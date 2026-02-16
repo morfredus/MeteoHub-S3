@@ -10,7 +10,7 @@
 #include "../utils/logs.h"
 
 
-void UiManager::begin(Sh1106Display& display, WifiManager& wifiRef, SensorManager& sensorRef, ForecastManager& forecastRef) {
+void UiManager::begin(DisplayInterface& display, WifiManager& wifiRef, SensorManager& sensorRef, ForecastManager& forecastRef) {
     d = &display;
     wifi = &wifiRef;
     sensors = &sensorRef;
@@ -18,14 +18,14 @@ void UiManager::begin(Sh1106Display& display, WifiManager& wifiRef, SensorManage
     history.begin();
     enc.begin();
 
-    pinMode(BTN_BACK, INPUT_PULLUP);
-    pinMode(BTN_CONFIRM, INPUT_PULLUP);
+    pinMode(BUTTON_BACK_PIN, INPUT_PULLUP);
+    pinMode(BUTTON_CONFIRM_PIN, INPUT_PULLUP);
 
-    back_raw = digitalRead(BTN_BACK) == LOW;
+    back_raw = digitalRead(BUTTON_BACK_PIN) == LOW;
     back_stable = back_raw;
     back_change_ms = millis();
 
-    confirm_raw = digitalRead(BTN_CONFIRM) == LOW;
+    confirm_raw = digitalRead(BUTTON_CONFIRM_PIN) == LOW;
     confirm_stable = confirm_raw;
     confirm_change_ms = millis();
 
@@ -136,8 +136,8 @@ void UiManager::update() {
 
 void UiManager::handleButtons() {
     unsigned long now = millis();
-    bool backPressed = digitalRead(BTN_BACK) == LOW;
-    bool confirmPressed = digitalRead(BTN_CONFIRM) == LOW;
+    bool backPressed = digitalRead(BUTTON_BACK_PIN) == LOW;
+    bool confirmPressed = digitalRead(BUTTON_CONFIRM_PIN) == LOW;
     bool encoderClickEvent = enc.clicked();
     if (now < ignoreEncoderClickUntilMs) {
         encoderClickEvent = false;

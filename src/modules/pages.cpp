@@ -44,7 +44,7 @@ std::string translateAlert(const std::string& event) {
     return event; // Fallback si aucune traduction
 }
 
-void pageNetwork(Sh1106Display& d, WifiManager& wifi, int pageIndex, int pageCount) {
+void pageNetwork(DisplayInterface& d, WifiManager& wifi, int pageIndex, int pageCount) {
     d.clear();
     d.text(0, 0, getHeader("Net.", pageIndex, pageCount));
 
@@ -55,7 +55,7 @@ void pageNetwork(Sh1106Display& d, WifiManager& wifi, int pageIndex, int pageCou
     d.show();
 }
 
-void pageSystem(Sh1106Display& d, int pageIndex, int pageCount) {
+void pageSystem(DisplayInterface& d, int pageIndex, int pageCount) {
     SystemInfo s = getSystemInfo();
 
     d.clear();
@@ -69,7 +69,7 @@ void pageSystem(Sh1106Display& d, int pageIndex, int pageCount) {
     d.show();
 }
 
-void pageLogs(Sh1106Display& d, int pageIndex, int pageCount) {
+void pageLogs(DisplayInterface& d, int pageIndex, int pageCount) {
     d.clear();
     d.text(0, 0, getHeader("Logs", pageIndex, pageCount));
 
@@ -83,7 +83,7 @@ void pageLogs(Sh1106Display& d, int pageIndex, int pageCount) {
     d.show();
 }
 
-void pageWeather(Sh1106Display& d, SensorManager& sensors, int pageIndex, int pageCount) {
+void pageWeather(DisplayInterface& d, SensorManager& sensors, int pageIndex, int pageCount) {
     SensorData data = sensors.read();
     d.clear();
     d.text(0, 0, getHeader("Meteo", pageIndex, pageCount));
@@ -99,7 +99,7 @@ void pageWeather(Sh1106Display& d, SensorManager& sensors, int pageIndex, int pa
     d.show();
 }
 
-void pageGraph(Sh1106Display& d, HistoryManager& history, int type, int pageIndex, int pageCount) {
+void pageGraph(DisplayInterface& d, HistoryManager& history, int type, int pageIndex, int pageCount) {
     d.clear();
     
     std::string title;
@@ -196,7 +196,7 @@ void pageGraph(Sh1106Display& d, HistoryManager& history, int type, int pageInde
     d.show();
 }
 
-void pageForecast(Sh1106Display& d, ForecastManager& forecast, int view, int pageIndex, int pageCount) {
+void pageForecast(DisplayInterface& d, ForecastManager& forecast, int view, int pageIndex, int pageCount) {
     d.clear();
     d.text(0, 0, getHeader("Prev.", pageIndex, pageCount));
 

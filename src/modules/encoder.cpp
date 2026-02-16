@@ -2,10 +2,10 @@
 #include "board_config.h"
 
 void Encoder::begin() {
-    pinMode(ENC_BTN, INPUT_PULLUP);
+    pinMode(ENCODER_BTN_PIN, INPUT_PULLUP);
 
     ESP32Encoder::useInternalWeakPullResistors = puType::up;
-    rotary.attachFullQuad(ENC_A, ENC_B);
+    rotary.attachFullQuad(ENCODER_A_PIN, ENCODER_B_PIN);
     rotary.setFilter(200);
     rotary.clearCount();
 
@@ -36,7 +36,7 @@ void Encoder::update() {
         if (stepQueue < -STEP_QUEUE_LIMIT) stepQueue = -STEP_QUEUE_LIMIT;
     }
 
-    bool btn = digitalRead(ENC_BTN) == LOW;
+    bool btn = digitalRead(ENCODER_BTN_PIN) == LOW;
     unsigned long now = millis();
     if (btn && !lastBtn && (now - lastClickMs >= CLICK_DEBOUNCE_MS)) {
         clickFlag = true;

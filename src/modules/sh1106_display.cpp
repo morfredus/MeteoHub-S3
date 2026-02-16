@@ -1,5 +1,5 @@
+#if defined(ESP32_S3_OLED)
 #include <string>
-
 #include "sh1106_display.h"
 #include "board_config.h"
 #include "config.h"
@@ -38,3 +38,4 @@ void Sh1106Display::bar(int x, int y, int w, int h, int value, int max) {
 void Sh1106Display::drawLine(int x0, int y0, int x1, int y1) {
     d->drawLine(x0, y0, x1, y1);
 }
+#endif
