@@ -1,5 +1,10 @@
+
 #include "encoder.h"
 #include "board_config.h"
+
+int Encoder::getStepCount() const {
+    return stepQueue;
+}
 
 void Encoder::begin() {
     pinMode(ENCODER_BTN_PIN, INPUT_PULLUP);

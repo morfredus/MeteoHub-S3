@@ -3,6 +3,7 @@
 #include <ESP32Encoder.h>
 
 class Encoder {
+
 public:
     void begin();
     void update();
@@ -10,6 +11,7 @@ public:
     bool rotatedCW();
     bool rotatedCCW();
     bool clicked();
+    int getStepCount() const;
 
 private:
     static constexpr int8_t COUNTS_PER_DETENT = 4;

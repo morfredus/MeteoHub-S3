@@ -35,9 +35,16 @@ Minimum valid version: 1.0.27
 - **Project Guidance**: Documented setup, wiring, configuration, usage, architecture, and troubleshooting workflows.
 
 ## Version 1.0.19
-- **Memory Discipline**: Replaced core runtime text handling with `std::string` in managers, pages, and logging.
-- **Display Interface**: Updated `Sh1106Display` API to accept `std::string` and centralized conversion at display driver boundary.
-- **Code Consistency**: Harmonized include ordering across updated files to match project include rules.
+# Project Changelog
+
+Minimum valid version: 1.0.28
+
+## Version 1.0.28
+- **Forecast Display Fix**: Forecast page now shows real values (temperature, min, max) on LCD.
+- **Graph Layout**: Axes and value labels are shifted to avoid overlap on LCD.
+- **Rotary Encoder LCD**: On LCD, one detent = one page (OLED logic unchanged).
+- **Encoder API**: Public method for step count, no more direct access to private rotary.
+- **Docs & Build**: Documentation and code fully synchronized, build and upload validated.
 
 ## Version 1.0.18
 - **Architecture**: Reorganized source files into `src/modules`, `src/managers`, and `src/utils`.

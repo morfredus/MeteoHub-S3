@@ -35,9 +35,16 @@ Version minimale valide : 1.0.27
 - **Guides projet** : Documentation des workflows d’installation, câblage, configuration, utilisation, architecture et dépannage.
 
 ## Version 1.0.19
-- **Discipline mémoire** : Remplacement de la gestion texte principale par `std::string` dans les managers, pages et logs.
-- **Interface affichage** : Mise à jour de l’API `Sh1106Display` pour accepter `std::string` et centralisation de la conversion à la frontière du driver écran.
-- **Cohérence code** : Harmonisation de l’ordre des includes dans les fichiers mis à jour selon les règles du projet.
+# Journal des modifications du projet
+
+Version minimale valide : 1.0.28
+
+## Version 1.0.28
+- **Affichage prévisions** : La page prévisions affiche désormais les vraies valeurs (température, min, max) sur LCD.
+- **Graphiques LCD** : Les axes et valeurs sont décalés pour éviter le chevauchement sur LCD.
+- **Encodeur rotatif LCD** : Sur LCD, 1 cran = 1 page (logique OLED inchangée).
+- **API encodeur** : Méthode publique pour le nombre de crans, plus d'accès direct au rotary privé.
+- **Docs & Build** : Documentation et code synchronisés, compilation et upload validés.
 
 ## Version 1.0.18
 - **Architecture** : Réorganisation des fichiers sources dans `src/modules`, `src/managers` et `src/utils`.

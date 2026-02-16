@@ -1,3 +1,5 @@
+// Utilitaire pour remplacer les accents par des caractères non accentués
+std::string removeAccents(const std::string& input);
 #pragma once
 #if defined(ESP32_S3_LCD)
 #include <Adafruit_GFX.h>
