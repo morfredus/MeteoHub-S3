@@ -1,7 +1,7 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.29
+Minimum valid version: 1.0.30
 
 ## Version 1.0.29
 - **LCD UI Overhaul**: Complete redesign of the ST7789 interface with a dark theme, colored headers, and data cards.

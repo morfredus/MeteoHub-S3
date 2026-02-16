@@ -1,6 +1,6 @@
 # Documentation Index
 
-Minimum valid version: 1.0.22
+Minimum valid version: 1.0.30
 
 
 ## OLED/LCD environments

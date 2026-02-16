@@ -1,7 +1,7 @@
 
 # Project Architecture
 
-Minimum valid version: 1.0.28
+Minimum valid version: 1.0.30
 
 ## Goal
 Explain how source code is organized, how OLED and LCD environments are managed, and how data flows across the system.

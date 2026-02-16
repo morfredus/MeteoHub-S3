@@ -1,6 +1,6 @@
 # Configuration
 
-Minimum valid version: 1.0.29
+Minimum valid version: 1.0.30
 
 ## Goal
 Configure network, weather API, and runtime constants safely.

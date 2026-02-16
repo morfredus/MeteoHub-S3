@@ -1,6 +1,6 @@
 # Maintenance et dépannage
 
-Version minimale valide : 1.0.29
+Version minimale valide : 1.0.30
 
 ## Objectif
 Fournir des étapes de reprise pratiques lorsque le dashboard ne se comporte pas comme prévu.
