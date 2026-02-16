@@ -156,9 +156,8 @@ void pageGraph_st7789(DisplayInterface& d, HistoryManager& history, int type, in
         int x = 30 + (180 * i) / (n - 1);
         float v = (type == 0) ? buffer[i].t : (type == 1 ? buffer[i].h : buffer[i].p);
         int y = 200 - (int)((v - min) * yscale);
-        auto* lcd = dynamic_cast<St7789Display*>(&d);
-        if (lcd) lcd->drawLine(prevx, prevy, x, y, color);
-        else d.drawLine(prevx, prevy, x, y);
+        auto* lcd = static_cast<St7789Display*>(&d);
+        lcd->drawLine(prevx, prevy, x, y, color);
         prevx = x;
         prevy = y;
     }
