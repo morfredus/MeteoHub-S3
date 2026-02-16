@@ -6,7 +6,7 @@
 #include "config.h"
 
 bool Sh1106Display::begin() {
-    d = new SH1106Wire(0x3C, OLED_SDA, OLED_SCL);
+    d = new SH1106Wire(0x3C, I2C_SDA, I2C_SCL);
     d->init();
     d->flipScreenVertically();
     d->setContrast(OLED_CONTRAST);

@@ -14,8 +14,8 @@ The firmware supports both SH1106 OLED and ST7789 LCD. Pin mapping and button la
 ## Current GPIO map
 
 ### OLED environment (I2C SH1106)
-- `OLED_SDA` = GPIO 15
-- `OLED_SCL` = GPIO 16
+- `I2C_SDA` = GPIO 15
+- `I2C_SCL` = GPIO 16
 - Rotary encoder (EC11):
 	- `ENC_A` = GPIO 4
 	- `ENC_B` = GPIO 5

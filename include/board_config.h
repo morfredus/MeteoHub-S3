@@ -7,8 +7,8 @@
 #if defined(ESP32_S3_OLED)
 
 // I2C OLED SH1106
-#define OLED_SDA 15
-#define OLED_SCL 16
+#define I2C_SDA 15
+#define I2C_SCL 16
 
 // Encodeur EC11
 #define ENC_A      4   // tra

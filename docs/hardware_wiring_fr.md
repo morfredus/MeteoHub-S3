@@ -14,8 +14,8 @@ Le firmware prend en charge à la fois l’OLED SH1106 et le LCD ST7789. Le mapp
 ## Mapping GPIO actuel
 
 ### Environnement OLED (I2C SH1106)
-- `OLED_SDA` = GPIO 15
-- `OLED_SCL` = GPIO 16
+- `I2C_SDA` = GPIO 15
+- `I2C_SCL` = GPIO 16
 - Encodeur rotatif (EC11) :
 	- `ENC_A` = GPIO 4
 	- `ENC_B` = GPIO 5
