@@ -5,6 +5,12 @@ Version minimale valide : 1.0.25
 ## Objectif
 Apprendre à utiliser le dashboard une fois le firmware démarré.
 
+
+## OLED vs LCD : Navigation et affichage
+- **OLED (SH1106)** : Monochrome, 128x64, 2 boutons + encodeur rotatif. Navigation : 2 crans = 1 page.
+- **LCD (TFT ST7789)** : Couleur, 240x240, 3 boutons + encodeur rotatif. Navigation : 1 cran = 1 page.
+- L’interface et la disposition des pages s’adaptent automatiquement à l’afficheur détecté.
+
 ## Commandes utilisateur
 - **Rotation encodeur** : navigation entre les pages
 - **Clic encodeur** : action contextuelle (changement vue prévisions ou action menu)

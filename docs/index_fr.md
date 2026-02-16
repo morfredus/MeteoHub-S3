@@ -2,7 +2,9 @@
 
 Version minimale valide : 1.0.22
 
-Ce dossier contient la documentation utilisateur complète de MeteoHub S3.
+
+## Environnements OLED/LCD
+Toute la documentation couvre à la fois les environnements OLED (SH1106) et LCD (ST7789). Les différences de navigation, de câblage et d’interface sont expliquées dans chaque section.
 
 ## Commencer ici
 - [Prise en main](getting_started_fr.md)

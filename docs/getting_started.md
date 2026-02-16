@@ -5,6 +5,13 @@ Minimum valid version: 1.0.22
 ## Goal
 This guide helps a beginner run MeteoHub S3 from zero to first successful upload.
 
+
+## Supported Environments
+- **OLED (SH1106, I2C)**: Monochrome, 128x64, rotary encoder + 2 buttons, NeoPixel, AHT20/BMP280 sensors.
+- **LCD (TFT ST7789, SPI)**: Color, 240x240, rotary encoder (HW-040) + 3 buttons, AHT20/BMP280 sensors.
+
+The firmware auto-detects the display type at boot and adapts the UI and navigation. See [Hardware Wiring](hardware_wiring.md) for pinout details.
+
 ## Prerequisites
 - A Windows PC
 - Visual Studio Code

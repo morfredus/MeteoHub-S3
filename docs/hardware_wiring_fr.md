@@ -5,8 +5,9 @@ Version minimale valide : 1.0.26
 ## Vue d’ensemble
 Cette page explique le mapping GPIO exact utilisé par le firmware.
 
-## Source du mapping des broches
-Le mapping de référence est défini dans :
+
+## Environnements OLED/LCD
+Le firmware prend en charge à la fois l’OLED SH1106 et le LCD ST7789. Le mapping des broches et la disposition des boutons diffèrent selon l’environnement. Voir ci-dessous pour le détail. Le mapping de référence est toujours défini dans :
 - `include/board_config.h`
 
 

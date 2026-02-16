@@ -20,6 +20,21 @@ Approximately every 30 minutes.
 ## Can I change page refresh speed?
 Yes, adjust `DASHBOARD_REFRESH_MS` in `include/config.h`.
 
+
+## Does the project support both OLED and LCD displays?
+Yes. The firmware automatically detects and adapts to either an SH1106 OLED (128x64, monochrome) or a TFT ST7789 LCD (240x240, color) at startup. No code change is needed.
+
+## What are the main differences between OLED and LCD environments?
+- **OLED (SH1106)**: 2 buttons + rotary encoder, monochrome, 128x64, navigation = 2 detents per page.
+- **LCD (ST7789)**: 3 buttons + rotary encoder, color, 240x240, navigation = 1 detent per page.
+The UI and page layout adapt automatically to the detected display.
+
+## How does navigation differ between OLED and LCD?
+On OLED, you must turn the encoder two detents to change page; on LCD, one detent is enough. Button mapping also differs (see user guide and hardware wiring).
+
+## Can I switch between OLED and LCD without changing the code?
+Yes. The firmware auto-detects the connected display at each boot.
+
 ## Can I change OLED contrast?
 Yes, adjust `OLED_CONTRAST` in `include/config.h`.
 

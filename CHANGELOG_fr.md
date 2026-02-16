@@ -1,10 +1,20 @@
+
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.27
+Version minimale valide : 1.0.28
+
+## Version 1.0.28
+- **Affichage prévisions** : La page prévisions affiche désormais les vraies valeurs (température, min, max) sur LCD.
+- **Graphiques LCD** : Les axes et valeurs sont décalés pour éviter le chevauchement sur LCD.
+- **Encodeur rotatif LCD** : Sur LCD, 1 cran = 1 page (logique OLED inchangée).
+- **API encodeur** : Méthode publique pour le nombre de crans, plus d'accès direct au rotary privé.
+- **Docs & Build** : Documentation et code synchronisés, compilation et upload validés.
+
 ## Version 1.0.27
 - **Initialisation I2C** : Initialisation dynamique du bus I2C dans SensorManager pour OLED et LCD, assurant la détection AHT20/BMP280 sur toutes les cartes.
 - **Correctif capteurs LCD** : Les capteurs fonctionnent désormais sans modification sur les versions LCD (broches I2C par défaut, personnalisables dans board_config.h).
 - **Rotation écran LCD** : L’orientation par défaut de l’écran LCD est maintenant retournée (setRotation(2)) pour un affichage correct.
+
 ## Version 1.0.26
 - **Multi-écrans** : Ajout d'un environnement LCD (TFT ST7789) avec gestion conditionnelle du code et du brochage.
 - **Protection compilation** : Ajout de conditions dans tous les fichiers d'affichage pour éviter les conflits entre OLED et LCD.
@@ -34,17 +44,6 @@ Version minimale valide : 1.0.27
 - **Cohérence bilingue** : Ajout d’équivalents stricts en anglais et en français pour tous les nouveaux documents utilisateur.
 - **Guides projet** : Documentation des workflows d’installation, câblage, configuration, utilisation, architecture et dépannage.
 
-## Version 1.0.19
-# Journal des modifications du projet
-
-Version minimale valide : 1.0.28
-
-## Version 1.0.28
-- **Affichage prévisions** : La page prévisions affiche désormais les vraies valeurs (température, min, max) sur LCD.
-- **Graphiques LCD** : Les axes et valeurs sont décalés pour éviter le chevauchement sur LCD.
-- **Encodeur rotatif LCD** : Sur LCD, 1 cran = 1 page (logique OLED inchangée).
-- **API encodeur** : Méthode publique pour le nombre de crans, plus d'accès direct au rotary privé.
-- **Docs & Build** : Documentation et code synchronisés, compilation et upload validés.
 
 ## Version 1.0.18
 - **Architecture** : Réorganisation des fichiers sources dans `src/modules`, `src/managers` et `src/utils`.

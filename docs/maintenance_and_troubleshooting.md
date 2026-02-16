@@ -10,6 +10,9 @@ Provide practical recovery steps when the dashboard does not behave as expected.
 - Upload: `platformio run --target upload`
 - Clean build cache: `platformio run --target clean`
 
+## OLED/LCD environments: auto-detection and navigation
+The firmware automatically detects and adapts to either an SH1106 OLED (128x64, monochrome) or a TFT ST7789 LCD (240x240, color) at startup. Navigation and button mapping differ between environments (see user guide and hardware wiring).
+
 ## Typical issues
 ### 1) Wi-Fi never connects
 Check:

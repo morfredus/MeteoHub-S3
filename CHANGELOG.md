@@ -1,10 +1,20 @@
+
 # Project Changelog
 
-Minimum valid version: 1.0.27
+Minimum valid version: 1.0.28
+
+## Version 1.0.28
+- **Forecast Display Fix**: Forecast page now shows real values (temperature, min, max) on LCD.
+- **Graph Layout**: Axes and value labels are shifted to avoid overlap on LCD.
+- **Rotary Encoder LCD**: On LCD, one detent = one page (OLED logic unchanged).
+- **Encoder API**: Public method for step count, no more direct access to private rotary.
+- **Docs & Build**: Documentation and code fully synchronized, build and upload validated.
+
 ## Version 1.0.27
 - **I2C Initialization**: Dynamic I2C initialization in SensorManager for both OLED and LCD environments, ensuring AHT20/BMP280 detection on all boards.
 - **LCD Sensor Fix**: Sensors now work out-of-the-box on LCD builds (default I2C pins, can be customized in board_config.h).
 - **LCD Display Rotation**: Default LCD orientation is now rotated (setRotation(2)) for correct display direction.
+
 ## Version 1.0.26
 - **Multi-écrans** : Ajout d'un environnement LCD (TFT ST7789) avec gestion conditionnelle du code et du brochage.
 - **Protection compilation** : Ajout de conditions dans tous les fichiers d'affichage pour éviter les conflits entre OLED et LCD.
@@ -34,17 +44,6 @@ Minimum valid version: 1.0.27
 - **Bilingual Consistency**: Added strict English/French equivalents for all new user-facing docs.
 - **Project Guidance**: Documented setup, wiring, configuration, usage, architecture, and troubleshooting workflows.
 
-## Version 1.0.19
-# Project Changelog
-
-Minimum valid version: 1.0.28
-
-## Version 1.0.28
-- **Forecast Display Fix**: Forecast page now shows real values (temperature, min, max) on LCD.
-- **Graph Layout**: Axes and value labels are shifted to avoid overlap on LCD.
-- **Rotary Encoder LCD**: On LCD, one detent = one page (OLED logic unchanged).
-- **Encoder API**: Public method for step count, no more direct access to private rotary.
-- **Docs & Build**: Documentation and code fully synchronized, build and upload validated.
 
 ## Version 1.0.18
 - **Architecture**: Reorganized source files into `src/modules`, `src/managers`, and `src/utils`.

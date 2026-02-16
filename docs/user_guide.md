@@ -5,6 +5,12 @@ Minimum valid version: 1.0.25
 ## Goal
 Learn how to use the dashboard once firmware is running.
 
+
+## OLED vs LCD: Navigation and Display
+- **OLED (SH1106)**: Monochrome, 128x64, 2 buttons + rotary encoder. Navigation: 2 detents = 1 page.
+- **LCD (TFT ST7789)**: Color, 240x240, 3 buttons + rotary encoder. Navigation: 1 detent = 1 page.
+- The UI and page layout adapt automatically to the detected display.
+
 ## Input controls
 - **Encoder rotation**: navigate pages
 - **Encoder click**: context action (forecast view switch or menu action)

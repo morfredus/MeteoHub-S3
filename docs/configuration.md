@@ -22,6 +22,10 @@ Use this file for functional tuning:
 - OLED contrast (`OLED_CONTRAST`)
 - Ping test flag (`ENABLE_PING_TEST`)
 
+
+## OLED/LCD environments
+The firmware supports both SH1106 OLED and ST7789 LCD. Display type, pin mapping, and navigation are auto-detected at boot. See user guide and hardware wiring for details.
+
 ## File you should not edit casually
 ### `include/board_config.h`
 This file defines GPIO mapping and should only be changed after hardware decision.

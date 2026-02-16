@@ -20,6 +20,21 @@ Environ toutes les 30 minutes.
 ## Puis-je changer la vitesse de rafraîchissement des pages ?
 Oui, modifier `DASHBOARD_REFRESH_MS` dans `include/config.h`.
 
+
+## Le projet gère-t-il à la fois OLED et LCD ?
+Oui. Le firmware détecte et s’adapte automatiquement à un écran OLED SH1106 (128x64, monochrome) ou un LCD TFT ST7789 (240x240, couleur) au démarrage. Aucun changement de code n’est nécessaire.
+
+## Quelles sont les principales différences entre les environnements OLED et LCD ?
+- **OLED (SH1106)** : 2 boutons + encodeur rotatif, monochrome, 128x64, navigation = 2 crans par page.
+- **LCD (ST7789)** : 3 boutons + encodeur rotatif, couleur, 240x240, navigation = 1 cran par page.
+L’interface et la disposition des pages s’adaptent automatiquement à l’afficheur détecté.
+
+## Comment la navigation diffère-t-elle entre OLED et LCD ?
+Sur OLED, il faut tourner l’encodeur de deux crans pour changer de page ; sur LCD, un seul cran suffit. Le mapping des boutons diffère aussi (voir guide utilisateur et câblage matériel).
+
+## Puis-je passer d’un OLED à un LCD sans changer le code ?
+Oui. Le firmware auto-détecte l’afficheur connecté à chaque démarrage.
+
 ## Puis-je changer le contraste OLED ?
 Oui, modifier `OLED_CONTRAST` dans `include/config.h`.
 

@@ -5,8 +5,9 @@ Minimum valid version: 1.0.26
 ## Overview
 This page explains the exact GPIO mapping used by the firmware.
 
-## Pin mapping source
-The authoritative mapping is defined in:
+
+## OLED/LCD environments
+The firmware supports both SH1106 OLED and ST7789 LCD. Pin mapping and button layout differ between environments. See below for details. The correct mapping is always defined in:
 - `include/board_config.h`
 
 

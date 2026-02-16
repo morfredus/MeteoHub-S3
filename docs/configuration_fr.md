@@ -22,6 +22,10 @@ Utiliser ce fichier pour les réglages fonctionnels :
 - Contraste OLED (`OLED_CONTRAST`)
 - Activation du test ping (`ENABLE_PING_TEST`)
 
+
+## Environnements OLED/LCD
+Le firmware prend en charge à la fois l’OLED SH1106 et le LCD ST7789. Le type d’afficheur, le mapping des broches et la navigation sont auto-détectés au démarrage. Voir guide utilisateur et câblage matériel pour le détail.
+
 ## Fichier à ne pas modifier à la légère
 ### `include/board_config.h`
 Ce fichier définit le mapping GPIO et ne doit être modifié qu’après décision matérielle.
