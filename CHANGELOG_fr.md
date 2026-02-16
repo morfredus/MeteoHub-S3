@@ -1,7 +1,15 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.28
+Version minimale valide : 1.0.29
+
+## Version 1.0.29
+- **Interface LCD** : Refonte complète de l'interface ST7789 (thème sombre, en-têtes colorés, cartes de données).
+- **Anti-scintillement** : Implémentation du double buffering pour l'écran LCD.
+- **Navigation** : Inversion du sens de l'encodeur sur LCD (Pages et Menu) pour une logique plus naturelle (Horaire = Suivant).
+- **Menu Système** : Redesign du menu sur LCD pour s'aligner avec la charte graphique.
+- **Ordre des pages** : Inversion des pages "Système" et "Logs" sur LCD.
+- **Correctifs** : Résolution de l'erreur de liaison `clearLogs`, correction du gel d'écran et gestion des accents.
 
 ## Version 1.0.28
 - **Affichage prévisions** : La page prévisions affiche désormais les vraies valeurs (température, min, max) sur LCD.

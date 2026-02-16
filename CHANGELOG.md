@@ -1,7 +1,15 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.28
+Minimum valid version: 1.0.29
+
+## Version 1.0.29
+- **LCD UI Overhaul**: Complete redesign of the ST7789 interface with a dark theme, colored headers, and data cards.
+- **Flicker-Free**: Implemented double buffering (Canvas16) for LCD to eliminate scanning artifacts.
+- **Navigation Logic**: Inverted rotary encoder direction on LCD (Pages & Menu) to match natural intuition (CW = Next).
+- **Menu Redesign**: LCD system menu now matches the global design language.
+- **Page Order**: Swapped "System" and "Logs" pages on LCD for better flow.
+- **Bug Fixes**: Fixed `clearLogs` linker error, frozen display issues, and text accent handling.
 
 ## Version 1.0.28
 - **Forecast Display Fix**: Forecast page now shows real values (temperature, min, max) on LCD.

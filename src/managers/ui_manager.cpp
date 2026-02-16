@@ -14,7 +14,6 @@
 #endif
 #include "../utils/logs.h"
 
-
 void UiManager::begin(DisplayInterface& display, WifiManager& wifiRef, SensorManager& sensorRef, ForecastManager& forecastRef) {
     d = &display;
     wifi = &wifiRef;
@@ -88,8 +87,13 @@ void UiManager::update() {
 
     if (menuMode) {
         bool rotated = false;
+#if defined(ESP32_S3_LCD)
+        if (enc.rotatedCW())  { menuIndex--; rotated = true; }
+        if (enc.rotatedCCW()) { menuIndex++; rotated = true; }
+#else
         if (enc.rotatedCW())  { menuIndex++; rotated = true; }
         if (enc.rotatedCCW()) { menuIndex--; rotated = true; }
+#endif
 
         if (rotated) {
             unsigned long now = millis();
@@ -118,8 +122,8 @@ void UiManager::update() {
     static int lastEnc = 0;
     int encVal = enc.getStepCount();
     if (encVal != lastEnc) {
-        if (encVal > lastEnc) { page++; rotatedPage = true; }
-        else if (encVal < lastEnc) { page--; rotatedPage = true; }
+        if (encVal > lastEnc) { page--; rotatedPage = true; }
+        else if (encVal < lastEnc) { page++; rotatedPage = true; }
         lastEnc = encVal;
     }
 #else
@@ -213,6 +217,7 @@ void UiManager::handleButtons() {
     if (confirmEvent && !menuMode) {
         menuMode = true;
         menuIndex = 0;
+        enc.clearQueue(); // Vider les rotations en attente pour éviter un saut
         ignoreButtonsUntilMs = now + BUTTON_GUARD_MS;
         drawMenu();
     }
@@ -228,6 +233,7 @@ void UiManager::handleButtons() {
                     ESP.restart();
                     break;
                 case MENU_CLEAR_LOGS:
+                    clearLogs();
                     LOG_INFO("Logs cleared");
                     menuMode = false;
                     drawPage();
@@ -251,17 +257,37 @@ void UiManager::handleButtons() {
 }
 
 void UiManager::drawMenu() {
+#if defined(ESP32_S3_LCD)
+    St7789Display& tft = static_cast<St7789Display&>(*d);
+    tft.clear();
+    tft.drawHeader("Menu", "");
+
+    const char* items[MENU_COUNT] = { "Retour", "Redémarrer", "Effacer Logs", "Effacer Historique" };
+    int y_start = 70;
+    int y_step = 40;
+
+    for (int i = 0; i < MENU_COUNT; i++) {
+        int current_y = y_start + i * y_step;
+        if (i == menuIndex) {
+            // Affiche l'élément sélectionné
+            tft.fillRoundRect(15, current_y - 22, 210, 30, 5, C_TEAL);
+            tft.text(30, current_y, items[i], C_WHITE, 1);
+        } else {
+            tft.text(30, current_y, items[i], C_GREY, 1);
+        }
+    }
+#else // Version OLED
     d->clear();
     d->text(0, 0, "Menu");
 
-    const char* items[MENU_COUNT] = { "Retour", "Reboot", "Clear logs", "Clear History" };
+    const char* items[MENU_COUNT] = { "Retour", "Redemarrer", "Eff. Logs", "Eff. Histo." };
 
     for (int i = 0; i < MENU_COUNT; i++) {
         std::string line = (i == menuIndex ? "> " : "  ");
         line += items[i];
         d->text(0, 14 + i * 12, line);
     }
-
+#endif
     d->show();
 }
 
@@ -274,8 +300,8 @@ void UiManager::drawPage() {
         case PAGE_GRAPH_HUM:  pageGraph_st7789(*d, history, 1, page + 1, PAGE_COUNT); break;
         case PAGE_GRAPH_PRES: pageGraph_st7789(*d, history, 2, page + 1, PAGE_COUNT); break;
         case PAGE_NETWORK: pageNetwork_st7789(*d, *wifi, page + 1, PAGE_COUNT); break;
-        case PAGE_LOGS:    pageLogs_st7789(*d, page + 1, PAGE_COUNT); break;
-        case PAGE_SYSTEM:  pageSystem_st7789(*d, page + 1, PAGE_COUNT); break;
+        case PAGE_LOGS:    pageSystem_st7789(*d, page + 1, PAGE_COUNT); break; // Swap pour ordre demandé
+        case PAGE_SYSTEM:  pageLogs_st7789(*d, page + 1, PAGE_COUNT); break;   // Swap pour ordre demandé
     }
 #else
     switch (page) {

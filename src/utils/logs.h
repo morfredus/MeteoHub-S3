@@ -6,6 +6,7 @@
 void addLog(const std::string& msg);
 std::string getLog(int index);
 int getLogCount();
+void clearLogs();
 
 #define LOG_DEBUG(msg) addLog(std::string("[DEBUG] ") + std::string(msg))
 #define LOG_INFO(msg) addLog(std::string("[INFO] ") + std::string(msg))

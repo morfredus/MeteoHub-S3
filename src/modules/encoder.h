@@ -11,6 +11,7 @@ public:
     bool rotatedCW();
     bool rotatedCCW();
     bool clicked();
+    void clearQueue();
     int getStepCount() const;
 
 private:

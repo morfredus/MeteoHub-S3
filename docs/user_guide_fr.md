@@ -1,6 +1,6 @@
 # Guide utilisateur
 
-Version minimale valide : 1.0.25
+Version minimale valide : 1.0.29
 
 ## Objectif
 Apprendre à utiliser le dashboard une fois le firmware démarré.
@@ -33,8 +33,8 @@ Le gestionnaire UI fait défiler ces pages :
 - Graphe Humidité
 - Graphe Pression
 - Réseau
-- Logs
-- Système
+- Système (LCD : position 7)
+- Logs (LCD : position 8)
 
 ### Comportement de l’échelle des graphes
 - Les libellés min/max des graphes sont calculés à partir de l’historique actuellement affiché à l’écran.

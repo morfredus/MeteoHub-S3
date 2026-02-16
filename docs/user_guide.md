@@ -1,6 +1,6 @@
 # User Guide
 
-Minimum valid version: 1.0.25
+Minimum valid version: 1.0.29
 
 ## Goal
 Learn how to use the dashboard once firmware is running.
@@ -33,8 +33,8 @@ The UI manager cycles through these pages:
 - Graph Humidity
 - Graph Pressure
 - Network
-- Logs
-- System
+- System (LCD: position 7)
+- Logs (LCD: position 8)
 
 ### Graph scale behavior
 - Graph min/max labels are computed from the history currently displayed on screen.

@@ -1,6 +1,6 @@
 # FAQ
 
-Minimum valid version: 1.0.22
+Minimum valid version: 1.0.29
 
 ## Is internet required?
 Yes, for forecast and alert updates. Local sensor pages still work without internet.

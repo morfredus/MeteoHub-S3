@@ -1,21 +1,29 @@
 #include "logs.h"
+#include <vector>
+#include <string>
 
-static std::string logBuffer[LOG_BUFFER_SIZE];
-static int logIndex = 0;
-static int logCount = 0;
+// Utilisation d'un vecteur pour stocker les logs en mémoire
+static std::vector<std::string> logs;
 
 void addLog(const std::string& msg) {
-    logBuffer[logIndex] = msg;
-    logIndex = (logIndex + 1) % LOG_BUFFER_SIZE;
-    if (logCount < LOG_BUFFER_SIZE) logCount++;
+    // Si le buffer est plein, on retire le plus ancien
+    if (logs.size() >= LOG_BUFFER_SIZE) {
+        logs.erase(logs.begin());
+    }
+    logs.push_back(msg);
 }
 
 std::string getLog(int index) {
-    if (index < 0 || index >= logCount) return "";
-    int realIndex = (logIndex - logCount + index + LOG_BUFFER_SIZE) % LOG_BUFFER_SIZE;
-    return logBuffer[realIndex];
+    if (index >= 0 && index < logs.size()) {
+        return logs[index];
+    }
+    return "";
 }
 
 int getLogCount() {
-    return logCount;
+    return logs.size();
+}
+
+void clearLogs() {
+    logs.clear();
 }

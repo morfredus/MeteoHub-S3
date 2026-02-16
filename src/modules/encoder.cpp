@@ -73,3 +73,8 @@ bool Encoder::clicked() {
     if (clickFlag) { clickFlag = false; return true; }
     return false;
 }
+
+void Encoder::clearQueue() {
+    stepQueue = 0;
+    pulseAccumulator = 0;
+}
