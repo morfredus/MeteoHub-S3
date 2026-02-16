@@ -1,6 +1,10 @@
 # Project Changelog
 
-Minimum valid version: 1.0.26
+Minimum valid version: 1.0.27
+## Version 1.0.27
+- **I2C Initialization**: Dynamic I2C initialization in SensorManager for both OLED and LCD environments, ensuring AHT20/BMP280 detection on all boards.
+- **LCD Sensor Fix**: Sensors now work out-of-the-box on LCD builds (default I2C pins, can be customized in board_config.h).
+- **LCD Display Rotation**: Default LCD orientation is now rotated (setRotation(2)) for correct display direction.
 ## Version 1.0.26
 - **Multi-écrans** : Ajout d'un environnement LCD (TFT ST7789) avec gestion conditionnelle du code et du brochage.
 - **Protection compilation** : Ajout de conditions dans tous les fichiers d'affichage pour éviter les conflits entre OLED et LCD.

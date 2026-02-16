@@ -19,9 +19,9 @@
 #define BTN_BACK    7  // bak
 #define BTN_CONFIRM 8  // com
 
-#define NEOPIXEL_PIN 48   // npx (neopixel status)
+    #define NEOPIXEL_PIN 48   // npx (neopixel status)
 
-// Masse et alim sont câblées physiquement :
+// Masse et alim sont câblées physiqement :
 // grd -> GND
 // vcc -> 3V3
 
@@ -52,6 +52,8 @@
 #define BUTTON_1   38
 #define BUTTON_2   39
 
+#define NEOPIXEL_PIN 48   // npx (neopixel status)
+
 // ------------------------------------
 // ENCODEUR ROTATIF (HW-040)
 // ------------------------------------
@@ -71,5 +73,6 @@
 #define ENCODER_A_PIN ROTARY_CLK
 #define ENCODER_B_PIN ROTARY_DT
 #define ENCODER_BTN_PIN ROTARY_SW
+
 
 #endif

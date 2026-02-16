@@ -6,10 +6,12 @@
 St7789Display::St7789Display() {}
 
 bool St7789Display::begin() {
-    tft = new Adafruit_ST7789(
-        DISPLAY_CS_PIN, DISPLAY_DC_PIN, DISPLAY_MOSI_PIN, DISPLAY_SCK_PIN, DISPLAY_RST_PIN);
+    // Initialisation SPI matériel
+    SPIClass* spi = new SPIClass(HSPI);
+    spi->begin(DISPLAY_SCK_PIN, DISPLAY_MISO_PIN, DISPLAY_MOSI_PIN, DISPLAY_CS_PIN);
+    tft = new Adafruit_ST7789(spi, DISPLAY_CS_PIN, DISPLAY_DC_PIN, DISPLAY_RST_PIN);
     tft->init(width, height);
-    tft->setRotation(0);
+    tft->setRotation(2);
     tft->fillScreen(ST77XX_BLACK);
     tft->setTextWrap(false);
     pinMode(DISPLAY_BL_PIN, OUTPUT);
@@ -46,4 +48,23 @@ void St7789Display::bar(int x, int y, int w, int h, int value, int max, uint16_t
 void St7789Display::drawLine(int x0, int y0, int x1, int y1, uint16_t color) {
     tft->drawLine(x0, y0, x1, y1, color);
 }
+
+// Définitions manquantes des surcharges sans couleur/size
+void St7789Display::text(int x, int y, const std::string& s) {
+    // Couleur et taille par défaut
+    text(x, y, s, ST77XX_WHITE, 1);
+}
+
+void St7789Display::center(int y, const std::string& s) {
+    center(y, s, ST77XX_WHITE, 1);
+}
+
+void St7789Display::bar(int x, int y, int w, int h, int value, int max) {
+    bar(x, y, w, h, value, max, ST77XX_WHITE);
+}
+
+void St7789Display::drawLine(int x0, int y0, int x1, int y1) {
+    drawLine(x0, y0, x1, y1, ST77XX_WHITE);
+}
 #endif
+

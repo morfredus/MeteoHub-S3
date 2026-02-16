@@ -1,9 +1,11 @@
 #include <Wire.h>
-
+#include "board_config.h"
 #include "sensors.h"
 #include "../utils/logs.h"
 
 bool SensorManager::begin() {
+    Wire.begin(I2C_SDA, I2C_SCL);
+
     // Initialisation AHT20 (Adresse 0x38 par défaut)
     if (aht.begin()) {
         ahtFound = true;

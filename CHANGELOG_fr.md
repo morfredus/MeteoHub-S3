@@ -1,6 +1,10 @@
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.26
+Version minimale valide : 1.0.27
+## Version 1.0.27
+- **Initialisation I2C** : Initialisation dynamique du bus I2C dans SensorManager pour OLED et LCD, assurant la détection AHT20/BMP280 sur toutes les cartes.
+- **Correctif capteurs LCD** : Les capteurs fonctionnent désormais sans modification sur les versions LCD (broches I2C par défaut, personnalisables dans board_config.h).
+- **Rotation écran LCD** : L’orientation par défaut de l’écran LCD est maintenant retournée (setRotation(2)) pour un affichage correct.
 ## Version 1.0.26
 - **Multi-écrans** : Ajout d'un environnement LCD (TFT ST7789) avec gestion conditionnelle du code et du brochage.
 - **Protection compilation** : Ajout de conditions dans tous les fichiers d'affichage pour éviter les conflits entre OLED et LCD.
