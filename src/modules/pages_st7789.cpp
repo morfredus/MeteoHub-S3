@@ -1,6 +1,7 @@
+#if defined(ESP32_S3_LCD)
 #include "display_interface.h"
 #include "pages_st7789.h"
-#if defined(ESP32_S3_LCD)
+#include "st7789_display.h"
 #include <algorithm>
 #include <cctype>
 #include <float.h>

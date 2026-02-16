@@ -1,5 +1,5 @@
-#include "display_interface.h"
 #if defined(ESP32_S3_OLED)
+#include "display_interface.h"
 #include <algorithm>
 #include <cctype>
 #include <float.h>
@@ -45,7 +45,7 @@ std::string translateAlert(const std::string& event) {
 	return event; // Fallback si aucune traduction
 }
 
-void pageNetwork(DisplayInterface& d, WifiManager& wifi, int pageIndex, int pageCount) {
+void pageNetwork_sh1106(DisplayInterface& d, WifiManager& wifi, int pageIndex, int pageCount) {
 	d.clear();
 	d.text(0, 0, getHeader("Net.", pageIndex, pageCount));
 
@@ -56,7 +56,7 @@ void pageNetwork(DisplayInterface& d, WifiManager& wifi, int pageIndex, int page
 	d.show();
 }
 
-void pageSystem(DisplayInterface& d, int pageIndex, int pageCount) {
+void pageSystem_sh1106(DisplayInterface& d, int pageIndex, int pageCount) {
 	SystemInfo s = getSystemInfo();
 
 	d.clear();
@@ -70,7 +70,7 @@ void pageSystem(DisplayInterface& d, int pageIndex, int pageCount) {
 	d.show();
 }
 
-void pageLogs(DisplayInterface& d, int pageIndex, int pageCount) {
+void pageLogs_sh1106(DisplayInterface& d, int pageIndex, int pageCount) {
 	d.clear();
 	d.text(0, 0, getHeader("Logs", pageIndex, pageCount));
 
@@ -84,7 +84,7 @@ void pageLogs(DisplayInterface& d, int pageIndex, int pageCount) {
 	d.show();
 }
 
-void pageWeather(DisplayInterface& d, SensorManager& sensors, int pageIndex, int pageCount) {
+void pageWeather_sh1106(DisplayInterface& d, SensorManager& sensors, int pageIndex, int pageCount) {
 	SensorData data = sensors.read();
 	d.clear();
 	d.text(0, 0, getHeader("Meteo", pageIndex, pageCount));
@@ -100,14 +100,14 @@ void pageWeather(DisplayInterface& d, SensorManager& sensors, int pageIndex, int
 	d.show();
 }
 
-void pageGraph(DisplayInterface& d, HistoryManager& history, int type, int pageIndex, int pageCount) {
+void pageGraph_sh1106(DisplayInterface& d, HistoryManager& history, int type, int pageIndex, int pageCount) {
 	d.clear();
 	d.text(0, 0, getHeader("Graph", pageIndex, pageCount));
 	// ... Affichage simplifié pour OLED ...
 	d.show();
 }
 
-void pageForecast(DisplayInterface& d, ForecastManager& forecast, int view, int pageIndex, int pageCount) {
+void pageForecast_sh1106(DisplayInterface& d, ForecastManager& forecast, int view, int pageIndex, int pageCount) {
 	d.clear();
 	d.text(0, 0, getHeader("Prev.", pageIndex, pageCount));
 	// ... Affichage simplifié pour OLED ...

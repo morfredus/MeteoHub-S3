@@ -8,10 +8,10 @@
 #include "sensors.h"
 #include "../utils/system_info.h"
 
-void pageNetwork(DisplayInterface& d, WifiManager& wifi, int pageIndex, int pageCount);
-void pageSystem(DisplayInterface& d, int pageIndex, int pageCount);
-void pageLogs(DisplayInterface& d, int pageIndex, int pageCount);
-void pageWeather(DisplayInterface& d, SensorManager& sensors, int pageIndex, int pageCount);
-void pageGraph(DisplayInterface& d, HistoryManager& history, int type, int pageIndex, int pageCount);
-void pageForecast(DisplayInterface& d, ForecastManager& forecast, int view, int pageIndex, int pageCount);
+void pageNetwork_sh1106(DisplayInterface& d, WifiManager& wifi, int pageIndex, int pageCount);
+void pageSystem_sh1106(DisplayInterface& d, int pageIndex, int pageCount);
+void pageLogs_sh1106(DisplayInterface& d, int pageIndex, int pageCount);
+void pageWeather_sh1106(DisplayInterface& d, SensorManager& sensors, int pageIndex, int pageCount);
+void pageGraph_sh1106(DisplayInterface& d, HistoryManager& history, int type, int pageIndex, int pageCount);
+void pageForecast_sh1106(DisplayInterface& d, ForecastManager& forecast, int view, int pageIndex, int pageCount);
 #endif

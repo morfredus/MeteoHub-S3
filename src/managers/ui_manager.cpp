@@ -269,14 +269,14 @@ void UiManager::drawPage() {
     }
 #else
     switch (page) {
-        case PAGE_WEATHER: pageWeather(*d, *sensors, page + 1, PAGE_COUNT); break;
-        case PAGE_FORECAST: pageForecast(*d, *forecast, forecastViewIndex, page + 1, PAGE_COUNT); break;
-        case PAGE_GRAPH_TEMP: pageGraph(*d, history, 0, page + 1, PAGE_COUNT); break;
-        case PAGE_GRAPH_HUM:  pageGraph(*d, history, 1, page + 1, PAGE_COUNT); break;
-        case PAGE_GRAPH_PRES: pageGraph(*d, history, 2, page + 1, PAGE_COUNT); break;
-        case PAGE_NETWORK: pageNetwork(*d, *wifi, page + 1, PAGE_COUNT); break;
-        case PAGE_LOGS:    pageLogs(*d, page + 1, PAGE_COUNT); break;
-        case PAGE_SYSTEM:  pageSystem(*d, page + 1, PAGE_COUNT); break;
+        case PAGE_WEATHER: pageWeather_sh1106(*d, *sensors, page + 1, PAGE_COUNT); break;
+        case PAGE_FORECAST: pageForecast_sh1106(*d, *forecast, forecastViewIndex, page + 1, PAGE_COUNT); break;
+        case PAGE_GRAPH_TEMP: pageGraph_sh1106(*d, history, 0, page + 1, PAGE_COUNT); break;
+        case PAGE_GRAPH_HUM:  pageGraph_sh1106(*d, history, 1, page + 1, PAGE_COUNT); break;
+        case PAGE_GRAPH_PRES: pageGraph_sh1106(*d, history, 2, page + 1, PAGE_COUNT); break;
+        case PAGE_NETWORK: pageNetwork_sh1106(*d, *wifi, page + 1, PAGE_COUNT); break;
+        case PAGE_LOGS:    pageLogs_sh1106(*d, page + 1, PAGE_COUNT); break;
+        case PAGE_SYSTEM:  pageSystem_sh1106(*d, page + 1, PAGE_COUNT); break;
     }
 #endif
 }
