@@ -114,8 +114,18 @@ void UiManager::update() {
     }
 
     bool rotatedPage = false;
+#if defined(ESP32_S3_LCD)
+    static int lastEnc = 0;
+    int encVal = enc.getStepCount();
+    if (encVal != lastEnc) {
+        if (encVal > lastEnc) { page++; rotatedPage = true; }
+        else if (encVal < lastEnc) { page--; rotatedPage = true; }
+        lastEnc = encVal;
+    }
+#else
     if (enc.rotatedCW())  { page--; rotatedPage = true; }
     if (enc.rotatedCCW()) { page++; rotatedPage = true; }
+#endif
 
     if (page < 0) page = PAGE_COUNT - 1;
     if (page >= PAGE_COUNT) page = 0;

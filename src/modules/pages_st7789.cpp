@@ -33,53 +33,33 @@ std::string getHeaderLCD(const std::string& title, int pageIndex, int pageCount)
 
 // Exemples de pages LCD (à enrichir pour tirer parti de la couleur, de la résolution, etc.)
 void pageNetwork_st7789(DisplayInterface& d, WifiManager& wifi, int pageIndex, int pageCount) {
-    d.clear();
-    // Fond dégradé bleu
-    for (int y = 0; y < 240; y += 8) {
-        uint16_t c = 0x1F1F + (y * 0x0200);
-        d.bar(0, y, 240, 8, 8, 8);
-    }
+    // Fond noir uniforme
+    static_cast<St7789Display&>(d).bar(0, 0, 240, 240, 240, 240, ST77XX_BLACK);
     // En-tête avec icône WiFi
-    d.text(10, 10, getHeaderLCD("\xF0\x9F\x93\xB6 Réseau", pageIndex, pageCount));
-    // SSID
-    d.text(20, 50, "SSID : " + std::string(wifi.ssid()));
-    // IP
-    d.text(20, 90, "IP   : " + std::string(wifi.ip()));
-    // RSSI avec couleur selon force
+    static_cast<St7789Display&>(d).text(10, 20, getHeaderLCD("Réseau", pageIndex, pageCount), ST77XX_WHITE, 1);
+    static_cast<St7789Display&>(d).text(20, 50, "SSID : " + std::string(wifi.ssid()), ST77XX_WHITE, 1);
+    static_cast<St7789Display&>(d).text(20, 70, "IP   : " + std::string(wifi.ip()), ST77XX_WHITE, 1);
     int rssi = wifi.rssi();
     uint16_t rssiColor = (rssi > -60) ? 0x07E0 : (rssi > -80 ? 0xFFE0 : 0xF800);
-    d.text(20, 130, "RSSI : " + std::to_string(rssi) + " dBm");
-    // Icône signal
-    if (rssi > -60) d.text(200, 130, "\xF0\x9F\x9B\xB2"); // Antenne verte
-    else if (rssi > -80) d.text(200, 130, "\xF0\x9F\x9B\xB3"); // Antenne jaune
-    else d.text(200, 130, "\xF0\x9F\x9B\xB1"); // Antenne rouge
-    d.show();
+    static_cast<St7789Display&>(d).text(20, 90, "RSSI : " + std::to_string(rssi) + " dBm", rssiColor, 1);
 }
 
 void pageSystem_st7789(DisplayInterface& d, int pageIndex, int pageCount) {
     SystemInfo s = getSystemInfo();
-    d.clear();
-    // Fond violet
-    for (int y = 0; y < 240; y += 8) {
-        uint16_t c = 0x780F + (y * 0x0010);
-        d.bar(0, y, 240, 8, 8, 8);
-    }
-    d.text(10, 10, getHeaderLCD("\xF0\x9F\x94\xA7 Système", pageIndex, pageCount));
-    d.text(20, 50, "Heap   : " + std::to_string(s.heapFree / 1024) + " KB");
-    d.text(20, 80, "PSRAM  : " + std::to_string(s.psramFree / 1024) + " KB");
-    d.text(20, 110, "Flash  : " + std::to_string(s.flashSize / 1024 / 1024) + " MB");
-    d.text(20, 140, "Version: " + std::string(PROJECT_VERSION));
-    d.text(20, 180, "\xF0\x9F\x9A\x80 MeteoHub S3");
-    d.show();
+    // Fond noir uniforme
+    static_cast<St7789Display&>(d).bar(0, 0, 240, 240, 240, 240, ST77XX_BLACK);
+    static_cast<St7789Display&>(d).text(10, 20, getHeaderLCD("Système", pageIndex, pageCount), ST77XX_WHITE, 1);
+    static_cast<St7789Display&>(d).text(20, 50, "Heap   : " + std::to_string(s.heapFree / 1024) + " KB", ST77XX_WHITE, 1);
+    static_cast<St7789Display&>(d).text(20, 70, "PSRAM  : " + std::to_string(s.psramFree / 1024) + " KB", ST77XX_WHITE, 1);
+    static_cast<St7789Display&>(d).text(20, 90, "Flash  : " + std::to_string(s.flashSize / 1024 / 1024) + " MB", ST77XX_WHITE, 1);
+    static_cast<St7789Display&>(d).text(20, 110, "Version: " + std::string(PROJECT_VERSION), ST77XX_WHITE, 1);
+    static_cast<St7789Display&>(d).text(20, 140, "MeteoHub S3", ST77XX_WHITE, 1);
 }
 
 void pageLogs_st7789(DisplayInterface& d, int pageIndex, int pageCount) {
-    d.clear();
-    // Fond gris
-    for (int y = 0; y < 240; y += 8) {
-        d.bar(0, y, 240, 8, 8, 8);
-    }
-    d.text(10, 10, getHeaderLCD("\xF0\x9F\x93\x84 Logs", pageIndex, pageCount));
+    // Fond noir uniforme
+    static_cast<St7789Display&>(d).bar(0, 0, 240, 240, 240, 240, ST77XX_BLACK);
+    d.text(10, 20, getHeaderLCD("Logs", pageIndex, pageCount));
     int y = 40;
     for (int i = 0; i < getLogCount(); i++) {
         d.text(10, y, getLog(i));
@@ -91,56 +71,37 @@ void pageLogs_st7789(DisplayInterface& d, int pageIndex, int pageCount) {
 
 void pageWeather_st7789(DisplayInterface& d, SensorManager& sensors, int pageIndex, int pageCount) {
     SensorData data = sensors.read();
-    d.clear();
-
-    // Fond dégradé bleu/vert selon température
-    uint16_t colorTop = 0x1F1F; // Bleu clair
-    uint16_t colorBottom = 0x07E0; // Vert
-    for (int y = 0; y < 240; y += 8) {
-        uint16_t c = (y < 120) ? colorTop : colorBottom;
-        d.bar(0, y, 240, 8, 8, 8); // Utilise la barre comme rectangle plein
-    }
+    // Fond noir uniforme
+    static_cast<St7789Display&>(d).bar(0, 0, 240, 240, 240, 240, ST77XX_BLACK);
 
     // En-tête dynamique
-    d.text(10, 10, getHeaderLCD("\xF0\x9F\x8C\xA1 Weather", pageIndex, pageCount)); // Icône soleil unicode
-
+    static_cast<St7789Display&>(d).text(10, 20, getHeaderLCD("Weather", pageIndex, pageCount), ST77XX_WHITE, 1);
     if (data.valid) {
-        // Température en grand, couleur dynamique
         uint16_t tempColor = (data.temperature > 28) ? 0xF800 : (data.temperature < 10 ? 0x001F : 0xFFE0);
-        d.text(30, 60, "Température");
-        d.text(30, 90, formatFloatLCD(data.temperature, 1) + " °C");
-
-        // Humidité
-        d.text(140, 60, "Humidité");
-        d.text(140, 90, formatFloatLCD(data.humidity, 0) + " %");
-
-        // Pression
-        d.text(30, 140, "Pression");
-        d.text(30, 170, formatFloatLCD(data.pressure, 0) + " hPa");
-
-        // Icône météo simple (ex : goutte si humidité > 80)
-        if (data.humidity > 80) d.text(200, 60, "\xF0\x9F\x92\xA7"); // Goutte
-        if (data.temperature > 28) d.text(200, 90, "\xF0\x9F\x94\xA5"); // Flamme
-        if (data.temperature < 5) d.text(200, 120, "\xF0\x9F\x8C\xA4"); // Flocon
+        static_cast<St7789Display&>(d).text(20, 50, "Température", tempColor, 1);
+        static_cast<St7789Display&>(d).text(20, 70, formatFloatLCD(data.temperature, 1) + " °C", tempColor, 1);
+        static_cast<St7789Display&>(d).text(20, 100, "Humidité", ST77XX_WHITE, 1);
+        static_cast<St7789Display&>(d).text(20, 120, formatFloatLCD(data.humidity, 0) + " %", ST77XX_WHITE, 1);
+        static_cast<St7789Display&>(d).text(20, 150, "Pression", ST77XX_WHITE, 1);
+        static_cast<St7789Display&>(d).text(20, 170, formatFloatLCD(data.pressure, 0) + " hPa", ST77XX_WHITE, 1);
     } else {
-        d.center(120, "AHT20 / BMP280");
-        d.center(150, "Non détecté");
+        static_cast<St7789Display&>(d).center(100, "AHT20 / BMP280", ST77XX_WHITE, 1);
+        static_cast<St7789Display&>(d).center(120, "Non détecté", ST77XX_WHITE, 1);
     }
-    d.show();
 }
 
 void pageGraph_st7789(DisplayInterface& d, HistoryManager& history, int type, int pageIndex, int pageCount) {
-    d.clear();
-    for (int y = 0; y < 240; y += 8) d.bar(0, y, 240, 8, 8, 8);
-    d.drawLine(30, 200, 210, 200);
-    d.drawLine(30, 40, 30, 200);
-    std::string title = "Graphique ";
-    if (type == 0) title += "Température";
-    else if (type == 1) title += "Humidité";
-    else title += "Pression";
-    d.text(40, 10, title);
+    // Fond noir uniforme
+    static_cast<St7789Display&>(d).bar(0, 0, 240, 240, 240, 240, ST77XX_BLACK);
+    // Axes
+    int graph_x0 = 50; // Décale l'axe Y et laisse la place à l'échelle
+    int graph_x1 = 220;
+    static_cast<St7789Display&>(d).drawLine(graph_x0, 40, graph_x0, 210, ST77XX_WHITE); // Y
+    static_cast<St7789Display&>(d).drawLine(graph_x0, 210, graph_x1, 210, ST77XX_WHITE); // X
+    std::string title = (type == 0) ? "Temperature" : (type == 1 ? "Humidite" : "Pression");
+    static_cast<St7789Display&>(d).text(graph_x0 + 10, 20, title, ST77XX_WHITE, 1);
     int n = history.getCount();
-    if (n == 0) { d.center(120, "Aucune donnée"); d.show(); return; }
+    if (n == 0) { static_cast<St7789Display&>(d).center(120, "Aucune donnée", ST77XX_WHITE, 2); return; }
     HistoryManager::Record buffer[HISTORY_SIZE];
     history.getData(buffer, HISTORY_SIZE);
     float min = 9999, max = -9999;
@@ -150,33 +111,50 @@ void pageGraph_st7789(DisplayInterface& d, HistoryManager& history, int type, in
         if (v > max) max = v;
     }
     float yscale = (max - min) > 0.1 ? 160.0f / (max - min) : 1.0f;
-    int prevx = 30, prevy = 200 - (int)(((type == 0 ? buffer[0].t : (type == 1 ? buffer[0].h : buffer[0].p)) - min) * yscale);
+    // Graduation Y (valeurs)
+    for (int i = 0; i <= 4; ++i) {
+        float v = min + (max - min) * (4 - i) / 4.0f;
+        int y = 50 + i * 40;
+        static_cast<St7789Display&>(d).text(5, y - 8, formatFloatLCD(v, 1), ST77XX_WHITE, 1);
+        static_cast<St7789Display&>(d).drawLine(graph_x0 - 2, y, graph_x0 + 2, y, ST77XX_WHITE);
+    }
+    // Graduation X (temps)
+    static_cast<St7789Display&>(d).text(40, 220, "-2h", ST77XX_WHITE, 1);
+    static_cast<St7789Display&>(d).text(200, 220, "now", ST77XX_WHITE, 1);
+    // Courbe
+    int prevx = graph_x0, prevy = 210 - (int)(((type == 0 ? buffer[0].t : (type == 1 ? buffer[0].h : buffer[0].p)) - min) * yscale);
     uint16_t color = (type == 0) ? 0xF800 : (type == 1 ? 0x07E0 : 0x001F);
     for (int i = 1; i < n; ++i) {
-        int x = 30 + (180 * i) / (n - 1);
+        int x = graph_x0 + ((graph_x1 - graph_x0) * i) / (n - 1);
         float v = (type == 0) ? buffer[i].t : (type == 1 ? buffer[i].h : buffer[i].p);
-        int y = 200 - (int)((v - min) * yscale);
-        auto* lcd = static_cast<St7789Display*>(&d);
-        lcd->drawLine(prevx, prevy, x, y, color);
+        int y = 210 - (int)((v - min) * yscale);
+        static_cast<St7789Display&>(d).drawLine(prevx, prevy, x, y, color);
         prevx = x;
         prevy = y;
     }
-    d.show();
 }
 
 void pageForecast_st7789(DisplayInterface& d, ForecastManager& forecast, int view, int pageIndex, int pageCount) {
-    d.clear();
-    // Fond bleu ciel
-    for (int y = 0; y < 240; y += 8) {
-        d.bar(0, y, 240, 8, 8, 8);
+    // Fond noir uniforme
+    static_cast<St7789Display&>(d).bar(0, 0, 240, 240, 240, 240, ST77XX_BLACK);
+    static_cast<St7789Display&>(d).text(10, 20, getHeaderLCD("Prévisions", pageIndex, pageCount), ST77XX_WHITE, 1);
+    if (view == 0) {
+        static_cast<St7789Display&>(d).text(20, 50, "Aujourd'hui : " + forecast.today.description, ST77XX_WHITE, 1);
+        static_cast<St7789Display&>(d).text(20, 70, "Temp : " + formatFloatLCD(forecast.today.temp_day, 1) + "°C", ST77XX_WHITE, 1);
+        static_cast<St7789Display&>(d).text(20, 90, "Min : " + formatFloatLCD(forecast.today.temp_min, 1) + "°C", ST77XX_WHITE, 1);
+        static_cast<St7789Display&>(d).text(20, 110, "Max : " + formatFloatLCD(forecast.today.temp_max, 1) + "°C", ST77XX_WHITE, 1);
+    } else if (view == 1) {
+        static_cast<St7789Display&>(d).text(20, 50, "Demain : " + forecast.tomorrow.description, ST77XX_WHITE, 1);
+        static_cast<St7789Display&>(d).text(20, 70, "Temp : " + formatFloatLCD(forecast.tomorrow.temp_day, 1) + "°C", ST77XX_WHITE, 1);
+        static_cast<St7789Display&>(d).text(20, 90, "Min : " + formatFloatLCD(forecast.tomorrow.temp_min, 1) + "°C", ST77XX_WHITE, 1);
+        static_cast<St7789Display&>(d).text(20, 110, "Max : " + formatFloatLCD(forecast.tomorrow.temp_max, 1) + "°C", ST77XX_WHITE, 1);
+    } else if (view == 2 && forecast.alert_active) {
+        static_cast<St7789Display&>(d).text(20, 50, "Alerte météo !", ST77XX_WHITE, 1);
+        static_cast<St7789Display&>(d).text(20, 70, "Type : " + forecast.alert.event, ST77XX_WHITE, 1);
+        static_cast<St7789Display&>(d).text(20, 90, "Gravité : " + std::to_string(forecast.alert.severity), ST77XX_WHITE, 1);
+        static_cast<St7789Display&>(d).text(20, 110, "Source : " + forecast.alert.sender, ST77XX_WHITE, 1);
+    } else {
+        static_cast<St7789Display&>(d).text(20, 50, "Pas d'alerte météo", ST77XX_WHITE, 1);
     }
-    d.text(10, 10, getHeaderLCD("\xF0\x9F\x8C\x9E Prévisions", pageIndex, pageCount));
-    d.text(20, 50, "Aujourd'hui : " + forecast.today.description);
-    d.text(20, 80, "Temp : " + std::to_string((int)forecast.today.temp_day) + "°C");
-    d.text(20, 110, "Demain : " + forecast.tomorrow.description);
-    d.text(20, 140, "Temp : " + std::to_string((int)forecast.tomorrow.temp_day) + "°C");
-    d.text(200, 50, "\xF0\x9F\x8C\xA1");
-    d.text(200, 110, "\xF0\x9F\x8C\xA7");
-    d.show();
 }
 #endif
