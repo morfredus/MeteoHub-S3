@@ -1,3 +1,4 @@
+#include "display_interface.h"
 #if defined(ESP32_S3_LCD)
 #include "st7789_display.h"
 #include <string>

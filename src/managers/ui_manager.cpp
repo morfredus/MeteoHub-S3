@@ -6,7 +6,12 @@
 #include "board_config.h"
 #include "config.h"
 #include "../modules/neopixel_status.h"
-#include "../modules/pages.h"
+#if defined(ESP32_S3_OLED)
+#include "../modules/pages_sh1106.h"
+#endif
+#if defined(ESP32_S3_LCD)   
+#include "../modules/pages_st7789.h"
+#endif
 #include "../utils/logs.h"
 
 
@@ -251,6 +256,18 @@ void UiManager::drawMenu() {
 }
 
 void UiManager::drawPage() {
+#if defined(ESP32_S3_LCD)
+    switch (page) {
+        case PAGE_WEATHER: pageWeather_st7789(*d, *sensors, page + 1, PAGE_COUNT); break;
+        case PAGE_FORECAST: pageForecast_st7789(*d, *forecast, forecastViewIndex, page + 1, PAGE_COUNT); break;
+        case PAGE_GRAPH_TEMP: pageGraph_st7789(*d, history, 0, page + 1, PAGE_COUNT); break;
+        case PAGE_GRAPH_HUM:  pageGraph_st7789(*d, history, 1, page + 1, PAGE_COUNT); break;
+        case PAGE_GRAPH_PRES: pageGraph_st7789(*d, history, 2, page + 1, PAGE_COUNT); break;
+        case PAGE_NETWORK: pageNetwork_st7789(*d, *wifi, page + 1, PAGE_COUNT); break;
+        case PAGE_LOGS:    pageLogs_st7789(*d, page + 1, PAGE_COUNT); break;
+        case PAGE_SYSTEM:  pageSystem_st7789(*d, page + 1, PAGE_COUNT); break;
+    }
+#else
     switch (page) {
         case PAGE_WEATHER: pageWeather(*d, *sensors, page + 1, PAGE_COUNT); break;
         case PAGE_FORECAST: pageForecast(*d, *forecast, forecastViewIndex, page + 1, PAGE_COUNT); break;
@@ -261,4 +278,5 @@ void UiManager::drawPage() {
         case PAGE_LOGS:    pageLogs(*d, page + 1, PAGE_COUNT); break;
         case PAGE_SYSTEM:  pageSystem(*d, page + 1, PAGE_COUNT); break;
     }
+#endif
 }

@@ -1,3 +1,4 @@
+#include "display_interface.h"
 #if defined(ESP32_S3_OLED)
 #include <string>
 #include "sh1106_display.h"

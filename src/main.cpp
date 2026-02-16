@@ -12,6 +12,7 @@
 #endif
 #if defined(ESP32_S3_LCD)
 #include "modules/st7789_display.h"
+#include "modules/pages_st7789.h"
 #endif
 #include "utils/logs.h"
 

@@ -5,7 +5,8 @@
 #if defined(ESP32_S3_LCD)
 #include "../modules/st7789_display.h"
 #endif
-#include "../modules/pages.h"
+#include "../modules/pages_sh1106.h"
+#include "../modules/pages_st7789.h"
 #include "../modules/encoder.h"
 #include "wifi_manager.h"
 #include "../modules/sensors.h"

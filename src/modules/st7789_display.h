@@ -3,7 +3,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_ST7789.h>
 #include "board_config.h"
-#include "pages.h" // Pour DisplayInterface
+#include "display_interface.h"
 
 class St7789Display : public DisplayInterface {
 public:

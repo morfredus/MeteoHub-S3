@@ -3,7 +3,7 @@
 #include <Arduino.h>
 #include <SH1106Wire.h>
 #include <string>
-#include "pages.h" // Pour DisplayInterface
+#include "display_interface.h"
 
 class Sh1106Display : public DisplayInterface {
 public:

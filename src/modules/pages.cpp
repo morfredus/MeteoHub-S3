@@ -6,7 +6,7 @@
 #include <string>
 #include <time.h>
 
-#include "pages.h"
+#include "pages_sh1106.h"
 #include "../utils/logs.h"
 
 std::string formatFloat(float value, int precision) {
