@@ -1,6 +1,6 @@
 # FAQ
 
-Version minimale valide : 1.0.29
+Version minimale valide : 1.0.30
 
 ## Internet est-il obligatoire ?
 Oui, pour les mises à jour de prévisions et d’alertes. Les pages capteurs locales restent utilisables sans internet.

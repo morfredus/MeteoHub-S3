@@ -1,7 +1,7 @@
 
 # Architecture du projet
 
-Version minimale valide : 1.0.28
+Version minimale valide : 1.0.30
 
 ## Objectif
 Expliquer l’organisation du code source, la gestion des environnements OLED et LCD, et le flux de données dans le système.

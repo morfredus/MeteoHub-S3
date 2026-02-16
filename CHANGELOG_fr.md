@@ -1,7 +1,7 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.29
+Version minimale valide : 1.0.30
 
 ## Version 1.0.29
 - **Interface LCD** : Refonte complète de l'interface ST7789 (thème sombre, en-têtes colorés, cartes de données).

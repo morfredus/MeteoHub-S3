@@ -1,6 +1,6 @@
 # Getting Started
 
-Minimum valid version: 1.0.29
+Minimum valid version: 1.0.30
 
 ## Goal
 This guide helps a beginner run MeteoHub S3 from zero to first successful upload.
