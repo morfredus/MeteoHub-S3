@@ -1,6 +1,6 @@
 # Maintenance et dépannage
 
-Version minimale valide : 1.0.56
+Version minimale valide : 1.0.58
 
 ## Objectif
 Fournir des étapes de reprise pratiques lorsque le dashboard ne se comporte pas comme prévu.
@@ -40,10 +40,7 @@ Vérifier :
 - La stabilité de l’alimentation capteurs
 
 ### 5) Les graphes n’affichent pas de valeurs
-Vérifier :
-- La synchronisation NTP terminée
-- Un temps d’exécution suffisant pour enregistrer des échantillons
-- Un historique non effacé récemment
+Ce comportement n'est plus normal. Le système recharge l'historique au démarrage. Si les graphes restent vides, cela peut indiquer un problème avec le système de fichiers LittleFS. Essayez d'effacer l'historique via le menu système pour forcer une réinitialisation.
 
 ### 6) L'interface Web est inaccessible
 Vérifier :

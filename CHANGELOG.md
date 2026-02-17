@@ -1,7 +1,15 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.30
+Minimum valid version: 1.0.58
+
+## Version 1.0.58
+- **Robust History Management**: Complete refactoring of the data history system for long-term reliability.
+  - **Flash-Friendly Storage**: Recent history is now appended to a file, not rewritten, drastically reducing flash memory wear.
+  - **Instant Data on Boot**: The system now reloads the last 24 hours of high-resolution data and 30 days of daily summaries into RAM at startup.
+  - **UI Consistency**: All UIs (OLED, LCD, Web) have immediate access to the full history, eliminating "empty graphs" after a reboot.
+  - **Data Integrity**: Added a check to prevent saving data points before NTP time is synchronized.
+  - **Automatic Maintenance**: Old archives (> 2 years) are now automatically deleted.
 
 ## Version 1.0.29
 - **LCD UI Overhaul**: Complete redesign of the ST7789 interface with a dark theme, colored headers, and data cards.
