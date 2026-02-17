@@ -1,7 +1,11 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.59
+Minimum valid version: 1.0.60
+
+## Version 1.0.60
+- **Fix (LCD)**: Corrected graph scaling on ST7789 displays. The plot now dynamically stretches to use the full screen width, ensuring the latest measurement is always at the far right.
+- **Refactor (UI)**: Simplified rotary encoder logic. The LCD now uses the natural hardware direction (Clockwise = Next), while the OLED inversion is handled in a single conditional block, improving code readability.
 
 ## Version 1.0.59
 - **Fix**: Resolved a critical bug where UI pages would not load or display in the LCD environment (ST7789). The page drawing logic is now correctly implemented for both OLED and LCD.
