@@ -42,17 +42,17 @@
 // Boutons
 // ------------------------------------
 #define BUTTON_BOOT_PIN 0
-#define BUTTON_BACK_PIN   38
-#define BUTTON_CONFIRM_PIN   39
+#define BUTTON_BACK_PIN   7
+#define BUTTON_CONFIRM_PIN   8
 
 #define NEOPIXEL_PIN 48   // npx (neopixel status)
 
 // ------------------------------------
 // ENCODEUR ROTATIF (HW-040)
 // ------------------------------------
-#define ENCODER_A_PIN   47
-#define ENCODER_B_PIN    45
-#define ENCODER_BTN_PIN    40
+#define ENCODER_A_PIN   4
+#define ENCODER_B_PIN    5
+#define ENCODER_BTN_PIN    6
 
 // ------------------------------------
 // I2C (AHT20 + BMP280)
