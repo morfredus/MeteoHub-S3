@@ -1,7 +1,18 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.56
+Version minimale valide : 1.0.58
+
+## Version 1.0.58
+- **Gestion d'historique robuste** : Refonte complète du système d'historique pour une fiabilité à long terme.
+  - **Stockage optimisé pour la Flash** : L'historique récent est désormais ajouté à un fichier (et non réécrit), réduisant drastiquement l'usure de la mémoire flash.
+  - **Données instantanées au démarrage** : Le système recharge en RAM les dernières 24h de données haute résolution et 30 jours de résumés quotidiens au démarrage.
+  - **Cohérence des interfaces** : Toutes les UI (OLED, LCD, Web) ont un accès immédiat à l'historique complet, éliminant les "graphes vides" après un redémarrage.
+  - **Intégrité des données** : Ajout d'une vérification pour empêcher la sauvegarde de points avant la synchronisation de l'heure NTP.
+  - **Maintenance automatique** : Les archives de plus de 2 ans sont désormais automatiquement supprimées.
+
+## Version 1.0.57
+- **Correctif** : Résolution d'un problème critique où l'historique des mesures (sauvegarde, lecture, récupération après redémarrage) ne fonctionnait pas dans l'environnement LCD (ST7789). La fonctionnalité est maintenant unifiée et stable sur les environnements OLED et LCD.
 
 ## Version 1.0.51
 - **Documentation** : Mise à jour complète des guides utilisateur, FAQ et maintenance pour inclure l'interface Web et la nouvelle gestion d'historique.

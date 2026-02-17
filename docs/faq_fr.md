@@ -1,6 +1,6 @@
 # FAQ
 
-Version minimale valide : 1.0.56
+Version minimale valide : 1.0.58
 
 ## Internet est-il obligatoire ?
 Oui, pour les mises à jour de prévisions et d’alertes. Les pages capteurs locales restent utilisables sans internet.
@@ -9,7 +9,7 @@ Oui, pour les mises à jour de prévisions et d’alertes. Les pages capteurs lo
 Oui. Le projet supporte la disponibilité partielle des capteurs et des comportements de secours.
 
 ## Pourquoi les graphes sont vides après redémarrage ?
-L’historique a besoin d’échantillons temporels et d’une heure valide (NTP) pour enregistrer des entrées.
+Ce problème est résolu. Le système recharge désormais l'historique des dernières 24 heures au démarrage, rendant les graphiques immédiatement disponibles sur tous les écrans (OLED, LCD et Web).
 
 ## Quelle est la fréquence de mise à jour des prévisions ?
 Environ toutes les 30 minutes.
