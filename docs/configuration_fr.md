@@ -1,6 +1,6 @@
 # Configuration
 
-Version minimale valide : 1.0.58
+Version minimale valide : 1.0.59
 
 ## Objectif
 Configurer le réseau, l’API météo et les constantes runtime de manière sûre.

@@ -1,7 +1,10 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.58
+Version minimale valide : 1.0.59
+
+## Version 1.0.59
+- **Correctif** : Résolution d'un bug critique où les pages de l'interface utilisateur ne se chargeaient pas ou ne s'affichaient pas dans l'environnement LCD (ST7789). La logique de dessin des pages est maintenant correctement implémentée pour l'OLED et le LCD.
 
 ## Version 1.0.58
 - **Gestion d'historique robuste** : Refonte complète du système d'historique pour une fiabilité à long terme.
