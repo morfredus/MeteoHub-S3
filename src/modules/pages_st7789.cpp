@@ -239,8 +239,8 @@ void pageGraph_st7789(DisplayInterface& d, HistoryManager& history, int type, in
     uint16_t color = (type == 0) ? C_ORANGE : (type == 1 ? C_CYAN : C_GREEN);
     
     for (int i = 1; i < n; ++i) {
-        int x = graph_x0 + ((graph_x1 - graph_x0) * i) / (1440 - 1); // 1440 = 24h * 60min
-        // Pour un graphe glissant correct, l'échelle X doit être fixe sur 2h (HISTORY_SIZE)
+        // Correction : Utiliser la largeur disponible pour le nombre de points actuels
+        int x = graph_x0 + ((graph_x1 - graph_x0) * i) / (n > 1 ? n - 1 : 1);
         
         float v = (type == 0) ? buffer[i].t : (type == 1 ? buffer[i].h : buffer[i].p);
         int y = graph_y1 - (int)((v - min) * yscale);

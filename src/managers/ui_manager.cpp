@@ -28,13 +28,14 @@ void UiManager::update() {
         enc.clearQueue();
 
 #if defined(ESP32_S3_OLED)
-        diff = -diff;
+        // Sur OLED, on inverse uniquement pour la navigation des pages
+        // Pour le menu, on garde le sens naturel (Horaire = Descendre/Suivant)
+        if (!menuMode) {
+            diff = -diff;
+        }
 #endif
 
         if (menuMode) {
-#if defined(ESP32_S3_OLED)
-            diff = -diff; // Inversion specifique pour le menu OLED (Horaire = Descendre)
-#endif
             menuIndex += diff;
             if (menuIndex < 0) menuIndex = MENU_COUNT - 1;
             if (menuIndex >= MENU_COUNT) menuIndex = 0;
