@@ -165,5 +165,17 @@ void UiManager::drawPage() {
         case PAGE_LOGS: pageLogs_sh1106(*d, page + 1, pCount); break;
         case PAGE_SYSTEM: pageSystem_sh1106(*d, page + 1, pCount); break;
     }
+#elif defined(ESP32_S3_LCD)
+    switch(page) {
+        case PAGE_WEATHER: pageWeather_st7789(*d, *sensors, page + 1, pCount); break;
+        case PAGE_FORECAST: pageForecast_st7789(*d, *forecast, forecastViewIndex, page + 1, pCount); break;
+        case PAGE_GRAPH_TEMP: pageGraph_st7789(*d, *history, 0, page + 1, pCount); break;
+        case PAGE_GRAPH_HUM: pageGraph_st7789(*d, *history, 1, page + 1, pCount); break;
+        case PAGE_GRAPH_PRES: pageGraph_st7789(*d, *history, 2, page + 1, pCount); break;
+        case PAGE_NETWORK: pageNetwork_st7789(*d, *wifi, page + 1, pCount); break;
+        // Inversion Logs/System pour LCD (voir Changelog v1.0.29)
+        case PAGE_LOGS: pageSystem_st7789(*d, page + 1, pCount); break;
+        case PAGE_SYSTEM: pageLogs_st7789(*d, page + 1, pCount); break;
+    }
 #endif
 }

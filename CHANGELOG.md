@@ -1,7 +1,10 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.58
+Minimum valid version: 1.0.59
+
+## Version 1.0.59
+- **Fix**: Resolved a critical bug where UI pages would not load or display in the LCD environment (ST7789). The page drawing logic is now correctly implemented for both OLED and LCD.
 
 ## Version 1.0.58
 - **Robust History Management**: Complete refactoring of the data history system for long-term reliability.
