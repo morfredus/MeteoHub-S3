@@ -4,11 +4,15 @@
 #include <string>
 #include <Fonts/FreeSans9pt7b.h>
 #include "board_config.h"
+#include "config.h"
 
 // Forward declaration helper
 std::string removeAccents(const std::string& input);
 
-St7789Display::St7789Display() {}
+St7789Display::St7789Display() {
+    _width = LCD_WIDTH;
+    _height = LCD_HEIGHT;
+}
 
 bool St7789Display::begin() {
     // Initialisation SPI matériel
@@ -94,15 +98,15 @@ void St7789Display::drawPixel(int x, int y, uint16_t color) {
 // Helpers UI
 void St7789Display::drawHeader(const std::string& title, const std::string& rightText) {
     // Fond de l'en-tête
-    canvas->fillRect(0, 0, 240, 32, C_DARKGREY);
-    canvas->drawFastHLine(0, 32, 240, C_GREY);
+    canvas->fillRect(0, 0, _width, 32, C_DARKGREY);
+    canvas->drawFastHLine(0, 32, _width, C_GREY);
     
     // Titre à gauche
     text(5, 22, title, C_CYAN, 1);
     
     // Info à droite (Heure ou Page)
     if (!rightText.empty()) {
-        text(235, 22, rightText, C_WHITE, 1, true);
+        text(_width - 5, 22, rightText, C_WHITE, 1, true);
     }
 }
 

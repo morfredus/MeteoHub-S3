@@ -15,3 +15,6 @@
 // Nom mDNS pour accès local
 #define WEB_MDNS_HOSTNAME "meteohub" // Accessible via http://meteohub.local
 
+// Configuration de l'écran LCD
+#define LCD_WIDTH            240
+#define LCD_HEIGHT           320 // Modifier à 240 pour l'ancien écran

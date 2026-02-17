@@ -1,7 +1,7 @@
 
 # MeteoHub S3
 
-Minimum valid version: 1.0.60
+Minimum valid version: 1.0.75
 
 ## Full Documentation
 - [Documentation Index](docs/index.md)
@@ -11,7 +11,7 @@ MeteoHub S3 is an ESP32-S3 PlatformIO project that displays local sensor data, w
 
 ## Supported Environments
 - **OLED (SH1106, I2C)**: Monochrome, 128x64, rotary encoder + 2 buttons, NeoPixel, AHT20/BMP280 sensors.
-- **LCD (TFT ST7789, SPI)**: Color, 240x240, rotary encoder (HW-040) + 3 buttons, AHT20/BMP280 sensors.
+- **LCD (TFT ST7789, SPI)**: Color, 240x240 or 240x320 (configurable), rotary encoder (HW-040) + 3 buttons, AHT20/BMP280 sensors.
 
 ## Project Architecture
 - `src/modules/`: hardware/display/page modules (`encoder`, `neopixel_status`, `sensors`, `sh1106_display`, `st7789_display`, `pages`)

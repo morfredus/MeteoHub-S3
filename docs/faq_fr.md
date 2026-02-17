@@ -1,6 +1,6 @@
 # FAQ
 
-Version minimale valide : 1.0.60
+Version minimale valide : 1.0.75
 
 ## Internet est-il obligatoire ?
 Oui, pour les mises à jour de prévisions et d’alertes. Les pages capteurs locales restent utilisables sans internet.
@@ -27,13 +27,16 @@ Allez sur l'interface Web, cliquez sur l'icône dossier 📂 en bas de page. Vou
 ## Puis-je changer la vitesse de rafraîchissement des pages ?
 Oui, modifier `DASHBOARD_REFRESH_MS` dans `include/config.h`.
 
+## Comment changer la résolution de l'écran LCD (240x240 vs 240x320) ?
+Modifiez les constantes `LCD_WIDTH` et `LCD_HEIGHT` dans `include/config.h`. L'interface s'adaptera automatiquement à la nouvelle résolution au prochain démarrage.
+
 
 ## Le projet gère-t-il à la fois OLED et LCD ?
-Oui. Le firmware détecte et s’adapte automatiquement à un écran OLED SH1106 (128x64, monochrome) ou un LCD TFT ST7789 (240x240, couleur) au démarrage. Aucun changement de code n’est nécessaire.
+Oui. Le firmware détecte et s’adapte automatiquement à un écran OLED SH1106 (128x64, monochrome) ou un LCD TFT ST7789 (240x240 ou 240x320, couleur) au démarrage. Aucun changement de code n’est nécessaire.
 
 ## Quelles sont les principales différences entre les environnements OLED et LCD ?
 - **OLED (SH1106)** : 2 boutons + encodeur rotatif, monochrome, 128x64, navigation = 2 crans par page.
-- **LCD (ST7789)** : 3 boutons + encodeur rotatif, couleur, 240x240, navigation = 1 cran par page.
+- **LCD (ST7789)** : 3 boutons + encodeur rotatif, couleur, 240x240/320, navigation = 1 cran par page.
 L’interface et la disposition des pages s’adaptent automatiquement à l’afficheur détecté.
 
 ## Comment la navigation diffère-t-elle entre OLED et LCD ?

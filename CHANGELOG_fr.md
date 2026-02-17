@@ -3,6 +3,52 @@
 
 Version minimale valide : 1.0.60
 
+## Version 1.0.75
+- **Documentation** : Mise à jour globale de la documentation (README, Guides, FAQ) pour inclure le support LCD 240x320 et les nouveaux écrans de démarrage. Synchronisation bilingue.
+
+## Version 1.0.74
+- **Correctif (OLED)** : Ajout de l'inclusion manquante `sh1106_display.h` dans `pages_sh1106.cpp` pour résoudre l'erreur de compilation liée à `Sh1106Display`.
+
+## Version 1.0.73
+- **UI (Boot)** : Ajustement esthétique du Splash Screen LCD : "morfredus" est désormais en minuscules et parfaitement centré verticalement entre les lignes décoratives.
+
+## Version 1.0.72
+- **Correctif (Compilation)** : Ajout des déclarations manquantes pour `drawSplashScreen_st7789` et `drawBootProgress_st7789` dans le fichier d'en-tête, résolvant l'erreur de compilation sur l'environnement LCD.
+
+## Version 1.0.71
+- **Correctif (Main)** : Intégration effective des appels aux nouveaux écrans de démarrage (Splash Screen et Boot Progress) dans la séquence d'initialisation principale, remplaçant l'ancienne logique statique.
+
+## Version 1.0.70
+- **Correctif (Dev)** : Ajout des déclarations manquantes dans les fichiers d'en-tête pour les fonctions de Splash Screen et de Boot Progress.
+
+## Version 1.0.69
+- **UI (Boot)** : Simplification du logo de démarrage ("MORFREDUS" uniquement).
+- **UI (OLED)** : Implémentation des écrans de démarrage et de progression pour l'environnement OLED (SH1106).
+
+## Version 1.0.68
+- **UI (Boot)** : Ajout d'un écran de démarrage animé "Morfredus" et d'une barre de progression visuelle pour les étapes d'initialisation (Capteurs, WiFi, NTP, etc.), adaptatifs à la résolution LCD.
+
+## Version 1.0.67
+- **Documentation** : Ajout des entrées manquantes dans le journal des modifications pour les versions 1.0.61 à 1.0.64 (Support LCD 240x320).
+
+## Version 1.0.66
+- **Correctif (UI)** : Ajustement vertical (+2px) de l'affichage de la température sur l'écran d'accueil en mode 240x240 pour éviter le chevauchement avec le titre.
+
+## Version 1.0.65
+- **Correctif (UI)** : Ajustement de la position verticale des graphiques sur écran LCD. Le haut du graphique a été décalé vers le bas pour éviter que les étiquettes de l'axe Y ne chevauchent la ligne de séparation de l'en-tête.
+
+## Version 1.0.64
+- **Fonctionnalité (UI)** : Adaptation réactive de toutes les pages (Réseau, Système, Logs, Météo, Graphes, Prévisions) pour supporter la résolution verticale étendue (320px) tout en préservant l'affichage 240px.
+
+## Version 1.0.63
+- **Pilote (LCD)** : Le driver `St7789Display` utilise désormais les dimensions dynamiques définies dans la configuration globale.
+
+## Version 1.0.62
+- **Configuration** : Nettoyage des définitions de version dans `platformio.ini`.
+
+## Version 1.0.61
+- **Configuration** : Introduction des constantes `LCD_WIDTH` et `LCD_HEIGHT` dans `config.h` pour paramétrer la résolution de l'écran.
+
 ## Version 1.0.60
 - **Correctif (LCD)** : Correction de l'échelle des graphiques sur écran ST7789. La courbe s'étire désormais dynamiquement sur toute la largeur de l'écran, garantissant que la dernière mesure est bien calée à droite.
 - **Refactorisation (UI)** : Simplification de la logique de l'encodeur rotatif. L'écran LCD utilise désormais le sens naturel (Horaire = Suivant), tandis que l'inversion spécifique à l'OLED est gérée de manière centralisée.

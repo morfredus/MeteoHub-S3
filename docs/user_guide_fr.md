@@ -1,6 +1,6 @@
 # Guide utilisateur
 
-Version minimale valide : 1.0.60
+Version minimale valide : 1.0.75
 
 ## Objectif
 Apprendre à utiliser le dashboard une fois le firmware démarré.
@@ -8,7 +8,7 @@ Apprendre à utiliser le dashboard une fois le firmware démarré.
 
 ## OLED vs LCD : Navigation et affichage
 - **OLED (SH1106)** : Monochrome, 128x64, 2 boutons + encodeur rotatif. Navigation : 2 crans = 1 page.
-- **LCD (TFT ST7789)** : Couleur, 240x240, 3 boutons + encodeur rotatif. Navigation : 1 cran = 1 page.
+- **LCD (TFT ST7789)** : Couleur, 240x240 ou 240x320, 3 boutons + encodeur rotatif. Navigation : 1 cran = 1 page.
 - L’interface et la disposition des pages s’adaptent automatiquement à l’afficheur détecté.
 
 ## Commandes utilisateur
@@ -18,8 +18,8 @@ Apprendre à utiliser le dashboard une fois le firmware démarré.
 - **Bouton Confirm** : action contextuelle (ex: défilement prévisions) ou validation
 
 ## Séquence de démarrage
-Au boot, l’OLED affiche des étapes de progression :
-1. Boot
+Au boot, l’écran affiche un Splash Screen "morfredus" suivi d'une barre de progression :
+1. Splash Screen (Logo Studio & Projet)
 2. Initialisation capteurs
 3. Connexion Wi-Fi
 4. Synchronisation horaire (NTP)

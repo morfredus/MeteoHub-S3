@@ -1,6 +1,6 @@
 # Prise en main
 
-Version minimale valide : 1.0.60
+Version minimale valide : 1.0.75
 
 ## Objectif
 Ce guide aide un débutant à démarrer MeteoHub S3 depuis zéro jusqu’au premier upload réussi.
@@ -8,7 +8,7 @@ Ce guide aide un débutant à démarrer MeteoHub S3 depuis zéro jusqu’au prem
 
 ## Environnements supportés
 - **OLED (SH1106, I2C)** : Monochrome, 128x64, encodeur rotatif + 2 boutons, NeoPixel, capteurs AHT20/BMP280.
-- **LCD (TFT ST7789, SPI)** : Couleur, 240x240, encodeur rotatif (HW-040) + 3 boutons, capteurs AHT20/BMP280.
+- **LCD (TFT ST7789, SPI)** : Couleur, 240x240 ou 240x320, encodeur rotatif (HW-040) + 3 boutons, capteurs AHT20/BMP280.
 
 Le firmware détecte automatiquement le type d’afficheur au démarrage et adapte l’interface et la navigation. Voir [Câblage matériel](hardware_wiring_fr.md) pour le détail des broches.
 
@@ -29,6 +29,7 @@ Le firmware détecte automatiquement le type d’afficheur au démarrage et adap
 2. Renseigner les identifiants Wi-Fi (`WIFI_CREDENTIALS`).
 3. Renseigner la clé API OpenWeatherMap (`OWM_API_KEY`).
 4. Vérifier les coordonnées (`OWM_LAT`, `OWM_LON`) et les unités (`OWM_UNITS`).
+5. (Optionnel) Pour l'écran LCD, ajuster `LCD_WIDTH` et `LCD_HEIGHT` dans `include/config.h` si vous utilisez un écran 240x320.
 
 ## Règle de sécurité secrets (obligatoire)
 - `include/secrets.h` est un fichier privé.
@@ -51,7 +52,7 @@ Résultat attendu :
 
 ## 5) Vérifier le comportement
 Après redémarrage, l’écran OLED doit afficher les phases de boot :
-- Booting
+- Splash Screen "morfredus"
 - Initialisation capteurs
 - Connexion Wi-Fi
 - Synchronisation de l’heure

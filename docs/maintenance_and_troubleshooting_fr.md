@@ -1,6 +1,6 @@
 # Maintenance et dépannage
 
-Version minimale valide : 1.0.60
+Version minimale valide : 1.0.75
 
 ## Objectif
 Fournir des étapes de reprise pratiques lorsque le dashboard ne se comporte pas comme prévu.
@@ -11,7 +11,7 @@ Fournir des étapes de reprise pratiques lorsque le dashboard ne se comporte pas
 - Nettoyage cache build : `platformio run --target clean`
 
 ## Environnements OLED/LCD : auto-détection et navigation
-Le firmware détecte et s’adapte automatiquement à un écran OLED SH1106 (128x64, monochrome) ou un LCD TFT ST7789 (240x240, couleur) au démarrage. La navigation et le mapping des boutons diffèrent selon l’environnement (voir guide utilisateur et câblage matériel).
+Le firmware détecte et s’adapte automatiquement à un écran OLED SH1106 (128x64, monochrome) ou un LCD TFT ST7789 (240x240/320, couleur) au démarrage. La navigation et le mapping des boutons diffèrent selon l’environnement (voir guide utilisateur et câblage matériel).
 
 ## Problèmes typiques
 ### 1) Le Wi-Fi ne se connecte jamais

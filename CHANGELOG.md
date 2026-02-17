@@ -3,6 +3,52 @@
 
 Minimum valid version: 1.0.60
 
+## Version 1.0.75
+- **Documentation**: Global documentation update (README, Guides, FAQ) to include LCD 240x320 support and new boot screens. Bilingual synchronization.
+
+## Version 1.0.74
+- **Fix (OLED)**: Added missing include `sh1106_display.h` in `pages_sh1106.cpp` to resolve compilation error related to `Sh1106Display`.
+
+## Version 1.0.73
+- **UI (Boot)**: Aesthetic adjustment of the LCD Splash Screen: "morfredus" is now lowercase and perfectly vertically centered between decorative lines.
+
+## Version 1.0.72
+- **Fix (Compilation)**: Added missing declarations for `drawSplashScreen_st7789` and `drawBootProgress_st7789` in the header file, resolving compilation error on LCD environment.
+
+## Version 1.0.71
+- **Fix (Main)**: Effective integration of calls to new boot screens (Splash Screen and Boot Progress) in the main initialization sequence, replacing the old static logic.
+
+## Version 1.0.70
+- **Fix (Dev)**: Added missing declarations in header files for Splash Screen and Boot Progress functions.
+
+## Version 1.0.69
+- **UI (Boot)**: Simplified boot logo ("morfredus" only).
+- **UI (OLED)**: Implementation of boot and progress screens for OLED environment (SH1106).
+
+## Version 1.0.68
+- **UI (Boot)**: Added animated "morfredus" splash screen and visual progress bar for initialization steps (Sensors, WiFi, NTP, etc.), adaptive to LCD resolution.
+
+## Version 1.0.67
+- **Documentation**: Added missing changelog entries for versions 1.0.61 to 1.0.64 (LCD 240x320 Support).
+
+## Version 1.0.66
+- **Fix (UI)**: Vertical adjustment (+2px) of temperature display on home screen in 240x240 mode to avoid overlap with title.
+
+## Version 1.0.65
+- **Fix (UI)**: Adjustment of vertical position of graphs on LCD. Top of graph shifted down to prevent Y-axis labels from overlapping header separator line.
+
+## Version 1.0.64
+- **Feature (UI)**: Reactive adaptation of all pages (Network, System, Logs, Weather, Graphs, Forecast) to support extended vertical resolution (320px) while preserving 240px display.
+
+## Version 1.0.63
+- **Driver (LCD)**: `St7789Display` driver now uses dynamic dimensions defined in global configuration.
+
+## Version 1.0.62
+- **Configuration**: Cleanup of version definitions in `platformio.ini`.
+
+## Version 1.0.61
+- **Configuration**: Introduction of `LCD_WIDTH` and `LCD_HEIGHT` constants in `config.h` to configure screen resolution.
+
 ## Version 1.0.60
 - **Fix (LCD)**: Corrected graph scaling on ST7789 displays. The plot now dynamically stretches to use the full screen width, ensuring the latest measurement is always at the far right.
 - **Refactor (UI)**: Simplified rotary encoder logic. The LCD now uses the natural hardware direction (Clockwise = Next), while the OLED inversion is handled in a single conditional block, improving code readability.

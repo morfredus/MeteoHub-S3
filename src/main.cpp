@@ -26,14 +26,6 @@ ForecastManager forecast;
 WebManager webManager;
 HistoryManager history;
 
-void drawBootStep(const std::string& label, int percent) {
-    display->clear();
-    display->center(10, PROJECT_NAME);
-    display->center(30, label);
-    display->bar(10, 50, 108, 8, percent, 100);
-    display->show();
-}
-
 void setup() {
     Serial.begin(115200);
 
@@ -47,37 +39,52 @@ void setup() {
     display->begin();
     neoInit();
 
-    // Etape 1 : Demarrage
-    drawBootStep("Booting...", 0);
+    // Etape 1 : Splash Screen (MORFREDUS + Projet)
+#if defined(ESP32_S3_LCD)
+    drawSplashScreen_st7789(*display);
+#elif defined(ESP32_S3_OLED)
+    drawSplashScreen_sh1106(*display);
+#endif
+
     LOG_INFO("System Boot");
 
     // Etape 2 : Capteurs
-    drawBootStep("Init Sensors...", 20);
+#if defined(ESP32_S3_LCD)
+    drawBootProgress_st7789(*display, 1, 5, "Init Capteurs...");
+#elif defined(ESP32_S3_OLED)
+    drawBootProgress_sh1106(*display, 1, 5, "Init Capteurs...");
+#endif
     sensors.begin();
     delay(200); // Petit delai visuel
 
     // Etape 3 : WiFi
-    drawBootStep("Connecting WiFi...", 40);
+#if defined(ESP32_S3_LCD)
+    drawBootProgress_st7789(*display, 2, 5, "Connexion WiFi...");
+#elif defined(ESP32_S3_OLED)
+    drawBootProgress_sh1106(*display, 2, 5, "Connexion WiFi...");
+#endif
     wifi.begin();
 
     // Boucle d'attente WiFi (Max ~10s)
     int w = 0;
     while (wifi.ip() == "0.0.0.0" && w < 100) {
         wifi.update();
-        drawBootStep("Connecting WiFi...", 40 + (w % 20)); // Animation 40-60%
         delay(100);
         w++;
     }
 
     // Etape 4 : Heure
-    drawBootStep("Sync Time...", 60);
+#if defined(ESP32_S3_LCD)
+    drawBootProgress_st7789(*display, 3, 5, "Sync Heure...");
+#elif defined(ESP32_S3_OLED)
+    drawBootProgress_sh1106(*display, 3, 5, "Sync Heure...");
+#endif
     configTime(3600, 3600, "pool.ntp.org");
 
     // Boucle d'attente NTP (Max 10s)
     struct tm timeinfo;
     int t = 0;
     while (!getLocalTime(&timeinfo, 0) && t < 100) {
-        drawBootStep("Sync Time...", 60 + (t * 30 / 100)); // Progression 60-90%
         delay(100);
         t++;
     }
@@ -89,10 +96,20 @@ void setup() {
     }
 
     // Etape 5 : Pret
-    drawBootStep("System Ready", 100);
-    delay(800); // Laisser le temps de lire "System Ready"
-
-    drawBootStep("Load History...", 100);
+#if defined(ESP32_S3_LCD)
+    drawBootProgress_st7789(*display, 4, 5, "Chargement Historique...");
+#elif defined(ESP32_S3_OLED)
+    drawBootProgress_sh1106(*display, 4, 5, "Chargement Historique...");
+#endif
+    
+    // Etape 6 : Lancement
+#if defined(ESP32_S3_LCD)
+    drawBootProgress_st7789(*display, 5, 5, "Systeme Pret");
+#elif defined(ESP32_S3_OLED)
+    drawBootProgress_sh1106(*display, 5, 5, "Systeme Pret");
+#endif
+    delay(800);
+    
     history.begin();
     
     // Lancement des modules principaux
