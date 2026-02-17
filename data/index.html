@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MeteoHub S3</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Chart.js depuis CDN pour l'exemple (à télécharger localement pour usage hors ligne strict) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>MeteoHub S3</h1>
+            <div id="status">Connexion...</div>
+        </header>
+
+        <nav>
+            <a href="/" class="active">Tableau de bord</a>
+            <a href="/stats.html">Statistiques</a>
+            <a href="/longterm.html">Historique Long Terme</a>
+        </nav>
+
+        <div class="grid">
+            <div class="card">
+                <h2>Température</h2>
+                <div><span id="temp" class="value">--</span> <span class="unit">°C</span></div>
+            </div>
+            <div class="card">
+                <h2>Humidité</h2>
+                <div><span id="hum" class="value">--</span> <span class="unit">%</span></div>
+            </div>
+            <div class="card">
+                <h2>Pression</h2>
+                <div><span id="pres" class="value">--</span> <span class="unit">hPa</span></div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="historyChart"></canvas>
+        </div>
+
+        <footer>
+            MeteoHub S3 Web Interface - v<span id="version">--</span> <a href="/files.html" class="footer-icon" title="Gestionnaire de fichiers">📂</a>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

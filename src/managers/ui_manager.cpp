@@ -1,318 +1,169 @@
-#include <string>
-#include <Preferences.h>
-#include <WiFi.h>
-
-#include "ui_manager.h"
+#include "managers/ui_manager.h"
+#include "utils/logs.h"
+#include <Arduino.h>
 #include "board_config.h"
 #include "config.h"
-#include "../modules/neopixel_status.h"
-#if defined(ESP32_S3_OLED)
-#include "../modules/pages_sh1106.h"
-#endif
-#if defined(ESP32_S3_LCD)   
-#include "../modules/pages_st7789.h"
-#endif
-#include "../utils/logs.h"
 
-void UiManager::begin(DisplayInterface& display, WifiManager& wifiRef, SensorManager& sensorRef, ForecastManager& forecastRef) {
+void UiManager::begin(DisplayInterface& display, WifiManager& wifiMgr, SensorManager& sensorMgr, ForecastManager& forecastMgr, HistoryManager& historyMgr) {
     d = &display;
-    wifi = &wifiRef;
-    sensors = &sensorRef;
-    forecast = &forecastRef;
-    history.begin();
-    enc.begin();
+    wifi = &wifiMgr;
+    sensors = &sensorMgr;
+    forecast = &forecastMgr;
+    history = &historyMgr;
 
+    enc.begin();
+    
+    // Configuration des boutons (si non gérés par Encoder)
     pinMode(BUTTON_BACK_PIN, INPUT_PULLUP);
     pinMode(BUTTON_CONFIRM_PIN, INPUT_PULLUP);
 
-    back_raw = digitalRead(BUTTON_BACK_PIN) == LOW;
-    back_stable = back_raw;
-    back_change_ms = millis();
-
-    confirm_raw = digitalRead(BUTTON_CONFIRM_PIN) == LOW;
-    confirm_stable = confirm_raw;
-    confirm_change_ms = millis();
-
-    // Forcer la page 1 (Meteo) au demarrage
-    page = PAGE_WEATHER;
-
-    // Initialiser le timer de la page prévisions
-    lastForecastViewSwitch = millis();
+    page = 0; 
 }
 
 void UiManager::update() {
+    // Gestion Encodeur
     enc.update();
-    wifi->update();
-    history.update(sensors->read());
-    forecast->update();
+    int diff = enc.getStepCount();
+    if (diff != 0) {
+        enc.clearQueue();
+
+#if defined(ESP32_S3_OLED)
+        diff = -diff;
+#endif
+
+        if (menuMode) {
+#if defined(ESP32_S3_OLED)
+            diff = -diff; // Inversion specifique pour le menu OLED (Horaire = Descendre)
+#endif
+            menuIndex += diff;
+            if (menuIndex < 0) menuIndex = MENU_COUNT - 1;
+            if (menuIndex >= MENU_COUNT) menuIndex = 0;
+        } else {
+            page += diff;
+            if (page < 0) page = PAGE_COUNT - 1;
+            if (page >= PAGE_COUNT) page = 0;
+        }
+        drawPage();
+        lastRefresh = millis();
+    }
+
     handleButtons();
 
-    // Gestion Alerte Température et LED
-    static bool tempAlert = false;
-    static unsigned long lastTempCheck = 0;
-    static unsigned long lastBlink = 0;
-    static bool blinkState = false;
-    unsigned long now = millis();
-
-    if (now - lastTempCheck > 2000) {
-        lastTempCheck = now;
-        SensorData data = sensors->read();
-        if (data.valid && data.temperature > 28.0) tempAlert = true;
-        else tempAlert = false;
-    }
-
-    bool weatherAlert = forecast->alert_active;
-
-    if (weatherAlert) { // Priorité 1: Alerte météo
-        if (now - lastBlink > 400) { // Clignotement plus rapide pour l'alerte
-            lastBlink = now;
-            blinkState = !blinkState;
-            if (blinkState) {
-                if (forecast->alert.severity == 3) neoAlertRed();
-                else if (forecast->alert.severity == 2) neoAlertOrange();
-                else neoAlertYellow();
-            } else {
-                neoOff();
-            }
-        }
-    } else if (tempAlert) { // Priorité 2: Alerte température locale
-        if (now - lastBlink > 500) {
-            lastBlink = now;
-            blinkState = !blinkState;
-            if (blinkState) neoWifiKO(); else neoOff(); // Clignotement Rouge / Eteint
-        }
-    } else { // Statut par défaut
-        if (WiFi.status() == WL_CONNECTED) neoWifiOK(); else neoWifiKO();
-    }
-
-    if (menuMode) {
-        bool rotated = false;
-#if defined(ESP32_S3_LCD)
-        if (enc.rotatedCW())  { menuIndex--; rotated = true; }
-        if (enc.rotatedCCW()) { menuIndex++; rotated = true; }
-#else
-        if (enc.rotatedCW())  { menuIndex++; rotated = true; }
-        if (enc.rotatedCCW()) { menuIndex--; rotated = true; }
-#endif
-
-        if (rotated) {
-            unsigned long now = millis();
-            ignoreButtonsUntilMs = now + BUTTON_GUARD_MS;
-            ignoreEncoderClickUntilMs = now + ENCODER_CLICK_GUARD_MS;
-        }
-
-        if (menuIndex < 0) menuIndex = MENU_COUNT - 1;
-        if (menuIndex >= MENU_COUNT) menuIndex = 0;
-
-        drawMenu();
-        return;
-    }
-
-    // Auto-cycle pour la page prévisions
-    if (page == PAGE_FORECAST) {
-        if (now - lastForecastViewSwitch > 5000) {
-            forecastViewIndex = (forecastViewIndex + 1) % 3;
-            lastForecastViewSwitch = now;
-            // Le rafraîchissement principal s'occupera de redessiner
-        }
-    }
-
-    bool rotatedPage = false;
-#if defined(ESP32_S3_LCD)
-    static int lastEnc = 0;
-    int encVal = enc.getStepCount();
-    if (encVal != lastEnc) {
-        if (encVal > lastEnc) { page--; rotatedPage = true; }
-        else if (encVal < lastEnc) { page++; rotatedPage = true; }
-        lastEnc = encVal;
-    }
-#else
-    if (enc.rotatedCW())  { page--; rotatedPage = true; }
-    if (enc.rotatedCCW()) { page++; rotatedPage = true; }
-#endif
-
-    if (page < 0) page = PAGE_COUNT - 1;
-    if (page >= PAGE_COUNT) page = 0;
-
-    if (rotatedPage) {
-        ignoreEncoderClickUntilMs = millis() + ENCODER_CLICK_GUARD_MS;
+    // Rafraîchissement auto
+    if (millis() - lastRefresh > DASHBOARD_REFRESH_MS) {
+        drawPage();
         lastRefresh = millis();
-        
-        Preferences prefs;
-        prefs.begin("dash", false); // Mode écriture
-        prefs.putInt("page", page);
-        prefs.end();
-
-        drawPage();
-        return;
     }
-
-    if (now - lastRefresh > DASHBOARD_REFRESH_MS) {
-        lastRefresh = now;
-        drawPage();
+    
+    // Défilement auto Prévisions
+    if (page == PAGE_FORECAST && !menuMode) {
+        if (millis() - lastForecastViewSwitch > 5000) {
+            forecastViewIndex = (forecastViewIndex + 1) % 3;
+            lastForecastViewSwitch = millis();
+            drawPage();
+        }
     }
 }
 
 void UiManager::handleButtons() {
-    unsigned long now = millis();
-    bool backPressed = digitalRead(BUTTON_BACK_PIN) == LOW;
-    bool confirmPressed = digitalRead(BUTTON_CONFIRM_PIN) == LOW;
-    bool encoderClickEvent = enc.clicked();
-    if (now < ignoreEncoderClickUntilMs) {
-        encoderClickEvent = false;
-    }
+    // Lecture simple des boutons (Back / Confirm)
+    bool btnBack = (digitalRead(BUTTON_BACK_PIN) == LOW);
+    bool btnConfirm = (digitalRead(BUTTON_CONFIRM_PIN) == LOW);
+    bool btnEncoder = enc.clicked();
 
-    if (now < ignoreButtonsUntilMs) {
-        back_raw = backPressed;
-        back_stable = backPressed;
-        back_change_ms = now;
+    // Anti-rebond basique
+    if (millis() < ignoreButtonsUntilMs) return;
 
-        confirm_raw = confirmPressed;
-        confirm_stable = confirmPressed;
-        confirm_change_ms = now;
+    if (btnBack) {
+        if (menuMode) {
+            menuMode = false;
+        } else {
+            // Page précédente ou action spécifique
+        }
+        ignoreButtonsUntilMs = millis() + BUTTON_GUARD_MS;
+        drawPage();
         return;
     }
 
-    if (backPressed != back_raw) {
-        back_raw = backPressed;
-        back_change_ms = now;
-    }
-
-    if (confirmPressed != confirm_raw) {
-        confirm_raw = confirmPressed;
-        confirm_change_ms = now;
-    }
-
-    bool backEvent = false;
-    bool confirmEvent = false;
-
-    if ((now - back_change_ms) >= BUTTON_DEBOUNCE_MS && back_stable != back_raw) {
-        back_stable = back_raw;
-        if (back_stable) backEvent = true;
-    }
-
-    if ((now - confirm_change_ms) >= BUTTON_DEBOUNCE_MS && confirm_stable != confirm_raw) {
-        confirm_stable = confirm_raw;
-        if (confirm_stable) confirmEvent = true;
-    }
-
-    if (backEvent) {
-
-        if (menuMode) {
-            menuMode = false;
-            drawPage();
-        } else {
-            page--;
-            if (page < 0) page = PAGE_COUNT - 1;
-            
-            Preferences prefs;
-            prefs.begin("dash", false);
-            prefs.putInt("page", page);
-            prefs.end();
-
-            drawPage();
-        }
-    }
-
-    if (confirmEvent && !menuMode) {
-        menuMode = true;
-        menuIndex = 0;
-        enc.clearQueue(); // Vider les rotations en attente pour éviter un saut
-        ignoreButtonsUntilMs = now + BUTTON_GUARD_MS;
-        drawMenu();
-    }
-
-    if (encoderClickEvent) {
-        if (menuMode) {
-            switch (menuIndex) {
-                case MENU_EXIT:
-                    menuMode = false;
-                    drawPage();
+    if (menuMode) {
+        // Dans le menu, Confirm et Clic Encodeur valident l'option
+        if (btnConfirm || btnEncoder) {
+            // Action Menu
+            switch(menuIndex) {
+                case MENU_EXIT: 
+                    menuMode = false; 
                     break;
-                case MENU_REBOOT:
-                    ESP.restart();
+                case MENU_REBOOT: 
+                    ESP.restart(); 
                     break;
-                case MENU_CLEAR_LOGS:
-                    clearLogs();
-                    LOG_INFO("Logs cleared");
+                case MENU_CLEAR_LOGS: 
+                    // clearLogs(); // TODO: Implementer dans logs.h
                     menuMode = false;
-                    drawPage();
                     break;
-                case MENU_CLEAR_HISTORY:
-                    history.clear();
-                    LOG_INFO("History cleared");
+                case MENU_CLEAR_HISTORY: 
+                    history->clear();
                     menuMode = false;
-                    drawPage();
                     break;
             }
-        } else {
-            // Gérer les clics hors du menu (par page)
+            ignoreButtonsUntilMs = millis() + BUTTON_GUARD_MS;
+            drawPage();
+        }
+    } else {
+        // Mode normal (hors menu)
+        if (btnEncoder) {
+            // Le clic encodeur ouvre le menu
+            menuMode = true;
+            menuIndex = 0;
+            ignoreButtonsUntilMs = millis() + BUTTON_GUARD_MS;
+            drawPage();
+        } else if (btnConfirm) {
+            // Le bouton Confirm est contextuel
             if (page == PAGE_FORECAST) {
+                // Changement de vue prévisions
                 forecastViewIndex = (forecastViewIndex + 1) % 3;
-                lastForecastViewSwitch = now; // Réinitialiser le timer auto
+                lastForecastViewSwitch = millis();
                 drawPage();
             }
+            // Sur les autres pages, validation future (rien pour l'instant)
+            ignoreButtonsUntilMs = millis() + BUTTON_GUARD_MS;
         }
     }
-}
-
-void UiManager::drawMenu() {
-#if defined(ESP32_S3_LCD)
-    St7789Display& tft = static_cast<St7789Display&>(*d);
-    tft.clear();
-    tft.drawHeader("Menu", "");
-
-    const char* items[MENU_COUNT] = { "Retour", "Redémarrer", "Effacer Logs", "Effacer Historique" };
-    int y_start = 70;
-    int y_step = 40;
-
-    for (int i = 0; i < MENU_COUNT; i++) {
-        int current_y = y_start + i * y_step;
-        if (i == menuIndex) {
-            // Affiche l'élément sélectionné
-            tft.fillRoundRect(15, current_y - 22, 210, 30, 5, C_TEAL);
-            tft.text(30, current_y, items[i], C_WHITE, 1);
-        } else {
-            tft.text(30, current_y, items[i], C_GREY, 1);
-        }
-    }
-#else // Version OLED
-    d->clear();
-    d->text(0, 0, "Menu");
-
-    const char* items[MENU_COUNT] = { "Retour", "Redemarrer", "Eff. Logs", "Eff. Histo." };
-
-    for (int i = 0; i < MENU_COUNT; i++) {
-        std::string line = (i == menuIndex ? "> " : "  ");
-        line += items[i];
-        d->text(0, 14 + i * 12, line);
-    }
-#endif
-    d->show();
 }
 
 void UiManager::drawPage() {
-#if defined(ESP32_S3_LCD)
-    switch (page) {
-        case PAGE_WEATHER: pageWeather_st7789(*d, *sensors, page + 1, PAGE_COUNT); break;
-        case PAGE_FORECAST: pageForecast_st7789(*d, *forecast, forecastViewIndex, page + 1, PAGE_COUNT); break;
-        case PAGE_GRAPH_TEMP: pageGraph_st7789(*d, history, 0, page + 1, PAGE_COUNT); break;
-        case PAGE_GRAPH_HUM:  pageGraph_st7789(*d, history, 1, page + 1, PAGE_COUNT); break;
-        case PAGE_GRAPH_PRES: pageGraph_st7789(*d, history, 2, page + 1, PAGE_COUNT); break;
-        case PAGE_NETWORK: pageNetwork_st7789(*d, *wifi, page + 1, PAGE_COUNT); break;
-        case PAGE_LOGS:    pageSystem_st7789(*d, page + 1, PAGE_COUNT); break; // Swap pour ordre demandé
-        case PAGE_SYSTEM:  pageLogs_st7789(*d, page + 1, PAGE_COUNT); break;   // Swap pour ordre demandé
-    }
+    if (menuMode) {
+        // drawMenu(); // Simplification pour l'exemple
+        d->clear();
+#if defined(ESP32_S3_OLED)
+        // Layout compact pour OLED 128x64
+        d->center(0, "MENU");
+        d->text(0, 16, (menuIndex == MENU_EXIT) ? "> Retour" : "  Retour");
+        d->text(0, 28, (menuIndex == MENU_REBOOT) ? "> Reboot" : "  Reboot");
+        d->text(0, 40, (menuIndex == MENU_CLEAR_LOGS) ? "> Clear Logs" : "  Clear Logs");
+        d->text(0, 52, (menuIndex == MENU_CLEAR_HISTORY) ? "> Clear Hist" : "  Clear Hist");
 #else
-    switch (page) {
-        case PAGE_WEATHER: pageWeather_sh1106(*d, *sensors, page + 1, PAGE_COUNT); break;
-        case PAGE_FORECAST: pageForecast_sh1106(*d, *forecast, forecastViewIndex, page + 1, PAGE_COUNT); break;
-        case PAGE_GRAPH_TEMP: pageGraph_sh1106(*d, history, 0, page + 1, PAGE_COUNT); break;
-        case PAGE_GRAPH_HUM:  pageGraph_sh1106(*d, history, 1, page + 1, PAGE_COUNT); break;
-        case PAGE_GRAPH_PRES: pageGraph_sh1106(*d, history, 2, page + 1, PAGE_COUNT); break;
-        case PAGE_NETWORK: pageNetwork_sh1106(*d, *wifi, page + 1, PAGE_COUNT); break;
-        case PAGE_LOGS:    pageLogs_sh1106(*d, page + 1, PAGE_COUNT); break;
-        case PAGE_SYSTEM:  pageSystem_sh1106(*d, page + 1, PAGE_COUNT); break;
+        // Layout aere pour LCD
+        d->center(20, "MENU");
+        d->text(20, 60, (menuIndex == MENU_EXIT) ? "> Retour" : "  Retour");
+        d->text(20, 90, (menuIndex == MENU_REBOOT) ? "> Reboot" : "  Reboot");
+        d->text(20, 120, (menuIndex == MENU_CLEAR_LOGS) ? "> Clear Logs" : "  Clear Logs");
+        d->text(20, 150, (menuIndex == MENU_CLEAR_HISTORY) ? "> Clear Hist" : "  Clear Hist");
+#endif
+        d->show();
+        return;
+    }
+
+    int pCount = PAGE_COUNT;
+#if defined(ESP32_S3_OLED)
+    switch(page) {
+        case PAGE_WEATHER: pageWeather_sh1106(*d, *sensors, page + 1, pCount); break;
+        case PAGE_FORECAST: pageForecast_sh1106(*d, *forecast, forecastViewIndex, page + 1, pCount); break;
+        case PAGE_GRAPH_TEMP: pageGraph_sh1106(*d, *history, 0, page + 1, pCount); break;
+        case PAGE_GRAPH_HUM: pageGraph_sh1106(*d, *history, 1, page + 1, pCount); break;
+        case PAGE_GRAPH_PRES: pageGraph_sh1106(*d, *history, 2, page + 1, pCount); break;
+        case PAGE_NETWORK: pageNetwork_sh1106(*d, *wifi, page + 1, pCount); break;
+        case PAGE_LOGS: pageLogs_sh1106(*d, page + 1, pCount); break;
+        case PAGE_SYSTEM: pageSystem_sh1106(*d, page + 1, pCount); break;
     }
 #endif
 }

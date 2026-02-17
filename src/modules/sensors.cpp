@@ -4,7 +4,7 @@
 #include "../utils/logs.h"
 
 bool SensorManager::begin() {
-    Wire.begin(I2C_SDA, I2C_SCL);
+    Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN);
 
     // Initialisation AHT20 (Adresse 0x38 par défaut)
     if (aht.begin()) {

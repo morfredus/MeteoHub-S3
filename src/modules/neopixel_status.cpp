@@ -20,18 +20,23 @@ void neoWifiKO() {
     neo.show();
 }
 
+void neoWifiLost() {
+    neo.setPixelColor(0, neo.Color(150, 0, 255)); // violet
+    neo.show();
+}
+
 void neoOff() {
     neo.setPixelColor(0, neo.Color(0, 0, 0)); // éteint
     neo.show();
 }
 
 void neoAlertYellow() {
-    neo.setPixelColor(0, neo.Color(150, 150, 0)); // jaune
+    neo.setPixelColor(0, neo.Color(255, 255, 0)); // jaune très vif
     neo.show();
 }
 
 void neoAlertOrange() {
-    neo.setPixelColor(0, neo.Color(255, 69, 0)); // orange vif
+    neo.setPixelColor(0, neo.Color(255, 100, 0)); // orange soutenu
     neo.show();
 }
 

@@ -10,6 +10,7 @@
 #include <string>
 #include <time.h>
 #include "../utils/logs.h"
+#include "../utils/system.h"
 
 // Fonctions utilitaires LCD (ex: formatage, couleurs, etc.)
 // À compléter selon besoins graphiques LCD
@@ -194,11 +195,9 @@ void pageGraph_st7789(DisplayInterface& d, HistoryManager& history, int type, in
     tft.drawLine(graph_x0, graph_y0, graph_x0, graph_y1, C_GREY); // Y Axis
     tft.drawLine(graph_x0, graph_y1, graph_x1, graph_y1, C_GREY); // X Axis
 
-    int n = history.getCount();
+    const auto& buffer = history.getRecentHistory();
+    int n = buffer.size();
     if (n == 0) { tft.center(120, "Attente donnees...", C_GREY, 1); d.show(); return; }
-    
-    HistoryManager::Record buffer[HISTORY_SIZE];
-    history.getData(buffer, HISTORY_SIZE);
     
     float min = 9999, max = -9999;
     for (int i = 0; i < n; ++i) {
@@ -240,7 +239,7 @@ void pageGraph_st7789(DisplayInterface& d, HistoryManager& history, int type, in
     uint16_t color = (type == 0) ? C_ORANGE : (type == 1 ? C_CYAN : C_GREEN);
     
     for (int i = 1; i < n; ++i) {
-        int x = graph_x0 + ((graph_x1 - graph_x0) * i) / (HISTORY_SIZE - 1); // Utiliser HISTORY_SIZE pour échelle fixe ou n pour dynamique
+        int x = graph_x0 + ((graph_x1 - graph_x0) * i) / (1440 - 1); // 1440 = 24h * 60min
         // Pour un graphe glissant correct, l'échelle X doit être fixe sur 2h (HISTORY_SIZE)
         
         float v = (type == 0) ? buffer[i].t : (type == 1 ? buffer[i].h : buffer[i].p);

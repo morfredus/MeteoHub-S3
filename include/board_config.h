@@ -7,30 +7,23 @@
 #if defined(ESP32_S3_OLED)
 
 // I2C OLED SH1106
-#define I2C_SDA 15
-#define I2C_SCL 16
+#define I2C_SDA_PIN 15
+#define I2C_SCL_PIN 16
 
 // Encodeur EC11
-#define ENC_A      4   // tra
-#define ENC_B      5   // trb
-#define ENC_BTN    6   // psh (push encodeur)
+#define ENCODER_A_PIN      4   // tra
+#define ENCODER_B_PIN      5   // trb
+#define ENCODER_BTN_PIN    6   // psh (push encodeur)
 
 // Boutons dédiés
-#define BTN_BACK    7  // bak
-#define BTN_CONFIRM 8  // com
+#define BUTTON_BACK_PIN    7  // bak
+#define BUTTON_CONFIRM_PIN 8  // com
 
     #define NEOPIXEL_PIN 48   // npx (neopixel status)
 
 // Masse et alim sont câblées physiqement :
 // grd -> GND
 // vcc -> 3V3
-
-// Alias génériques pour code commun
-#define BUTTON_BACK_PIN BTN_BACK
-#define BUTTON_CONFIRM_PIN BTN_CONFIRM
-#define ENCODER_A_PIN ENC_A
-#define ENCODER_B_PIN ENC_B
-#define ENCODER_BTN_PIN ENC_BTN
 
 #elif defined(ESP32_S3_LCD)
 
@@ -48,31 +41,24 @@
 // ------------------------------------
 // Boutons
 // ------------------------------------
-#define BUTTON_BOOT 0
-#define BUTTON_1   38
-#define BUTTON_2   39
+#define BUTTON_BOOT_PIN 0
+#define BUTTON_BACK_PIN   38
+#define BUTTON_CONFIRM_PIN   39
 
 #define NEOPIXEL_PIN 48   // npx (neopixel status)
 
 // ------------------------------------
 // ENCODEUR ROTATIF (HW-040)
 // ------------------------------------
-#define ROTARY_CLK   47
-#define ROTARY_DT    45
-#define ROTARY_SW    40
+#define ENCODER_A_PIN   47
+#define ENCODER_B_PIN    45
+#define ENCODER_BTN_PIN    40
 
 // ------------------------------------
 // I2C (AHT20 + BMP280)
 // ------------------------------------
-#define I2C_SDA 15
-#define I2C_SCL 16
-
-// Alias génériques pour code commun
-#define BUTTON_BACK_PIN BUTTON_1
-#define BUTTON_CONFIRM_PIN BUTTON_2
-#define ENCODER_A_PIN ROTARY_CLK
-#define ENCODER_B_PIN ROTARY_DT
-#define ENCODER_BTN_PIN ROTARY_SW
+#define I2C_SDA_PIN 15
+#define I2C_SCL_PIN 16
 
 
 #endif

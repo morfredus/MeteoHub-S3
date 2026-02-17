@@ -1,6 +1,6 @@
 # Maintenance et dépannage
 
-Version minimale valide : 1.0.30
+Version minimale valide : 1.0.56
 
 ## Objectif
 Fournir des étapes de reprise pratiques lorsque le dashboard ne se comporte pas comme prévu.
@@ -44,6 +44,12 @@ Vérifier :
 - La synchronisation NTP terminée
 - Un temps d’exécution suffisant pour enregistrer des échantillons
 - Un historique non effacé récemment
+
+### 6) L'interface Web est inaccessible
+Vérifier :
+- Que vous êtes sur le même réseau Wi-Fi.
+- Essayez l'adresse IP directe (ex: `192.168.1.x`) au lieu de `meteohub.local` (le mDNS peut être capricieux sur certains réseaux/OS).
+- Vérifiez que la partition LittleFS est bien montée (voir logs au démarrage).
 
 ## Actions de maintenance disponibles dans le menu UI
 - Redémarrer

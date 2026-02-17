@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fichiers - MeteoHub S3</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Gestionnaire de Fichiers</h1>
+            <div id="status">Connexion...</div>
+        </header>
+
+        <nav>
+            <a href="/">Tableau de bord</a>
+            <a href="/stats.html">Statistiques</a>
+            <a href="/longterm.html">Historique</a>
+        </nav>
+
+        <div class="card">
+            <h2>Téléverser un fichier</h2>
+            <div style="display: flex; gap: 10px; justify-content: center; align-items: center; margin-bottom: 20px;">
+                <input type="file" id="fileInput" style="color: var(--text);">
+                <button onclick="uploadFile()" class="btn">Envoyer</button>
+            </div>
+            <div id="uploadStatus"></div>
+        </div>
+
+        <div class="card" style="margin-top: 20px;">
+            <h2>Fichiers Système (LittleFS)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Taille</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="fileList">
+                    <tr><td colspan="3">Chargement...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <footer>
+            MeteoHub S3 Web Interface - v<span id="version">--</span>
+        </footer>
+    </div>
+    <script src="files.js"></script>
+</body>
+</html>

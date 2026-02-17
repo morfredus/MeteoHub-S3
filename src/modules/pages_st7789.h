@@ -1,10 +1,9 @@
 #pragma once
 #include "display_interface.h"
-#include "../managers/forecast_manager.h"
-#include "../managers/history.h"
 #include "../managers/wifi_manager.h"
 #include "sensors.h"
-#include "../utils/system_info.h"
+#include "../managers/forecast_manager.h"
+#include "../managers/history_manager.h"
 
 void pageNetwork_st7789(DisplayInterface& d, WifiManager& wifi, int pageIndex, int pageCount);
 void pageSystem_st7789(DisplayInterface& d, int pageIndex, int pageCount);

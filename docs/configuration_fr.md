@@ -1,6 +1,6 @@
 # Configuration
 
-Version minimale valide : 1.0.30
+Version minimale valide : 1.0.56
 
 ## Objectif
 Configurer le réseau, l’API météo et les constantes runtime de manière sûre.
@@ -21,6 +21,7 @@ Utiliser ce fichier pour les réglages fonctionnels :
 - Délai de retry Wi-Fi (`WIFI_RETRY_DELAY_MS`)
 - Contraste OLED (`OLED_CONTRAST`)
 - Activation du test ping (`ENABLE_PING_TEST`)
+- Nom réseau local (`WEB_MDNS_HOSTNAME`) : par défaut "meteohub" (accessible via `http://meteohub.local`).
 
 
 ## Environnements OLED/LCD

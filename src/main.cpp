@@ -5,6 +5,8 @@
 #include "managers/forecast_manager.h"
 #include "managers/ui_manager.h"
 #include "managers/wifi_manager.h"
+#include "managers/web_manager.h"
+#include "managers/history_manager.h"
 #include "modules/neopixel_status.h"
 #include "modules/sensors.h"
 #if defined(ESP32_S3_OLED)
@@ -21,6 +23,8 @@ WifiManager wifi;
 UiManager ui;
 SensorManager sensors;
 ForecastManager forecast;
+WebManager webManager;
+HistoryManager history;
 
 void drawBootStep(const std::string& label, int percent) {
     display->clear();
@@ -89,13 +93,46 @@ void setup() {
     delay(800); // Laisser le temps de lire "System Ready"
 
     drawBootStep("Load History...", 100);
+    history.begin();
     
     // Lancement des modules principaux
     forecast.begin();
+    webManager.begin(history);
 
-    ui.begin(*display, wifi, sensors, forecast);
+    ui.begin(*display, wifi, sensors, forecast, history);
 }
 
 void loop() {
+    static unsigned long lastHistoryUpdate = 0;
+    static unsigned long lastLedUpdate = 0;
+
+    wifi.update();
+    forecast.update();
     ui.update();
+    webManager.handle();
+
+    // Gestion LED Status (toutes les 500ms)
+    if (millis() - lastLedUpdate >= 500) {
+        lastLedUpdate = millis();
+        static bool blink = false;
+        blink = !blink;
+
+        if (forecast.alert_active) {
+            if (forecast.alert.severity >= 3) { if (blink) neoAlertRed(); else neoOff(); }
+            else if (forecast.alert.severity == 2) neoAlertOrange();
+            else neoAlertYellow();
+        } else {
+            if (wifi.ip() != "0.0.0.0") neoWifiOK();
+            else { if (blink) neoWifiLost(); else neoOff(); }
+        }
+    }
+
+    // Enregistrement historique toutes les minutes
+    if (millis() - lastHistoryUpdate >= 60000) {
+        lastHistoryUpdate = millis();
+        SensorData data = sensors.read();
+        if (data.valid) {
+            history.add(data.temperature, data.humidity, data.pressure);
+        }
+    }
 }

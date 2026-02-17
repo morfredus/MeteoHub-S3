@@ -10,12 +10,12 @@
 #include "../modules/encoder.h"
 #include "wifi_manager.h"
 #include "../modules/sensors.h"
-#include "history.h"
+#include "managers/history_manager.h"
 #include "forecast_manager.h"
 
 class UiManager {
 public:
-    void begin(DisplayInterface& display, WifiManager& wifi, SensorManager& sensors, ForecastManager& forecast);
+    void begin(DisplayInterface& display, WifiManager& wifi, SensorManager& sensors, ForecastManager& forecast, HistoryManager& history);
     void update();
 
 private:
@@ -46,7 +46,7 @@ private:
     DisplayInterface* d;
     WifiManager* wifi;
     SensorManager* sensors;
-    HistoryManager history;
+    HistoryManager* history;
     ForecastManager* forecast;
     Encoder enc;
 

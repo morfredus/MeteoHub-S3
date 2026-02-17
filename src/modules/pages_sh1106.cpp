@@ -9,6 +9,7 @@
 #include <time.h>
 #include "pages_sh1106.h"
 #include "../utils/logs.h"
+#include "../utils/system.h"
 
 // 1. Formate un float avec précision donnée
 std::string formatFloat(float value, int precision) {
@@ -118,10 +119,8 @@ void pageGraph_sh1106(DisplayInterface& d, HistoryManager& history, int type, in
     
     d.text(0, 0, getHeader(title, pageIndex, pageCount));
 
-    HistoryManager::Record records[HISTORY_SIZE];
-    history.getData(records, HISTORY_SIZE);
-    
-    int count = history.getCount();
+    const auto& records = history.getRecentHistory();
+    int count = records.size();
     if (count == 0) {
         d.center(30, "Attente donnees...");
         d.show();

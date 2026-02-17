@@ -1,6 +1,6 @@
 # Câblage matériel
 
-Version minimale valide : 1.0.30
+Version minimale valide : 1.0.56
 
 ## Vue d’ensemble
 Cette page explique le mapping GPIO exact utilisé par le firmware.
@@ -14,15 +14,15 @@ Le firmware prend en charge à la fois l’OLED SH1106 et le LCD ST7789. Le mapp
 ## Mapping GPIO actuel
 
 ### Environnement OLED (I2C SH1106)
-- `I2C_SDA` = GPIO 15
-- `I2C_SCL` = GPIO 16
+- `I2C_SDA_PIN` = GPIO 15
+- `I2C_SCL_PIN` = GPIO 16
 - Encodeur rotatif (EC11) :
-	- `ENC_A` = GPIO 4
-	- `ENC_B` = GPIO 5
-	- `ENC_BTN` = GPIO 6
+	- `ENCODER_A_PIN` = GPIO 4
+	- `ENCODER_B_PIN` = GPIO 5
+	- `ENCODER_BTN_PIN` = GPIO 6
 - Boutons dédiés :
-	- `BTN_BACK` = GPIO 7
-	- `BTN_CONFIRM` = GPIO 8
+	- `BUTTON_BACK_PIN` = GPIO 7
+	- `BUTTON_CONFIRM_PIN` = GPIO 8
 - LED de statut :
 	- `NEOPIXEL_PIN` = GPIO 48
 
@@ -36,16 +36,16 @@ Le firmware prend en charge à la fois l’OLED SH1106 et le LCD ST7789. Le mapp
 	- `DISPLAY_BL_PIN` = GPIO 8
 	- `DISPLAY_MISO_PIN` = -1 (non utilisé)
 - Encodeur rotatif (HW-040) :
-	- `ROTARY_CLK` = GPIO 47
-	- `ROTARY_DT` = GPIO 45
-	- `ROTARY_SW` = GPIO 40
+	- `ENCODER_A_PIN` = GPIO 47
+	- `ENCODER_B_PIN` = GPIO 45
+	- `ENCODER_BTN_PIN` = GPIO 40
 - Boutons :
-	- `BUTTON_BOOT` = GPIO 0
-	- `BUTTON_1` = GPIO 38
-	- `BUTTON_2` = GPIO 39
+	- `BUTTON_BOOT_PIN` = GPIO 0
+	- `BUTTON_BACK_PIN` = GPIO 38
+	- `BUTTON_CONFIRM_PIN` = GPIO 39
 - Capteurs I2C :
-	- `I2C_SDA` = GPIO 15
-	- `I2C_SCL` = GPIO 16
+	- `I2C_SDA_PIN` = GPIO 15
+	- `I2C_SCL_PIN` = GPIO 16
 
 ## Notes électriques
 - Connecter correctement `3V3` et `GND` de la carte.

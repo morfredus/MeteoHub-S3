@@ -1,7 +1,18 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.30
+Version minimale valide : 1.0.56
+
+## Version 1.0.51
+- **Documentation** : Mise à jour complète des guides utilisateur, FAQ et maintenance pour inclure l'interface Web et la nouvelle gestion d'historique.
+
+## Versions 1.0.30 à 1.0.50 (Mise à jour majeure Web & Historique)
+- **Interface Web** : Tableau de bord complet accessible via `http://meteohub.local` (Live, Graphes, Stats, Fichiers).
+- **Gestionnaire de Fichiers** : Interface Web pour gérer les fichiers LittleFS (Logs, Historique).
+- **Historique Hybride** : Stockage haute résolution (RAM) pour 24h et archivage mensuel décimé (LittleFS) pour le long terme (2 ans).
+- **Graphiques Web** : Visualisation multi-axes (Temp/Hum/Pres) avec couleurs adaptées.
+- **OLED** : Correction de la navigation (sens encodeur) et du menu pour l'écran SH1106.
+- **Système** : Uniformisation des noms de GPIO (`_PIN`) et optimisations diverses.
 
 ## Version 1.0.29
 - **Interface LCD** : Refonte complète de l'interface ST7789 (thème sombre, en-têtes colorés, cartes de données).

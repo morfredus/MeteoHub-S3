@@ -1,6 +1,6 @@
 # Guide utilisateur
 
-Version minimale valide : 1.0.30
+Version minimale valide : 1.0.56
 
 ## Objectif
 Apprendre à utiliser le dashboard une fois le firmware démarré.
@@ -13,9 +13,9 @@ Apprendre à utiliser le dashboard une fois le firmware démarré.
 
 ## Commandes utilisateur
 - **Rotation encodeur** : navigation entre les pages
-- **Clic encodeur** : action contextuelle (changement vue prévisions ou action menu)
+- **Clic encodeur** : ouverture du menu ou validation d'une option
 - **Bouton Back** : page précédente ou fermeture menu
-- **Bouton Confirm** : ouverture menu
+- **Bouton Confirm** : action contextuelle (ex: défilement prévisions) ou validation
 
 ## Séquence de démarrage
 Au boot, l’OLED affiche des étapes de progression :
@@ -24,6 +24,22 @@ Au boot, l’OLED affiche des étapes de progression :
 3. Connexion Wi-Fi
 4. Synchronisation horaire (NTP)
 5. Prêt
+
+## Interface Web
+Le MeteoHub S3 dispose d'une interface Web complète accessible depuis n'importe quel navigateur sur le même réseau Wi-Fi.
+
+### Accès
+- Adresse : `http://meteohub.local` (ou via l'adresse IP affichée sur l'écran au démarrage).
+
+### Fonctionnalités Web
+- **Tableau de bord** : Affichage en temps réel de la Température, Humidité et Pression.
+- **Graphiques** : Visualisation interactive des 3 courbes sur les dernières 24h (haute résolution).
+- **Statistiques** : Page dédiée affichant les Min/Moy/Max pour la période en cours.
+- **Historique Long Terme** : Consultation des données archivées sur plusieurs mois/années.
+- **Gestionnaire de Fichiers** : Accessible via l'icône dossier 📂 en bas de page. Permet de :
+    - Télécharger les fichiers de logs (`system.log`).
+    - Télécharger les archives d'historique (`YYYY-MM.dat`).
+    - Supprimer ou téléverser des fichiers.
 
 ## Pages principales
 Le gestionnaire UI fait défiler ces pages :
@@ -45,7 +61,7 @@ Le gestionnaire UI fait défiler ces pages :
   - Aujourd’hui
   - Demain
   - Alertes
-- Défilement manuel possible via clic encodeur.
+- Défilement manuel possible via le bouton **Confirm**.
 
 ## Logique d’alerte (NeoPixel)
 - **Clignotement orange** : alerte météo active
@@ -66,7 +82,8 @@ Le menu contient :
 
 ## Persistance des données
 - La dernière page est stockée dans Preferences (NVS).
-- L’historique capteurs est stocké dans LittleFS (`/history.dat`).
+- **Historique Court Terme** : Les dernières 24h sont en RAM et sauvegardées périodiquement dans `/history.dat`.
+- **Historique Long Terme** : Les données sont archivées mensuellement (moyenne 15 min) dans des fichiers `/YYYY-MM.dat` sur la mémoire interne (LittleFS).
 
 ## Lecture des valeurs météo et interprétation
 ### Température (Temp)

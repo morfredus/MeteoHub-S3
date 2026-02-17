@@ -1,6 +1,6 @@
 # FAQ
 
-Version minimale valide : 1.0.30
+Version minimale valide : 1.0.56
 
 ## Internet est-il obligatoire ?
 Oui, pour les mises à jour de prévisions et d’alertes. Les pages capteurs locales restent utilisables sans internet.
@@ -14,8 +14,15 @@ L’historique a besoin d’échantillons temporels et d’une heure valide (NTP
 ## Quelle est la fréquence de mise à jour des prévisions ?
 Environ toutes les 30 minutes.
 
-## Combien de points d’historique sont stockés ?
-128 points sont conservés en mémoire et persistés dans LittleFS.
+## Comment accéder à l'interface Web ?
+Connectez-vous au même réseau Wi-Fi et ouvrez `http://meteohub.local` dans votre navigateur. Si cela ne fonctionne pas, utilisez l'adresse IP affichée sur l'écran du MeteoHub (Page Réseau).
+
+## Quelle est la capacité de l'historique ?
+- **Court terme (Graphiques)** : ~24h de données haute résolution (1 point/min) stockées en RAM et sauvegardées.
+- **Long terme** : Jusqu'à 2 ans d'archives stockées dans la mémoire interne (fichiers mensuels, 1 point/15 min).
+
+## Comment récupérer mes données ?
+Allez sur l'interface Web, cliquez sur l'icône dossier 📂 en bas de page. Vous pouvez télécharger les fichiers `.dat` (format binaire) ou les logs.
 
 ## Puis-je changer la vitesse de rafraîchissement des pages ?
 Oui, modifier `DASHBOARD_REFRESH_MS` dans `include/config.h`.

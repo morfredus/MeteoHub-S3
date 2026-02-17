@@ -11,3 +11,7 @@
 
 // Activer le test de ping
 #define ENABLE_PING_TEST     1
+
+// Nom mDNS pour accès local
+#define WEB_MDNS_HOSTNAME "meteohub" // Accessible via http://meteohub.local
+

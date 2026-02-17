@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistiques - MeteoHub S3</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Statistiques</h1>
+            <div id="status">Connexion...</div>
+        </header>
+
+        <nav>
+            <a href="/">Tableau de bord</a>
+            <a href="/stats.html" class="active">Statistiques</a>
+            <a href="/longterm.html">Historique Long Terme</a>
+        </nav>
+
+        <div class="card">
+            <h2>Résumé (Période affichée)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Donnée</th>
+                        <th>Min</th>
+                        <th>Moy</th>
+                        <th>Max</th>
+                    </tr>
+                </thead>
+                <tbody id="statsBody">
+                    <tr><td colspan="4">Chargement...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <footer>
+            MeteoHub S3 Web Interface - v<span id="version">--</span> <a href="/files.html" class="footer-icon" title="Gestionnaire de fichiers">📂</a>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        window.onload = () => { fetchSystem(); fetchStats(); };
+    </script>
+</body>
+</html>
