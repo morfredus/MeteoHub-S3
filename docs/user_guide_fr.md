@@ -1,6 +1,6 @@
 # Guide utilisateur
 
-Version minimale valide : 1.0.56
+Version minimale valide : 1.0.58
 
 ## Objectif
 Apprendre à utiliser le dashboard une fois le firmware démarré.
@@ -82,8 +82,8 @@ Le menu contient :
 
 ## Persistance des données
 - La dernière page est stockée dans Preferences (NVS).
-- **Historique Court Terme** : Les dernières 24h sont en RAM et sauvegardées périodiquement dans `/history.dat`.
-- **Historique Long Terme** : Les données sont archivées mensuellement (moyenne 15 min) dans des fichiers `/YYYY-MM.dat` sur la mémoire interne (LittleFS).
+- **Historique Court Terme** : Les dernières 24h (1 point/min) sont en RAM et sauvegardées en continu dans `/history/recent.dat`. Le système recharge ces données au démarrage pour une disponibilité immédiate.
+- **Historique Long Terme** : Les données sont archivées mensuellement (moyenne sur 15 min) dans des fichiers `/archive/YYYY-MM.dat` sur la mémoire interne (LittleFS).
 
 ## Lecture des valeurs météo et interprétation
 ### Température (Temp)

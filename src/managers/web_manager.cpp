@@ -103,51 +103,25 @@ void WebManager::_setupApi() {
     });
 
     // API : Statistiques
-    _server.on("/api/stats", HTTP_GET, [](AsyncWebServerRequest *request) {
-        // Pour les stats, on utilise aussi le fichier history.dat (snapshot récent) ou la RAM
-        // Pour simplifier, on lit history.dat qui contient le snapshot récent
-        File file = LittleFS.open("/history.dat", "r");
-        
-        float minT = 100, maxT = -100, sumT = 0;
-        float minH = 100, maxH = 0, sumH = 0;
-        float minP = 2000, maxP = 0, sumP = 0;
-        int count = 0;
-
-        if (file) {
-            HistoryRecord r;
-            while (file.read((uint8_t*)&r, sizeof(HistoryRecord)) == sizeof(HistoryRecord)) {
-                if (r.t < minT) minT = r.t;
-                if (r.t > maxT) maxT = r.t;
-                sumT += r.t;
-
-                if (r.h < minH) minH = r.h;
-                if (r.h > maxH) maxH = r.h;
-                sumH += r.h;
-
-                if (r.p < minP) minP = r.p;
-                if (r.p > maxP) maxP = r.p;
-                sumP += r.p;
-
-                count++;
-            }
-            file.close();
-        }
-
+    _server.on("/api/stats", HTTP_GET, [this](AsyncWebServerRequest *request) {
         AsyncResponseStream *response = request->beginResponseStream("application/json");
         DynamicJsonDocument doc(1024);
         
+        Stats24h stats = _history->getRecentStats();
+        int count = stats.count;
+
         if (count > 0) {
-            doc["temp"]["min"] = minT;
-            doc["temp"]["max"] = maxT;
-            doc["temp"]["avg"] = sumT / count;
+            doc["temp"]["min"] = stats.temp.minT;
+            doc["temp"]["max"] = stats.temp.maxT;
+            doc["temp"]["avg"] = stats.temp.avgT();
             
-            doc["hum"]["min"] = minH;
-            doc["hum"]["max"] = maxH;
-            doc["hum"]["avg"] = sumH / count;
+            doc["hum"]["min"] = stats.hum.minH;
+            doc["hum"]["max"] = stats.hum.maxH;
+            doc["hum"]["avg"] = stats.hum.avgH();
             
-            doc["pres"]["min"] = minP;
-            doc["pres"]["max"] = maxP;
-            doc["pres"]["avg"] = sumP / count;
+            doc["pres"]["min"] = stats.pres.minP;
+            doc["pres"]["max"] = stats.pres.maxP;
+            doc["pres"]["avg"] = stats.pres.avgP();
         } else {
             // Valeurs par défaut si vide
             doc["temp"]["min"] = 0; doc["temp"]["max"] = 0; doc["temp"]["avg"] = 0;

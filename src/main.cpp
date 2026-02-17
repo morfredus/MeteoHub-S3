@@ -108,6 +108,7 @@ void loop() {
 
     wifi.update();
     forecast.update();
+    history.update(); 
     ui.update();
     webManager.handle();
 
