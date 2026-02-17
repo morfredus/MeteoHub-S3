@@ -11,6 +11,8 @@
 #include <time.h>
 #include "../utils/logs.h"
 #include "../utils/system.h"
+#include "config.h"
+#include <Arduino.h> // Pour delay()
 
 // Fonctions utilitaires LCD (ex: formatage, couleurs, etc.)
 // À compléter selon besoins graphiques LCD
@@ -60,22 +62,24 @@ void pageNetwork_st7789(DisplayInterface& d, WifiManager& wifi, int pageIndex, i
     tft.clear();
     tft.drawHeader("Réseau", getPageStr(pageIndex, pageCount));
 
-    int y = 60;
+    int y = (LCD_HEIGHT == 320) ? 80 : 60;
+    int dy = (LCD_HEIGHT == 320) ? 40 : 30;
+
     tft.text(20, y, "SSID", C_GREY, 1);
     tft.text(80, y, wifi.ssid(), C_WHITE, 1);
     
-    y += 30;
+    y += dy;
     tft.text(20, y, "IP", C_GREY, 1);
     tft.text(80, y, wifi.ip(), C_CYAN, 1);
 
-    y += 30;
+    y += dy;
     int rssi = wifi.rssi();
     uint16_t rssiColor = (rssi > -60) ? C_GREEN : (rssi > -80 ? C_ORANGE : C_RED);
     tft.text(20, y, "Signal", C_GREY, 1);
     tft.text(80, y, std::to_string(rssi) + " dBm", rssiColor, 1);
 
     // Barre de signal visuelle
-    y += 40;
+    y += (LCD_HEIGHT == 320) ? 50 : 40;
     int barW = 160;
     int signalPct = 0;
     if (rssi > -100) signalPct = map(rssi, -100, -50, 0, 100);
@@ -93,23 +97,25 @@ void pageSystem_st7789(DisplayInterface& d, int pageIndex, int pageCount) {
     tft.clear();
     tft.drawHeader("Système", getPageStr(pageIndex, pageCount));
 
-    int y = 60;
+    int y = (LCD_HEIGHT == 320) ? 80 : 60;
+    int dy = (LCD_HEIGHT == 320) ? 40 : 30;
+
     tft.text(20, y, "Heap", C_GREY, 1);
     tft.text(100, y, std::to_string(s.heapFree / 1024) + " KB", C_GREEN, 1);
     
-    y += 30;
+    y += dy;
     tft.text(20, y, "PSRAM", C_GREY, 1);
     tft.text(100, y, std::to_string(s.psramFree / 1024) + " KB", C_GREEN, 1);
     
-    y += 30;
+    y += dy;
     tft.text(20, y, "Flash", C_GREY, 1);
     tft.text(100, y, std::to_string(s.flashSize / 1024 / 1024) + " MB", C_YELLOW, 1);
     
-    y += 30;
+    y += dy;
     tft.text(20, y, "Version", C_GREY, 1);
     tft.text(100, y, std::string(PROJECT_VERSION), C_MAGENTA, 1);
 
-    tft.center(220, "MeteoHub S3", C_TEAL, 1);
+    tft.center((LCD_HEIGHT == 320) ? 300 : 220, "MeteoHub S3", C_TEAL, 1);
     d.show();
 }
 
@@ -128,7 +134,7 @@ void pageLogs_st7789(DisplayInterface& d, int pageIndex, int pageCount) {
         
         tft.text(5, y, logLine, color, 1);
         y += 18;
-        if (y > 230) break;
+        if (y > ((LCD_HEIGHT == 320) ? 310 : 230)) break;
     }
     d.show();
 }
@@ -144,20 +150,20 @@ void pageWeather_st7789(DisplayInterface& d, SensorManager& sensors, int pageInd
         // Température Principale (Gros)
         uint16_t tempColor = (data.temperature > 28) ? C_RED : (data.temperature < 10 ? C_BLUE : C_ORANGE);
         
-        tft.center(60, "Température", C_GREY, 1);
+        tft.center((LCD_HEIGHT == 320) ? 80 : 60, "Température", C_GREY, 1);
         
         // Astuce: Utiliser size 2 ou 3 pour simuler une grosse police
         std::string tempStr = formatFloatLCD(data.temperature, 1);
         int16_t x1, y1; uint16_t w, h;
         // Centrage manuel pour le "gros" texte
         int xCenter = 120;
-        int yCenter = 100;
+        int yCenter = (LCD_HEIGHT == 320) ? 130 : 102;
         tft.text(xCenter - 50, yCenter, tempStr, tempColor, 3); // Size 3
         tft.text(xCenter + 60, yCenter, "C", tempColor, 1); // Unité plus petite
 
         // Cartes Humidité et Pression en bas
-        int cardY = 160;
-        int cardH = 60;
+        int cardY = (LCD_HEIGHT == 320) ? 220 : 160;
+        int cardH = (LCD_HEIGHT == 320) ? 80 : 60;
         int cardW = 100;
         
         // Humidité (Gauche)
@@ -188,8 +194,8 @@ void pageGraph_st7789(DisplayInterface& d, HistoryManager& history, int type, in
     // Axes
     int graph_x0 = 40; 
     int graph_x1 = 230;
-    int graph_y0 = 50;
-    int graph_y1 = 210;
+    int graph_y0 = 55;
+    int graph_y1 = (LCD_HEIGHT == 320) ? 290 : 210;
 
     // Cadre du graphe
     tft.drawLine(graph_x0, graph_y0, graph_x0, graph_y1, C_GREY); // Y Axis
@@ -228,8 +234,9 @@ void pageGraph_st7789(DisplayInterface& d, HistoryManager& history, int type, in
     }
     
     // Graduation X (temps)
-    tft.text(graph_x0, 220, "-2h", C_GREY, 1);
-    tft.text(graph_x1 - 30, 220, "now", C_GREY, 1);
+    int label_y = (LCD_HEIGHT == 320) ? 300 : 220;
+    tft.text(graph_x0, label_y, "-2h", C_GREY, 1);
+    tft.text(graph_x1 - 30, label_y, "now", C_GREY, 1);
     
     // Courbe
     int prevx = graph_x0;
@@ -260,39 +267,99 @@ void pageForecast_st7789(DisplayInterface& d, ForecastManager& forecast, int vie
     tft.clear();
     tft.drawHeader("Prévisions", getTimeStr());
 
+    int y_title = (LCD_HEIGHT == 320) ? 60 : 50;
+    int y_desc = (LCD_HEIGHT == 320) ? 100 : 80;
+    int y_lbl = (LCD_HEIGHT == 320) ? 160 : 120;
+    int y_val = (LCD_HEIGHT == 320) ? 200 : 155;
+
     if (view == 0) {
-        tft.center(50, "Aujourd'hui", C_CYAN, 1);
-        tft.center(80, forecast.today.description, C_WHITE, 1);
+        tft.center(y_title, "Aujourd'hui", C_CYAN, 1);
+        tft.center(y_desc, forecast.today.description, C_WHITE, 1);
         
         // Températures
-        tft.text(40, 120, "Min", C_BLUE, 1);
-        tft.text(40, 155, formatFloatLCD(forecast.today.temp_min, 0), C_WHITE, 2);
+        tft.text(40, y_lbl, "Min", C_BLUE, 1);
+        tft.text(40, y_val, formatFloatLCD(forecast.today.temp_min, 0), C_WHITE, 2);
         
-        tft.text(140, 120, "Max", C_RED, 1);
-        tft.text(140, 155, formatFloatLCD(forecast.today.temp_max, 0), C_WHITE, 2);
+        tft.text(140, y_lbl, "Max", C_RED, 1);
+        tft.text(140, y_val, formatFloatLCD(forecast.today.temp_max, 0), C_WHITE, 2);
 
     } else if (view == 1) {
-        tft.center(50, "Demain", C_CYAN, 1);
-        tft.center(80, forecast.tomorrow.description, C_WHITE, 1);
+        tft.center(y_title, "Demain", C_CYAN, 1);
+        tft.center(y_desc, forecast.tomorrow.description, C_WHITE, 1);
         
-        tft.text(40, 120, "Min", C_BLUE, 1);
-        tft.text(40, 155, formatFloatLCD(forecast.tomorrow.temp_min, 0), C_WHITE, 2);
+        tft.text(40, y_lbl, "Min", C_BLUE, 1);
+        tft.text(40, y_val, formatFloatLCD(forecast.tomorrow.temp_min, 0), C_WHITE, 2);
         
-        tft.text(140, 120, "Max", C_RED, 1);
-        tft.text(140, 155, formatFloatLCD(forecast.tomorrow.temp_max, 0), C_WHITE, 2);
+        tft.text(140, y_lbl, "Max", C_RED, 1);
+        tft.text(140, y_val, formatFloatLCD(forecast.tomorrow.temp_max, 0), C_WHITE, 2);
 
     } else if (view == 2 && forecast.alert_active) {
         tft.fillScreen(C_RED); // Fond rouge pour alerte
-        tft.center(40, "ALERTE", C_YELLOW, 2);
+        int y_base = (LCD_HEIGHT == 320) ? 60 : 40;
+        tft.center(y_base, "ALERTE", C_YELLOW, 2);
         
-        tft.center(90, translateAlert(forecast.alert.event), C_WHITE, 1);
-        tft.center(120, "Niveau: " + std::to_string(forecast.alert.severity), C_WHITE, 1);
-        tft.center(150, forecast.alert.sender, C_BLACK, 1);
+        tft.center(y_base + 50, translateAlert(forecast.alert.event), C_WHITE, 1);
+        tft.center(y_base + 80, "Niveau: " + std::to_string(forecast.alert.severity), C_WHITE, 1);
+        tft.center(y_base + 110, forecast.alert.sender, C_BLACK, 1);
 
     } else {
         tft.center(100, "Aucune Alerte", C_GREEN, 1);
         tft.center(130, "Météo Normale", C_GREY, 1);
     }
+    d.show();
+}
+
+// --- Ecrans de démarrage (Splash & Boot) ---
+
+void drawSplashScreen_st7789(DisplayInterface& d) {
+    St7789Display& tft = static_cast<St7789Display&>(d);
+    
+    int cx = LCD_WIDTH / 2;
+    int cy = LCD_HEIGHT / 2;
+
+    // Séquence 1 : Studio MORFREDUS
+    tft.clear();
+    
+    // Lignes décoratives "Modernes" qui encadrent le nom
+    tft.drawLine(20, cy - 35, LCD_WIDTH - 20, cy - 35, C_ORANGE);
+    tft.drawLine(20, cy + 25, LCD_WIDTH - 20, cy + 25, C_ORANGE);
+    
+    tft.center(cy + 5, "morfredus", C_ORANGE, 2); // Police taille 2
+    
+    d.show();
+    delay(2000); // Temps de lecture
+
+    // Séquence 2 : Projet & Version
+    tft.clear();
+    tft.center(cy - 25, PROJECT_NAME, C_CYAN, 2);
+    tft.center(cy + 10, std::string("v") + PROJECT_VERSION, C_WHITE, 1);
+    tft.center(cy + 50, "Initialisation...", C_GREY, 1);
+    
+    d.show();
+    delay(1500);
+}
+
+void drawBootProgress_st7789(DisplayInterface& d, int step, int total, const std::string& msg) {
+    St7789Display& tft = static_cast<St7789Display&>(d);
+    tft.clear();
+
+    int cy = LCD_HEIGHT / 2;
+
+    // Rappel du titre
+    tft.center(40, PROJECT_NAME, C_CYAN, 1);
+
+    // Barre de progression
+    int barW = LCD_WIDTH - 60;
+    int barH = 14;
+    int barX = 30;
+    int barY = cy - 10;
+
+    // Dessin de la barre
+    tft.bar(barX, barY, barW, barH, step, total, C_GREEN);
+    
+    // Message de l'étape en cours
+    tft.center(cy + 20, msg, C_WHITE, 1);
+    
     d.show();
 }
 #endif

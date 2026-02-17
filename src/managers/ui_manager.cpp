@@ -26,7 +26,8 @@ void UiManager::update() {
     int diff = enc.getStepCount();
     if (diff != 0) {
         enc.clearQueue();
-
+        diff = -diff; // Inversion pour correspondre à la logique de navigation (sens horaire = page suivante)
+        
 #if defined(ESP32_S3_OLED)
         // Sur OLED, on inverse uniquement pour la navigation des pages
         // Pour le menu, on garde le sens naturel (Horaire = Descendre/Suivant)

@@ -1,5 +1,6 @@
 #if defined(ESP32_S3_OLED)
 #include "display_interface.h"
+#include "sh1106_display.h"
 #include <algorithm>
 #include <cctype>
 #include <float.h>
@@ -10,6 +11,7 @@
 #include "pages_sh1106.h"
 #include "../utils/logs.h"
 #include "../utils/system.h"
+#include <Arduino.h>
 
 // 1. Formate un float avec précision donnée
 std::string formatFloat(float value, int precision) {
@@ -241,5 +243,44 @@ void pageForecast_sh1106(DisplayInterface& d, ForecastManager& forecast, int vie
         }
     }
     d.show();
+}
+
+// --- Ecrans de démarrage (Splash & Boot) ---
+
+void drawSplashScreen_sh1106(DisplayInterface& d) {
+    Sh1106Display& disp = static_cast<Sh1106Display&>(d);
+    disp.clear();
+    
+    // Animation simple pour OLED
+    disp.center(20, "MORFREDUS");
+    disp.drawLine(10, 35, 118, 35);
+    
+    disp.show();
+    delay(2000);
+
+    disp.clear();
+    disp.center(15, PROJECT_NAME);
+    disp.center(30, std::string("v") + PROJECT_VERSION);
+    disp.center(50, "Initialisation...");
+    disp.show();
+    delay(1500);
+}
+
+void drawBootProgress_sh1106(DisplayInterface& d, int step, int total, const std::string& msg) {
+    Sh1106Display& disp = static_cast<Sh1106Display&>(d);
+    disp.clear();
+    
+    disp.center(10, PROJECT_NAME);
+    
+    // Barre de progression
+    int barW = 100;
+    int barH = 10;
+    int barX = (128 - barW) / 2;
+    int barY = 30;
+    
+    disp.bar(barX, barY, barW, barH, step, total);
+    
+    disp.center(50, msg);
+    disp.show();
 }
 #endif
