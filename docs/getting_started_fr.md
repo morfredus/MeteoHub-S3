@@ -1,6 +1,6 @@
 # Prise en main
 
-Version minimale valide : 1.0.59
+Version minimale valide : 1.0.60
 
 ## Objectif
 Ce guide aide un débutant à démarrer MeteoHub S3 depuis zéro jusqu’au premier upload réussi.

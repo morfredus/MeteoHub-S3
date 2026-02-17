@@ -1,7 +1,11 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.59
+Version minimale valide : 1.0.60
+
+## Version 1.0.60
+- **Correctif (LCD)** : Correction de l'échelle des graphiques sur écran ST7789. La courbe s'étire désormais dynamiquement sur toute la largeur de l'écran, garantissant que la dernière mesure est bien calée à droite.
+- **Refactorisation (UI)** : Simplification de la logique de l'encodeur rotatif. L'écran LCD utilise désormais le sens naturel (Horaire = Suivant), tandis que l'inversion spécifique à l'OLED est gérée de manière centralisée.
 
 ## Version 1.0.59
 - **Correctif** : Résolution d'un bug critique où les pages de l'interface utilisateur ne se chargeaient pas ou ne s'affichaient pas dans l'environnement LCD (ST7789). La logique de dessin des pages est maintenant correctement implémentée pour l'OLED et le LCD.
