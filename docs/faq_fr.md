@@ -27,10 +27,13 @@ Allez sur l'interface Web, cliquez sur l'icône disquette 💾 en bas de page. V
 ## Puis-je changer la vitesse de rafraîchissement des pages ?
 Oui, modifier `DASHBOARD_REFRESH_MS` dans `include/config.h`.
 
+
 ## Comment puis-je éviter la corruption des données ou la perte de l'historique ?
 La corruption du système de fichiers est rare mais peut survenir lors d'une coupure de courant.
 1.  **Prévention n°1 : Alimentation stable.** Utilisez une alimentation USB de bonne qualité et un câble fiable. C'est la cause la plus fréquente de problèmes.
-2.  **Récupération :** Si une corruption se produit, la version 1.0.76+ inclut un mode de récupération. Maintenez le bouton BOOT au démarrage pour formater la partition et repartir sur une base saine (l'historique sera perdu).
+2.  **Récupération facile (formatage d'urgence)** :
+	- Si l'appareil ne démarre plus ou redémarre en boucle, il est possible de forcer un formatage de la mémoire interne (LittleFS) sans ordinateur : débranchez l'alimentation, maintenez le bouton **BOOT** enfoncé, rebranchez l'alimentation, attendez le message de maintenance à l'écran puis relâchez le bouton. L'appareil effacera la mémoire et redémarrera proprement (toutes les données historiques seront perdues).
+	- Cette procédure est accessible à tout utilisateur, même débutant.
 3.  **Robustesse maximale (avancé) :** Pour les applications critiques, les alternatives les plus sûres sont de stocker les données sur une **carte SD** (nécessite une modification matérielle) ou de les envoyer vers un **service Cloud** (ex: ThingSpeak, broker MQTT), ce qui les met à l'abri de toute défaillance matérielle locale.
 
 Le firmware utilise déjà des techniques d'écriture robustes (ajout de données plutôt que réécriture complète) pour minimiser l'usure et les risques.

@@ -20,10 +20,13 @@ Approximately every 30 minutes.
 ## Can I change page refresh speed?
 Yes, adjust `DASHBOARD_REFRESH_MS` in `include/config.h`.
 
+
 ## How can I prevent data corruption or history loss?
 Filesystem corruption is rare but can happen during a power outage.
 1.  **Prevention #1: Stable Power.** Use a high-quality USB power supply and a reliable cable. This is the most common source of issues.
-2.  **Recovery:** If corruption occurs, version 1.0.76+ includes a recovery mode. Hold the BOOT button at startup to format the partition and start fresh (history will be lost).
+2.  **Easy recovery (emergency format):**
+	- If the device is stuck or keeps rebooting, you can force an emergency format of the internal memory (LittleFS) without a computer: unplug the power, hold the **BOOT** button, plug the power back in, wait for the maintenance message on the screen, then release the button. The device will erase the memory and reboot cleanly (all history data will be lost).
+	- This procedure is accessible to any user, even beginners.
 3.  **Maximum Robustness (Advanced):** For critical applications, the safest alternatives are to store data on an **SD card** (requires a hardware modification) or send it to a **Cloud service** (e.g., ThingSpeak, MQTT broker), which protects it from any local hardware failure.
 
 The firmware already uses robust writing techniques (appending data rather than full rewrites) to minimize wear and risks.

@@ -11,12 +11,27 @@ This guide helps a beginner start MeteoHub S3 from scratch up to the first succe
 
 The firmware automatically detects the display type at startup and adapts the interface and navigation. See Hardware Wiring for pin details.
 
-## Prerequisites
-- A Windows PC
-- Visual Studio Code
-- The PlatformIO extension in VS Code
-- An ESP32-S3-DevKitC-1-N16R8V board
-- A data-compatible USB cable
+
+## Required Hardware
+
+- **ESP32-S3-DevKitC-1-N16R8V board**
+- **OLED (HW-040 complete module)**:
+	- PCB with integrated OLED
+	- Rotary encoder (center button)
+	- Back and Confirm buttons soldered on PCB
+	- Integrated NeoPixel
+- **LCD (EC11 module only)**:
+	- TFT ST7789 display (240x240 or 240x320)
+	- EC11 rotary encoder (center button)
+	- Back and Confirm buttons (must be wired separately)
+- **Sensors**: AHT20 and/or BMP280
+- **Wiring**: Dupont wires, connectors, breadboard or soldering
+- **USB power**: data-compatible cable, stable power supply
+- **Windows PC**
+- **Visual Studio Code**
+- **PlatformIO extension**
+
+The OLED (HW-040) environment is easiest to assemble (all integrated on PCB). The LCD environment requires manual wiring of Back/Confirm buttons.
 
 ## 1) Open the Project
 1. Open VS Code.
@@ -57,11 +72,23 @@ After reboot, the OLED screen should display the boot phases:
 - Time Synchronization
 - System Ready
 
+
 ## Common First-Boot Issues
 - **No Wi-Fi**: Check SSID/password in `include/secrets.h`.
 - **No Forecast**: Check `OWM_API_KEY` and internet connection.
 - **No Display**: Check SDA/SCL wiring and OLED power.
 - **Upload Failed**: Check USB cable and selected COM port.
+
+> **If the device is stuck or keeps rebooting**
+>
+> You can force an emergency format of the internal memory (LittleFS) without a computer:
+> 1. Unplug the USB power.
+> 2. Hold down the **BOOT** button.
+> 3. Plug the USB power back in while keeping BOOT pressed.
+> 4. Wait for the maintenance message on the screen, then release the button.
+> 5. The device will erase the memory and reboot cleanly (all history data will be lost).
+
+This procedure requires no tools or software and allows any user to recover from a blocked state.
 
 ## Next Step
 Continue with Hardware Wiring and Configuration.
