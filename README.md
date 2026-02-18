@@ -1,7 +1,7 @@
 
 # MeteoHub S3
 
-Minimum valid version: 1.0.75
+Minimum valid version: 1.0.103
 
 ## Full Documentation
 - [Documentation Index](docs/index.md)
@@ -31,7 +31,8 @@ MeteoHub S3 is an ESP32-S3 PlatformIO project that displays local sensor data, w
 - NTP synchronization
 - Forecast and alerts retrieval (OpenWeatherMap)
 - Page-based UI with rotary encoder and buttons (OLED or LCD)
-- History persistence in LittleFS
+- **Web Interface**: Full dashboard, charts, system logs, and file manager (SD/Internal) accessible via browser (`http://meteohub.local`).
+- History persistence in LittleFS (cache) and SD Card (archive)
 - Status LED with NeoPixel (OLED) or on-screen alert (LCD)
 
 ## LCD vs OLED: Key Differences

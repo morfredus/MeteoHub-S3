@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logs Système - MeteoHub S3</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        #logContainer {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            padding: 15px;
+            border-radius: 8px;
+            height: 60vh;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            border: 1px solid #333;
+        }
+        .log-line { margin: 2px 0; border-bottom: 1px solid #2a2a2a; }
+        .log-E { color: #ff5555; font-weight: bold; } /* Error */
+        .log-W { color: #ffb86c; } /* Warning */
+        .log-I { color: #8be9fd; } /* Info */
+        .log-D { color: #6272a4; } /* Debug */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Logs Système</h1>
+            <div id="status">Connexion...</div>
+        </header>
+
+        <nav>
+            <a href="/">Tableau de bord</a>
+            <a href="/files.html">Fichiers</a>
+        </nav>
+
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <h2>Journal d'événements</h2>
+                <button onclick="fetchLogs()" class="btn-small">Rafraîchir</button>
+            </div>
+            <div id="logContainer">Chargement...</div>
+        </div>
+
+        <footer>
+        </footer>
+    </div>
+
+    <script src="footer.js"></script>
+    <script>
+        function fetchLogs() {
+            fetch('/api/logs')
+                .then(r => r.text())
+                .then(text => {
+                    const container = document.getElementById('logContainer');
+                    container.innerHTML = '';
+                    const lines = text.split('\n');
+                    lines.forEach(line => {
+                        if(!line.trim()) return;
+                        const div = document.createElement('div');
+                        div.className = 'log-line';
+                        if(line.includes('[E]')) div.classList.add('log-E');
+                        else if(line.includes('[W]')) div.classList.add('log-W');
+                        else if(line.includes('[I]')) div.classList.add('log-I');
+                        div.textContent = line;
+                        container.appendChild(div);
+                    });
+                    container.scrollTop = container.scrollHeight; // Auto scroll bottom
+                });
+        }
+        document.addEventListener('DOMContentLoaded', fetchLogs);
+        // Auto refresh every 5s
+        setInterval(fetchLogs, 5000);
+    </script>
+</body>
+</html>

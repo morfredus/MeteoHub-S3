@@ -12,6 +12,9 @@
 // Activer le test de ping
 #define ENABLE_PING_TEST     1
 
+// Anti-rebond pour les boutons
+#define BUTTON_GUARD_MS      200
+
 // Nom mDNS pour accès local
 #define WEB_MDNS_HOSTNAME "meteohub" // Accessible via http://meteohub.local
 

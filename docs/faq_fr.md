@@ -1,6 +1,6 @@
 # FAQ
 
-Version minimale valide : 1.0.75
+Version minimale valide : 1.0.104
 
 ## Internet est-il obligatoire ?
 Oui, pour les mises à jour de prévisions et d’alertes. Les pages capteurs locales restent utilisables sans internet.
@@ -19,13 +19,22 @@ Connectez-vous au même réseau Wi-Fi et ouvrez `http://meteohub.local` dans vot
 
 ## Quelle est la capacité de l'historique ?
 - **Court terme (Graphiques)** : ~24h de données haute résolution (1 point/min) stockées en RAM et sauvegardées.
-- **Long terme** : Jusqu'à 2 ans d'archives stockées dans la mémoire interne (fichiers mensuels, 1 point/15 min).
+- **Long terme** : Illimité (selon la taille de la carte SD) sous forme de fichiers CSV journaliers.
 
 ## Comment récupérer mes données ?
-Allez sur l'interface Web, cliquez sur l'icône dossier 📂 en bas de page. Vous pouvez télécharger les fichiers `.dat` (format binaire) ou les logs.
+Allez sur l'interface Web, cliquez sur l'icône disquette 💾 en bas de page. Vous pouvez naviguer dans la carte SD et télécharger les fichiers CSV (`/history/YYYY-MM-DD.csv`).
 
 ## Puis-je changer la vitesse de rafraîchissement des pages ?
 Oui, modifier `DASHBOARD_REFRESH_MS` dans `include/config.h`.
+
+## Comment puis-je éviter la corruption des données ou la perte de l'historique ?
+La corruption du système de fichiers est rare mais peut survenir lors d'une coupure de courant.
+1.  **Prévention n°1 : Alimentation stable.** Utilisez une alimentation USB de bonne qualité et un câble fiable. C'est la cause la plus fréquente de problèmes.
+2.  **Récupération :** Si une corruption se produit, la version 1.0.76+ inclut un mode de récupération. Maintenez le bouton BOOT au démarrage pour formater la partition et repartir sur une base saine (l'historique sera perdu).
+3.  **Robustesse maximale (avancé) :** Pour les applications critiques, les alternatives les plus sûres sont de stocker les données sur une **carte SD** (nécessite une modification matérielle) ou de les envoyer vers un **service Cloud** (ex: ThingSpeak, broker MQTT), ce qui les met à l'abri de toute défaillance matérielle locale.
+
+Le firmware utilise déjà des techniques d'écriture robustes (ajout de données plutôt que réécriture complète) pour minimiser l'usure et les risques.
+
 
 ## Comment changer la résolution de l'écran LCD (240x240 vs 240x320) ?
 Modifiez les constantes `LCD_WIDTH` et `LCD_HEIGHT` dans `include/config.h`. L'interface s'adaptera automatiquement à la nouvelle résolution au prochain démarrage.
