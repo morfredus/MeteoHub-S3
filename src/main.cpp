@@ -1,16 +1,20 @@
 #include <string>
 #include <time.h>
 #include <Arduino.h>
+#include <FS.h>
+#include <LittleFS.h>
 
 #include "managers/forecast_manager.h"
 #include "managers/ui_manager.h"
 #include "managers/wifi_manager.h"
 #include "managers/web_manager.h"
 #include "managers/history_manager.h"
+#include "managers/sd_manager.h"
 #include "modules/neopixel_status.h"
 #include "modules/sensors.h"
 #if defined(ESP32_S3_OLED)
 #include "modules/sh1106_display.h"
+#include "modules/pages_sh1106.h"
 #endif
 #if defined(ESP32_S3_LCD)
 #include "modules/st7789_display.h"
@@ -25,6 +29,7 @@ SensorManager sensors;
 ForecastManager forecast;
 WebManager webManager;
 HistoryManager history;
+SdManager sdCard;
 
 void setup() {
     Serial.begin(115200);
@@ -38,6 +43,55 @@ void setup() {
 #endif
     display->begin();
     neoInit();
+
+    // --- Maintenance : Formatage LittleFS si BOOT maintenu ---
+    pinMode(0, INPUT_PULLUP);
+    if (digitalRead(0) == LOW) {
+        delay(100); // Debounce
+        if (digitalRead(0) == LOW) {
+            display->clear();
+            // Utilisation de la méthode center de base (compatible OLED/LCD)
+            display->center(30, "MAINTENANCE");
+            display->center(50, "Maintenir BOOT");
+            display->center(70, "pour Formater");
+            display->show();
+            
+            delay(3000);
+            
+            if (digitalRead(0) == LOW) {
+                display->clear();
+                display->center(50, "Formatage...");
+                display->show();
+                
+                LittleFS.begin(true);
+                LittleFS.format();
+                
+                display->clear();
+                display->center(50, "Redemarrage...");
+                display->show();
+                delay(1000);
+                ESP.restart();
+            }
+        }
+    }
+
+    // Montage du système de fichiers
+    bool fsMounted = true;
+    if (!LittleFS.begin(false)) { // Essai sans formatage d'abord
+        if (!LittleFS.begin(true)) { // Formatage si échec
+            LOG_ERROR("LittleFS Mount Failed");
+            fsMounted = false;
+        }
+    }
+    
+    if (fsMounted) {
+        if (!LittleFS.exists("/history")) {
+            LittleFS.mkdir("/history");
+        }
+    }
+
+    // Initialisation Carte SD (Optionnel)
+    sdCard.begin();
 
     // Etape 1 : Splash Screen (MORFREDUS + Projet)
 #if defined(ESP32_S3_LCD)
@@ -110,13 +164,13 @@ void setup() {
 #endif
     delay(800);
     
-    history.begin();
+    history.begin(&sdCard); // Injection de la dépendance SD
     
     // Lancement des modules principaux
     forecast.begin();
-    webManager.begin(history);
+    webManager.begin(history, sdCard);
 
-    ui.begin(*display, wifi, sensors, forecast, history);
+    ui.begin(*display, wifi, sensors, forecast, history, sdCard);
 }
 
 void loop() {
@@ -150,7 +204,17 @@ void loop() {
         lastHistoryUpdate = millis();
         SensorData data = sensors.read();
         if (data.valid) {
-            history.add(data.temperature, data.humidity, data.pressure);
+            // Filtrage des valeurs aberrantes (bruit capteur)
+            bool valuesOk = true;
+            if (data.temperature < -40.0f || data.temperature > 85.0f) valuesOk = false;
+            if (data.humidity < 0.0f || data.humidity > 100.0f) valuesOk = false;
+            if (data.pressure < 800.0f || data.pressure > 1200.0f) valuesOk = false;
+
+            if (valuesOk) {
+                history.add(data.temperature, data.humidity, data.pressure);
+            } else {
+                LOG_WARNING("Valeurs capteurs hors limites ignorees");
+            }
         }
     }
 }

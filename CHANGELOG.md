@@ -1,7 +1,99 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.60
+Minimum valid version: 1.0.93
+
+## Version 1.0.104
+- **Documentation**: Complete revision of user guides and FAQ to accurately reflect the hybrid storage strategy (SD primary, LittleFS cache) and current Web UI features.
+
+## Version 1.0.103
+- **Documentation**: Global update and verification of user documentation (Guides, FAQ, Architecture) to ensure consistency with latest features (Web UI, SD, Logs).
+
+## Version 1.0.102
+- **Web UI**: Unified footer across all pages with a single "Floppy" icon for the file manager and "Scroll" icon for logs.
+- **UI (OLED)**: Added log scrolling functionality on the OLED screen using the "Confirm" button.
+
+## Version 1.0.101
+- **Refactoring (Web)**: Centralized footer code into `footer.js` for easier maintenance and consistency across all pages.
+- **Feature (Web)**: Added buttons in the file manager to easily switch between internal memory and SD card.
+
+## Version 1.0.100
+- **Web UI (Logs)**: New `/logs` page with syntax highlighting (Info/Warn/Error) and auto-refresh.
+- **Web UI (Files)**: Major file manager upgrade with folder navigation, breadcrumbs, and full SD card support.
+- **Web UI (Access)**: Added a "Floppy Disk" icon for direct SD file access in the footer.
+
+## Version 1.0.99
+- **Feature (Web)**: Added a `/logs` page accessible via a footer icon to view system logs in real-time.
+- **Fix (SD)**: Automatic check for `/history` folder existence before writing to prevent errors after formatting or card swapping.
+
+## Version 1.0.98
+- **UI (Safety)**: Added confirmation screens for "Clear Logs" and "Clear History" actions in the system menu to prevent accidental deletions.
+- **Web UI**: Simplified SD card access shortcut to `/sd` (redirects to `/files.html?fs=sd`).
+
+## Version 1.0.97
+- **Improvement (Web)**: Added a `/sd-files` shortcut redirecting to the file manager in SD mode (`/files.html?fs=sd`) and logged the link at startup.
+- **Documentation**: Updated power supply advice (3.3V vs 5V for SD module).
+
+## Version 1.0.96
+- **Documentation**: Added a troubleshooting note regarding potential interference between the SD card (power spikes) and I2C sensors, explaining the source of outlier values.
+
+## Version 1.0.95
+- **Fix (Sensors)**: Added filtering of outlier values (temperature, humidity, pressure) before saving to history to prevent data pollution from read errors.
+- **Improvement (Web)**: Added a `/files` redirect to `/files.html` and logged the file manager URL at startup for easier access.
+
+## Version 1.0.94
+- **Fix (Compilation)**: Synchronized the `web_manager.h` header file with its implementation to resolve compilation errors related to SD card management in the web interface.
+
+## Version 1.0.93
+- **Feature (Storage)**: The SD card is now the primary storage for high-resolution history, with daily CSV files (`/history/YYYY-MM-DD.csv`).
+- **Feature (Web UI)**: The web file manager now allows browsing and managing files on both the SD card and the internal storage.
+- **Stability**: LittleFS archiving is kept as a 24h cache for fast reboots.
+## Version 1.0.92
+- **Documentation**: Added a troubleshooting section for I2C errors (`i2cRead returned Error -1`) and unexpected reboots, highlighting likely hardware causes (wiring, power supply).
+
+## Version 1.0.91
+- **UI**: Inverted rotary encoder direction for menu navigation for a more intuitive experience (clockwise = up).
+
+## Version 1.0.90
+- **Fix (SD Crash)**: Complete rewrite of the format function to be self-contained and robust, manually handling SPI bus initialization and memory allocation to prevent "Guru Meditation Error" crashes.
+
+## Version 1.0.89
+- **Fix (SD Crash)**: Used low-level `sdcard_init` functions for formatting, preventing the crash caused by `SD.begin` mount failure.
+
+## Version 1.0.88
+- **Fix (Crash)**: Resolved "Guru Meditation Error" crash during SD card formatting by forcing a hardware re-initialization before the operation.
+- **Fix (UI)**: Simplified and stabilized the rotary encoder logic for consistent menu and page navigation on both OLED and LCD.
+
+## Version 1.0.87
+- **Fix (Compilation)**: Definitive fix for `getHeight` error in `ui_manager.cpp` by replacing the method call with a local constant defined by the environment (OLED/LCD).
+
+## Version 1.0.86
+- **Fix (Compilation)**: Resolved `'getHeight' is not a member of 'DisplayInterface'` compilation error by using environment-specific screen height constants.
+
+## Version 1.0.85
+- **Fix (UI)**: Fixed the SD card formatting process, which no longer reboots the device and now displays a success or failure message.
+- **Feature (UI)**: The system menu is now scrollable on the OLED screen, making the "Format SD" option accessible.
+- **Fix (UI)**: Enabled the "Clear Logs" function in the system menu.
+
+## Version 1.0.84
+- **Fix (Compilation)**: Resolved multiple compilation errors caused by the missing `BUTTON_GUARD_MS` definition and missing page headers (`pages_sh1106.h`, `pages_st7789.h`) in `main.cpp` and `ui_manager.cpp`.
+
+## Version 1.0.83
+- **Fix (Compilation)**: Fixed `display_interface.h` include path in `ui_manager.h` to resolve "No such file or directory" compilation error.
+
+## Version 1.0.82
+- **Feature (Maintenance)**: Added a "Format SD" option to the system menu to format the SD card (as FAT32) directly from the device. A confirmation step has been added to prevent accidental formatting.
+
+## Version 1.0.78
+- **Feature (Hardware)**: Added initial SD card support via `SdManager`.
+- **Configuration**: Usage of `SD_CS_PIN`, `SPI_SCK_PIN`, `SPI_MISO_PIN`, `SPI_MOSI_PIN` definitions from `board_config.h`.
+
+## Version 1.0.77
+- **Documentation**: Added explanations on filesystem corruption (causes, prevention) and alternative storage methods (SD card, Cloud) in the FAQ and Maintenance guides.
+
+## Version 1.0.76
+- **Fix (System)**: Added filesystem (LittleFS) recovery procedure. Holding the BOOT button at startup now allows formatting memory in case of corruption.
+- **Stability**: Explicit initialization of LittleFS and creation of `/history` folder at startup to prevent write errors and reboot loops (WDT).
 
 ## Version 1.0.75
 - **Documentation**: Global documentation update (README, Guides, FAQ) to include LCD 240x320 support and new boot screens. Bilingual synchronization.

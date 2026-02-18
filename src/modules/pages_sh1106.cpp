@@ -79,12 +79,16 @@ void pageSystem_sh1106(DisplayInterface& d, int pageIndex, int pageCount) {
 }
 
 // 6. Page logs : affiche les derniers logs
-void pageLogs_sh1106(DisplayInterface& d, int pageIndex, int pageCount) {
+void pageLogs_sh1106(DisplayInterface& d, int pageIndex, int pageCount, int scrollOffset) {
 	d.clear();
 	d.text(0, 0, getHeader("Logs", pageIndex, pageCount));
 
+    int totalLogs = getLogCount();
+    // Sécurité si le buffer a changé entre temps
+    if (scrollOffset >= totalLogs) scrollOffset = 0;
+
 	int y = 12;
-	for (int i = 0; i < getLogCount(); i++) {
+	for (int i = scrollOffset; i < totalLogs; i++) {
 		d.text(0, y, getLog(i));
 		y += 10;
 		if (y > 54) break;

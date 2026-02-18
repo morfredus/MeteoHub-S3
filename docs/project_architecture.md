@@ -1,7 +1,7 @@
 
 # Project Architecture
 
-Minimum valid version: 1.0.30
+Minimum valid version: 1.0.104
 
 ## Goal
 Explain how source code is organized, how OLED and LCD environments are managed, and how data flows across the system.
@@ -48,8 +48,13 @@ Explain how source code is organized, how OLED and LCD environments are managed,
 5. NeoPixel (OLED) or on-screen alert (LCD) reflects connection/alert state.
 
 ## Persistence model
-- NVS (Preferences): last active page index
-- LittleFS: historical sensor records
+- **NVS (Preferences)**: Non-volatile storage for small key-value data (e.g., last active page index).
+- **LittleFS**: Filesystem on the internal flash memory for larger data.
+  - **Recent History**: The last 24 hours are appended to a file (`/history/recent.dat`) to minimize flash wear.
+  - **Role**: Serves as a fast cache for reboot recovery and backup storage for logs.
+- **SD Card**: Primary storage for long-term archiving.
+  - **Format**: Daily CSV files (`/history/YYYY-MM-DD.csv`).
+  - **Benefit**: High capacity, easy PC readability, increased robustness compared to internal flash for frequent writes.
 
 ## External dependencies
 - OLED driver (SH1106) and/or LCD driver (Adafruit ST7789)

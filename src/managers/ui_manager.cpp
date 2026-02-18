@@ -3,13 +3,20 @@
 #include <Arduino.h>
 #include "board_config.h"
 #include "config.h"
+#if defined(ESP32_S3_OLED)
+#include "modules/pages_sh1106.h"
+#endif
+#if defined(ESP32_S3_LCD)
+#include "modules/pages_st7789.h"
+#endif
 
-void UiManager::begin(DisplayInterface& display, WifiManager& wifiMgr, SensorManager& sensorMgr, ForecastManager& forecastMgr, HistoryManager& historyMgr) {
+void UiManager::begin(DisplayInterface& display, WifiManager& wifiMgr, SensorManager& sensorMgr, ForecastManager& forecastMgr, HistoryManager& historyMgr, SdManager& sdMgr) {
     d = &display;
     wifi = &wifiMgr;
     sensors = &sensorMgr;
     forecast = &forecastMgr;
     history = &historyMgr;
+    sd = &sdMgr;
 
     enc.begin();
     
@@ -26,24 +33,31 @@ void UiManager::update() {
     int diff = enc.getStepCount();
     if (diff != 0) {
         enc.clearQueue();
-        diff = -diff; // Inversion pour correspondre à la logique de navigation (sens horaire = page suivante)
         
+        // La logique de l'encodeur est inversée sur l'OLED par rapport au LCD.
+        // Nous normalisons ici : une rotation horaire donne toujours un diff positif.
 #if defined(ESP32_S3_OLED)
-        // Sur OLED, on inverse uniquement pour la navigation des pages
-        // Pour le menu, on garde le sens naturel (Horaire = Descendre/Suivant)
-        if (!menuMode) {
-            diff = -diff;
-        }
+        diff = -diff;
 #endif
 
         if (menuMode) {
-            menuIndex += diff;
+            menuIndex -= diff; // Inversion du sens pour le menu (horaire = monter)
             if (menuIndex < 0) menuIndex = MENU_COUNT - 1;
             if (menuIndex >= MENU_COUNT) menuIndex = 0;
+
+            #if defined(ESP32_S3_OLED)
+            const int MENU_VISIBLE_ITEMS = 4;
+            if (menuIndex < menuScrollOffset) {
+                menuScrollOffset = menuIndex;
+            } else if (menuIndex >= menuScrollOffset + MENU_VISIBLE_ITEMS) {
+                menuScrollOffset = menuIndex - MENU_VISIBLE_ITEMS + 1;
+            }
+            #endif
         } else {
             page += diff;
             if (page < 0) page = PAGE_COUNT - 1;
             if (page >= PAGE_COUNT) page = 0;
+            logScrollLine = 0; // Reset scroll logs au changement de page
         }
         drawPage();
         lastRefresh = millis();
@@ -76,6 +90,93 @@ void UiManager::handleButtons() {
     // Anti-rebond basique
     if (millis() < ignoreButtonsUntilMs) return;
 
+    // --- Gestion des confirmations (Format, Logs, Hist) ---
+    // On utilise une logique commune : Encoder/Confirm = OUI, Back = NON
+    
+    // 1. Confirmation Format SD
+    if (confirmFormatMode) {
+        if (btnEncoder || btnConfirm) {
+            ignoreButtonsUntilMs = millis() + BUTTON_GUARD_MS;
+            d->clear();
+#if defined(ESP32_S3_LCD)
+            int h = LCD_HEIGHT;
+#else
+            int h = 64;
+#endif
+            d->center(h / 2 - 10, "Formatage SD...");
+            d->center(h / 2 + 10, "Veuillez patienter.");
+            d->show();
+            
+            bool success = sd->format();
+            
+            d->clear();
+            if (success) {
+                d->center(h / 2, "Formatage reussi !");
+            } else {
+                d->center(h / 2, "Echec du formatage.");
+            }
+            d->show();
+            delay(2000);
+
+            confirmFormatMode = false;
+            drawPage();
+            return;
+        }
+        if (btnBack) {
+            confirmFormatMode = false;
+            drawPage(); // Go back to normal menu
+            ignoreButtonsUntilMs = millis() + BUTTON_GUARD_MS;
+            return;
+        }
+        return; // Don't process other buttons
+    }
+
+    // 2. Confirmation Clear Logs
+    if (confirmClearLogsMode) {
+        if (btnEncoder || btnConfirm) {
+            clearLogs();
+            confirmClearLogsMode = false;
+            d->clear();
+#if defined(ESP32_S3_LCD)
+            d->center(LCD_HEIGHT / 2, "Logs effaces !", C_GREEN, 1);
+#else
+            d->center(32, "Logs effaces !");
+#endif
+            d->show();
+            delay(1000);
+            drawPage();
+        } else if (btnBack) {
+            confirmClearLogsMode = false;
+            drawPage();
+        }
+        if (btnEncoder || btnConfirm || btnBack) ignoreButtonsUntilMs = millis() + BUTTON_GUARD_MS;
+        return;
+    }
+
+    // 3. Confirmation Clear History
+    if (confirmClearHistMode) {
+        if (btnEncoder || btnConfirm) {
+            history->clearHistory();
+            confirmClearHistMode = false;
+            d->clear();
+#if defined(ESP32_S3_LCD)
+            d->center(LCD_HEIGHT / 2, "Historique efface !", C_GREEN, 1);
+#else
+            d->center(32, "Historique efface !");
+#endif
+            d->show();
+            delay(1000);
+            drawPage();
+        } else if (btnBack) {
+            confirmClearHistMode = false;
+            drawPage();
+        }
+        if (btnEncoder || btnConfirm || btnBack) ignoreButtonsUntilMs = millis() + BUTTON_GUARD_MS;
+        return;
+    }
+
+    // --- Navigation normale ---
+
     if (btnBack) {
         if (menuMode) {
             menuMode = false;
@@ -99,13 +200,18 @@ void UiManager::handleButtons() {
                     ESP.restart(); 
                     break;
                 case MENU_CLEAR_LOGS: 
-                    // clearLogs(); // TODO: Implementer dans logs.h
-                    menuMode = false;
-                    break;
+                    confirmClearLogsMode = true;
+                    drawPage();
+                    return;
                 case MENU_CLEAR_HISTORY: 
-                    history->clear();
-                    menuMode = false;
-                    break;
+                    confirmClearHistMode = true;
+                    drawPage();
+                    return;
+                case MENU_FORMAT_SD:
+                    confirmFormatMode = true;
+                    ignoreButtonsUntilMs = millis() + BUTTON_GUARD_MS;
+                    drawPage();
+                    return; // Return to show confirmation screen immediately
             }
             ignoreButtonsUntilMs = millis() + BUTTON_GUARD_MS;
             drawPage();
@@ -125,6 +231,12 @@ void UiManager::handleButtons() {
                 forecastViewIndex = (forecastViewIndex + 1) % 3;
                 lastForecastViewSwitch = millis();
                 drawPage();
+            } else if (page == PAGE_LOGS) {
+                // Défilement des logs
+                logScrollLine++;
+                // Si on dépasse la fin, on boucle au début
+                if (logScrollLine >= getLogCount()) logScrollLine = 0;
+                drawPage();
             }
             // Sur les autres pages, validation future (rien pour l'instant)
             ignoreButtonsUntilMs = millis() + BUTTON_GUARD_MS;
@@ -133,16 +245,58 @@ void UiManager::handleButtons() {
 }
 
 void UiManager::drawPage() {
+    // Ecrans de confirmation
+    if (confirmClearLogsMode || confirmClearHistMode || confirmFormatMode) {
+        d->clear();
+        std::string title = "CONFIRMER";
+        std::string msg = confirmFormatMode ? "Formater SD ?" : (confirmClearLogsMode ? "Effacer Logs ?" : "Effacer Hist ?");
+        
+#if defined(ESP32_S3_OLED)
+        d->center(10, title);
+        d->center(30, msg);
+        d->text(0, 50, "Clic=OK, Back=Non");
+#else
+        d->center(60, title, C_RED, 2);
+        d->center(120, msg, C_WHITE, 1);
+        d->center(180, "Clic = OK / Back = Non", C_GREY, 1);
+#endif
+        d->show();
+        return;
+    }
+
+    if (confirmFormatMode) {
+        d->clear();
+#if defined(ESP32_S3_OLED)
+        d->center(10, "CONFIRMER");
+        d->center(30, "Formatage SD ?");
+        d->text(0, 50, "Clic=OK, Back=Annuler");
+#else
+        d->center(60, "CONFIRMER", C_RED, 2);
+        d->center(120, "Formater la carte SD ?", C_WHITE, 1);
+        d->center(180, "Clic = OK / Back = Annuler", C_GREY, 1);
+#endif
+        d->show();
+        return;
+    }
+
     if (menuMode) {
         // drawMenu(); // Simplification pour l'exemple
         d->clear();
 #if defined(ESP32_S3_OLED)
         // Layout compact pour OLED 128x64
+        const char* itemNames[] = { "Retour", "Reboot", "Clear Logs", "Clear Hist", "Format SD" };
+        const int MENU_VISIBLE_ITEMS = 4;
+
         d->center(0, "MENU");
-        d->text(0, 16, (menuIndex == MENU_EXIT) ? "> Retour" : "  Retour");
-        d->text(0, 28, (menuIndex == MENU_REBOOT) ? "> Reboot" : "  Reboot");
-        d->text(0, 40, (menuIndex == MENU_CLEAR_LOGS) ? "> Clear Logs" : "  Clear Logs");
-        d->text(0, 52, (menuIndex == MENU_CLEAR_HISTORY) ? "> Clear Hist" : "  Clear Hist");
+
+        for (int i = 0; i < MENU_VISIBLE_ITEMS; i++) {
+            int itemIndex = menuScrollOffset + i;
+            if (itemIndex >= MENU_COUNT) break;
+
+            std::string line = (itemIndex == menuIndex) ? "> " : "  ";
+            line += itemNames[itemIndex];
+            d->text(0, 16 + i * 12, line);
+        }
 #else
         // Layout aere pour LCD
         d->center(20, "MENU");
@@ -150,6 +304,7 @@ void UiManager::drawPage() {
         d->text(20, 90, (menuIndex == MENU_REBOOT) ? "> Reboot" : "  Reboot");
         d->text(20, 120, (menuIndex == MENU_CLEAR_LOGS) ? "> Clear Logs" : "  Clear Logs");
         d->text(20, 150, (menuIndex == MENU_CLEAR_HISTORY) ? "> Clear Hist" : "  Clear Hist");
+        d->text(20, 180, (menuIndex == MENU_FORMAT_SD) ? "> Format SD" : "  Format SD", sd->isAvailable() ? C_WHITE : C_DARKGREY);
 #endif
         d->show();
         return;
@@ -164,7 +319,7 @@ void UiManager::drawPage() {
         case PAGE_GRAPH_HUM: pageGraph_sh1106(*d, *history, 1, page + 1, pCount); break;
         case PAGE_GRAPH_PRES: pageGraph_sh1106(*d, *history, 2, page + 1, pCount); break;
         case PAGE_NETWORK: pageNetwork_sh1106(*d, *wifi, page + 1, pCount); break;
-        case PAGE_LOGS: pageLogs_sh1106(*d, page + 1, pCount); break;
+        case PAGE_LOGS: pageLogs_sh1106(*d, page + 1, pCount, logScrollLine); break;
         case PAGE_SYSTEM: pageSystem_sh1106(*d, page + 1, pCount); break;
     }
 #elif defined(ESP32_S3_LCD)

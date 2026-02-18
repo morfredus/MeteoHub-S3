@@ -1,11 +1,7 @@
-#ifndef WEB_MANAGER_H
-#define WEB_MANAGER_H
-
-#include <Arduino.h>
+#pragma once
 #include <ESPAsyncWebServer.h>
-#include <ArduinoJson.h>
-#include "config.h"
 #include "managers/history_manager.h"
+#include "managers/sd_manager.h"
 
 class WebManager {
 public:
@@ -15,11 +11,9 @@ public:
 
 private:
     AsyncWebServer _server;
-    
-    void _setupRoutes();
-    void _setupApi();
     HistoryManager* _history = nullptr;
     SdManager* _sd = nullptr;
-};
 
-#endif // WEB_MANAGER_H
+    void _setupRoutes();
+    void _setupApi();
+};
