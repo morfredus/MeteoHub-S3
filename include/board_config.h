@@ -26,6 +26,15 @@
 #define ENCODER_B_PIN      5
 #define ENCODER_BTN_PIN    6
 
+// ------------------------------------
+// Module SD (SPI secondaire SAFE)
+// ------------------------------------
+#define SD_CS_PIN    10
+#define SD_SCK_PIN   12
+#define SD_MOSI_PIN  11
+#define SD_MISO_PIN  13
+
+
 // -------------------------------------------------------------------
 // Configuration conditionnelle selon l'environnement PlatformIO
 // -------------------------------------------------------------------

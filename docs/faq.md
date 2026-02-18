@@ -1,6 +1,6 @@
 # FAQ
 
-Minimum valid version: 1.0.30
+Minimum valid version: 1.0.104
 
 ## Is internet required?
 Yes, for forecast and alert updates. Local sensor pages still work without internet.
@@ -19,6 +19,15 @@ Approximately every 30 minutes.
 
 ## Can I change page refresh speed?
 Yes, adjust `DASHBOARD_REFRESH_MS` in `include/config.h`.
+
+## How can I prevent data corruption or history loss?
+Filesystem corruption is rare but can happen during a power outage.
+1.  **Prevention #1: Stable Power.** Use a high-quality USB power supply and a reliable cable. This is the most common source of issues.
+2.  **Recovery:** If corruption occurs, version 1.0.76+ includes a recovery mode. Hold the BOOT button at startup to format the partition and start fresh (history will be lost).
+3.  **Maximum Robustness (Advanced):** For critical applications, the safest alternatives are to store data on an **SD card** (requires a hardware modification) or send it to a **Cloud service** (e.g., ThingSpeak, MQTT broker), which protects it from any local hardware failure.
+
+The firmware already uses robust writing techniques (appending data rather than full rewrites) to minimize wear and risks.
+
 
 
 ## Does the project support both OLED and LCD displays?

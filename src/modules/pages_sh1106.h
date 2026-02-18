@@ -7,7 +7,7 @@
 
 void pageNetwork_sh1106(DisplayInterface& d, WifiManager& wifi, int pageIndex, int pageCount);
 void pageSystem_sh1106(DisplayInterface& d, int pageIndex, int pageCount);
-void pageLogs_sh1106(DisplayInterface& d, int pageIndex, int pageCount);
+void pageLogs_sh1106(DisplayInterface& d, int pageIndex, int pageCount, int scrollOffset = 0);
 void pageWeather_sh1106(DisplayInterface& d, SensorManager& sensors, int pageIndex, int pageCount);
 void pageGraph_sh1106(DisplayInterface& d, HistoryManager& history, int type, int pageIndex, int pageCount);
 void pageForecast_sh1106(DisplayInterface& d, ForecastManager& forecast, int view, int pageIndex, int pageCount);

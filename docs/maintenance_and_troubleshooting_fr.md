@@ -1,6 +1,6 @@
 # Maintenance et dépannage
 
-Version minimale valide : 1.0.75
+Version minimale valide : 1.0.103
 
 ## Objectif
 Fournir des étapes de reprise pratiques lorsque le dashboard ne se comporte pas comme prévu.
@@ -52,6 +52,42 @@ Vérifier :
 - Redémarrer
 - Effacer les logs
 - Effacer l’historique
+- Formater la carte SD (si présente)
+
+### 7) Redémarrages en boucle ou blocage au démarrage (Watchdog Triggered)
+**Symptômes** : L'appareil redémarre en boucle, les logs affichent `Task watchdog got triggered` et/ou des erreurs `vfs_api.cpp:105] open(): ... does not exist, no permits for creation`. L'interface web ne répond plus.
+
+**Cause** : Le système de fichiers (LittleFS) est très probablement corrompu. Cela arrive le plus souvent après une coupure de courant ou une déconnexion USB brutale pendant que l'appareil écrivait des données (historique, logs).
+
+**Solution de récupération** :
+1.  Téléversez la version 1.0.76 ou supérieure.
+2.  Débranchez l'appareil.
+3.  Rebranchez-le tout en **maintenant le bouton BOOT (GPIO 0) enfoncé**.
+4.  L'écran affichera un message de maintenance. Continuez de maintenir le bouton pendant 3 secondes jusqu'à ce que le formatage commence.
+5.  Relâchez le bouton. L'appareil va formater la mémoire (ce qui efface les données corrompues, y compris l'historique) et redémarrer proprement.
+
+### 8) Erreurs I2C (`i2cRead returned Error -1`) et redémarrages inattendus
+**Symptômes** : Les logs affichent des erreurs `i2cRead returned Error -1` et/ou `Bus already started in Master Mode`. L'appareil peut redémarrer de manière inattendue, parfois avec un message `Reason: 8 - ASSOC_LEAVE` dans les logs Wi-Fi.
+
+**Causes et Solutions** :
+- **`Bus already started...`** : C'est un avertissement normal et sans danger. Il apparaît car plusieurs composants tentent d'initialiser le bus I2C. Vous pouvez l'ignorer.
+- **`i2cRead returned Error -1`** : C'est une erreur matérielle. Cela signifie qu'un capteur (AHT20 ou BMP280) ne répond pas.
+    - **Vérifiez le câblage** des broches SDA, SCL, VCC et GND de vos capteurs.
+    - **Vérifiez l'alimentation** : Une alimentation USB faible ou un câble de mauvaise qualité peuvent causer des baisses de tension qui provoquent ces erreurs. Essayez un autre port USB, un autre câble, ou une alimentation murale dédiée.
+- **Redémarrage inattendu (`ASSOC_LEAVE`)** : Le redémarrage est souvent une conséquence de l'instabilité causée par le problème matériel ci-dessus. Une alimentation instable peut perturber à la fois les capteurs et le module Wi-Fi, conduisant à une déconnexion et un redémarrage. **Résoudre le problème matériel I2C résout généralement le redémarrage.**
+
+### 9) Valeurs de capteurs aberrantes (pics ou chutes soudaines)
+**Symptômes** : Les graphiques montrent des pics soudains et irréalistes (ex: température qui saute à -140°C ou +80°C) ou l'humidité qui passe à 0% ou 100% brièvement.
+
+**Cause probable** : Interférences électriques, souvent liées à l'ajout d'un module gourmand comme une **carte SD**.
+- Les écritures sur carte SD génèrent des pics de consommation de courant.
+- Ces pics peuvent créer de brèves chutes de tension sur le rail 3.3V.
+- Les capteurs I2C sont sensibles à ces fluctuations et peuvent renvoyer des données corrompues.
+
+**Solutions** :
+1. **Alimentation 3.3V** : Si votre module SD le permet, alimentez-le en 3.3V plutôt qu'en 5V. Cela évite le régulateur interne du module (souvent bruyant) et aligne les niveaux logiques avec l'ESP32.
+2. **Condensateur** : Ajoutez un condensateur de découplage (ex: 100µF) sur l'alimentation 3.3V près des capteurs ou du module SD.
+3. **Logiciel** : Le firmware (v1.0.95+) intègre un filtre logiciel qui ignore ces valeurs aberrantes.
 
 ## Workflow de mise à jour sûr
 1. Sauvegarder les changements.

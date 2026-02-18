@@ -1,32 +1,31 @@
 # Documentation Index
 
-Minimum valid version: 1.0.30
+Minimum valid version: 1.0.103
 
-
-## OLED/LCD environments
-All documentation covers both OLED (SH1106) and LCD (ST7789) environments. Navigation, wiring, and UI differences are explained in each section.
+## OLED/LCD Environments
+All documentation covers both OLED (SH1106) and LCD (ST7789) environments. Differences in navigation, wiring, and interface are explained in each section.
 
 ## Start Here
-- [Getting Started](getting_started.md)
-- [Hardware Wiring](hardware_wiring.md)
-- [Configuration](configuration.md)
+- Getting Started
+- Hardware Wiring
+- Configuration
 
-## Daily Use
-- [User Guide](user_guide.md)
-- [Maintenance and Troubleshooting](maintenance_and_troubleshooting.md)
-- [FAQ](faq.md)
+## Daily Usage
+- User Guide
+- Maintenance and Troubleshooting
+- FAQ
 
 ## Technical Understanding
-- [Project Architecture](project_architecture.md)
+- Project Architecture
 
 ## French Documentation
-Each file above has an exact French equivalent with suffix `_fr.md`.
+Each document above has a strict French equivalent with `_fr` suffix.
 
-- [Index (FR)](index_fr.md)
-- [Getting Started (FR)](getting_started_fr.md)
-- [Hardware Wiring (FR)](hardware_wiring_fr.md)
-- [Configuration (FR)](configuration_fr.md)
-- [User Guide (FR)](user_guide_fr.md)
-- [Project Architecture (FR)](project_architecture_fr.md)
-- [Maintenance and Troubleshooting (FR)](maintenance_and_troubleshooting_fr.md)
-- [FAQ (FR)](faq_fr.md)
+- Index (FR)
+- Prise en main (FR)
+- Câblage matériel (FR)
+- Configuration (FR)
+- Guide utilisateur (FR)
+- Architecture du projet (FR)
+- Maintenance et dépannage (FR)
+- FAQ (FR)
