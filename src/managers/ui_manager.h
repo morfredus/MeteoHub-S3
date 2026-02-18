@@ -1,75 +1,60 @@
 #pragma once
-#if defined(ESP32_S3_OLED)
-#include "../modules/sh1106_display.h"
-#endif
-#if defined(ESP32_S3_LCD)
-#include "../modules/st7789_display.h"
-#endif
-#include "../modules/pages_sh1106.h"
-#include "../modules/pages_st7789.h"
-#include "../modules/encoder.h"
-#include "wifi_manager.h"
-#include "../modules/sensors.h"
+
+#include "modules/display_interface.h"
+#include "managers/wifi_manager.h"
+#include "modules/sensors.h"
+#include "managers/forecast_manager.h"
 #include "managers/history_manager.h"
-#include "forecast_manager.h"
+#include "managers/sd_manager.h"
+#include "modules/encoder.h"
+
+enum Page {
+    PAGE_WEATHER,
+    PAGE_FORECAST,
+    PAGE_GRAPH_TEMP,
+    PAGE_GRAPH_HUM,
+    PAGE_GRAPH_PRES,
+    PAGE_NETWORK,
+    PAGE_SYSTEM,
+    PAGE_LOGS,
+    PAGE_COUNT
+};
+
+enum MenuItem {
+    MENU_EXIT,
+    MENU_REBOOT,
+    MENU_CLEAR_LOGS,
+    MENU_CLEAR_HISTORY,
+    MENU_FORMAT_SD,
+    MENU_COUNT
+};
 
 class UiManager {
 public:
-    void begin(DisplayInterface& display, WifiManager& wifi, SensorManager& sensors, ForecastManager& forecast, HistoryManager& history);
+    void begin(DisplayInterface& display, WifiManager& wifiMgr, SensorManager& sensorMgr, ForecastManager& forecastMgr, HistoryManager& historyMgr, SdManager& sdMgr);
     void update();
 
 private:
-    static constexpr unsigned long BUTTON_DEBOUNCE_MS = 50;
-    static constexpr unsigned long BUTTON_GUARD_MS = 150;
-    static constexpr unsigned long ENCODER_CLICK_GUARD_MS = 220;
-
-    enum PageId {
-        PAGE_WEATHER,
-        PAGE_FORECAST,
-        PAGE_GRAPH_TEMP,
-        PAGE_GRAPH_HUM,
-        PAGE_GRAPH_PRES,
-        PAGE_NETWORK,
-        PAGE_LOGS,
-        PAGE_SYSTEM,
-        PAGE_COUNT // Vaut automatiquement 4, et passera a 5 si vous ajoutez une page avant
-    };
-
-    enum MenuAction {
-        MENU_EXIT,
-        MENU_REBOOT,
-        MENU_CLEAR_LOGS,
-        MENU_CLEAR_HISTORY,
-        MENU_COUNT
-    };
-
-    DisplayInterface* d;
-    WifiManager* wifi;
-    SensorManager* sensors;
-    HistoryManager* history;
-    ForecastManager* forecast;
+    DisplayInterface* d = nullptr;
+    WifiManager* wifi = nullptr;
+    SensorManager* sensors = nullptr;
+    ForecastManager* forecast = nullptr;
+    HistoryManager* history = nullptr;
+    SdManager* sd = nullptr;
     Encoder enc;
-
     int page = 0;
-    unsigned long lastRefresh = 0;
-
-    int forecastViewIndex = 0;
-    unsigned long lastForecastViewSwitch = 0;
-
     bool menuMode = false;
     int menuIndex = 0;
-
-    bool back_raw = false;
-    bool back_stable = false;
-    unsigned long back_change_ms = 0;
-
-    bool confirm_raw = false;
-    bool confirm_stable = false;
-    unsigned long confirm_change_ms = 0;
+    int forecastViewIndex = 0;
+    unsigned long lastRefresh = 0;
+    unsigned long lastForecastViewSwitch = 0;
     unsigned long ignoreButtonsUntilMs = 0;
-    unsigned long ignoreEncoderClickUntilMs = 0;
+    int menuScrollOffset = 0;
+    int logScrollLine = 0;
+    bool confirmFormatMode = false;
+    bool confirmClearLogsMode = false;
+    bool confirmClearHistMode = false;
 
-    void drawPage();
     void handleButtons();
-    void drawMenu();
+    void drawPage();
 };

@@ -10,13 +10,14 @@
 #define WEB_MDNS_HOSTNAME "meteohub"
 #endif
 
-WebManager::WebManager() : _server(80), _history(nullptr) {
+WebManager::WebManager() : _server(80) {
 }
 
-void WebManager::begin(HistoryManager& history) {
+void WebManager::begin(HistoryManager& history, SdManager& sd) {
     LOG_INFO("Initialisation du WebManager...");
 
     _history = &history;
+    _sd = &sd;
     // LittleFS n'est plus requis ici pour les pages web (géré par HistoryManager pour les données)
     // Configuration mDNS
     if (MDNS.begin(WEB_MDNS_HOSTNAME)) {
@@ -31,6 +32,8 @@ void WebManager::begin(HistoryManager& history) {
 
     _server.begin();
     LOG_INFO("Serveur Web demarre sur le port 80");
+    LOG_INFO("Gestionnaire de fichiers : http://" WEB_MDNS_HOSTNAME ".local/files.html");
+    LOG_INFO("Fichiers Carte SD : http://" WEB_MDNS_HOSTNAME ".local/sd");
 }
 
 void WebManager::handle() {
@@ -61,6 +64,35 @@ void WebManager::_setupRoutes() {
     });
     _server.on("/files.js", HTTP_GET, [](AsyncWebServerRequest *request) {
         request->send(200, "application/javascript", web_files_js);
+    });
+    _server.on("/footer.js", HTTP_GET, [](AsyncWebServerRequest *request) {
+        request->send(200, "application/javascript", web_footer_js);
+    });
+    _server.on("/logs.html", HTTP_GET, [](AsyncWebServerRequest *request) {
+        request->send(200, "text/html", web_logs_html);
+    });
+    // Raccourci pour l'accès manuel
+    _server.on("/files", HTTP_GET, [](AsyncWebServerRequest *request) {
+        request->redirect("/files.html");
+    });
+    // Raccourci pour l'accès SD
+    _server.on("/sd", HTTP_GET, [](AsyncWebServerRequest *request) {
+        request->redirect("/files.html?fs=sd");
+    });
+    
+    // Page Logs UI
+    _server.on("/logs", HTTP_GET, [](AsyncWebServerRequest *request) {
+        request->send(200, "text/html", web_logs_html);
+    });
+    // API Logs Data
+    _server.on("/api/logs", HTTP_GET, [](AsyncWebServerRequest *request) {
+        AsyncResponseStream *response = request->beginResponseStream("text/plain");
+        int count = getLogCount();
+        for (int i = 0; i < count; i++) {
+            response->print(getLog(i).c_str());
+            response->print("\n");
+        }
+        request->send(response);
     });
 
     _server.onNotFound([](AsyncWebServerRequest *request) {
@@ -111,17 +143,17 @@ void WebManager::_setupApi() {
         int count = stats.count;
 
         if (count > 0) {
-            doc["temp"]["min"] = stats.temp.minT;
-            doc["temp"]["max"] = stats.temp.maxT;
-            doc["temp"]["avg"] = stats.temp.avgT();
+            doc["temp"]["min"] = stats.temp.min;
+            doc["temp"]["max"] = stats.temp.max;
+            doc["temp"]["avg"] = stats.temp.avg();
             
-            doc["hum"]["min"] = stats.hum.minH;
-            doc["hum"]["max"] = stats.hum.maxH;
-            doc["hum"]["avg"] = stats.hum.avgH();
+            doc["hum"]["min"] = stats.hum.min;
+            doc["hum"]["max"] = stats.hum.max;
+            doc["hum"]["avg"] = stats.hum.avg();
             
-            doc["pres"]["min"] = stats.pres.minP;
-            doc["pres"]["max"] = stats.pres.maxP;
-            doc["pres"]["avg"] = stats.pres.avgP();
+            doc["pres"]["min"] = stats.pres.min;
+            doc["pres"]["max"] = stats.pres.max;
+            doc["pres"]["avg"] = stats.pres.avg();
         } else {
             // Valeurs par défaut si vide
             doc["temp"]["min"] = 0; doc["temp"]["max"] = 0; doc["temp"]["avg"] = 0;
@@ -142,18 +174,47 @@ void WebManager::_setupApi() {
     });
 
     // API : Liste des fichiers
-    _server.on("/api/files/list", HTTP_GET, [](AsyncWebServerRequest *request) {
+    _server.on("/api/files/list", HTTP_GET, [this](AsyncWebServerRequest *request) {
+        String fsName = "littlefs";
+        String path = "/";
+        if (request->hasParam("path")) {
+            path = request->getParam("path")->value();
+        }
+
+        if (request->hasParam("fs")) {
+            fsName = request->getParam("fs")->value();
+        }
+
+        fs::FS* pFs = &LittleFS;
+        if (fsName == "sd") {
+            if (_sd && _sd->isAvailable()) {
+                pFs = &SD;
+            } else {
+                request->send(503, "text/plain", "SD Card not available");
+                return;
+            }
+        }
+
         AsyncResponseStream *response = request->beginResponseStream("application/json");
         response->print("[");
-        File root = LittleFS.open("/");
+        
+        File root = pFs->open(path);
+        if (!root || !root.isDirectory()) {
+            root = pFs->open("/"); // Fallback root
+        }
+
         File file = root.openNextFile();
         bool first = true;
         while(file){
             if(!first) response->print(",");
             response->print("{\"name\":\"");
-            response->print(file.name());
+            // Assurer que le nom commence par un /
+            if (file.name()[0] != '/') response->print("/");
+            response->print(file.name()); // file.path() sur ESP32 core > 2.0.5
             response->print("\",\"size\":");
             response->print(file.size());
+            response->print(",\"isDir\":");
+            response->print(file.isDirectory() ? "true" : "false");
             response->print("}");
             first = false;
             file = root.openNextFile();
@@ -163,12 +224,27 @@ void WebManager::_setupApi() {
     });
 
     // API : Télécharger un fichier
-    _server.on("/api/files/download", HTTP_GET, [](AsyncWebServerRequest *request) {
+    _server.on("/api/files/download", HTTP_GET, [this](AsyncWebServerRequest *request) {
+        String fsName = "littlefs";
+        if (request->hasParam("fs")) {
+            fsName = request->getParam("fs")->value();
+        }
+
+        fs::FS* pFs = &LittleFS;
+        if (fsName == "sd") {
+            if (_sd && _sd->isAvailable()) {
+                pFs = &SD;
+            } else {
+                request->send(503, "text/plain", "SD Card not available");
+                return;
+            }
+        }
+
         if(request->hasParam("path")) {
             String path = request->getParam("path")->value();
             if(!path.startsWith("/")) path = "/" + path;
-            if(LittleFS.exists(path)) {
-                request->send(LittleFS, path, "application/octet-stream", true);
+            if(pFs->exists(path)) {
+                request->send(*pFs, path, "application/octet-stream", true);
             } else {
                 request->send(404, "text/plain", "Fichier non trouve");
             }
@@ -178,12 +254,27 @@ void WebManager::_setupApi() {
     });
 
     // API : Supprimer un fichier
-    _server.on("/api/files/delete", HTTP_DELETE, [](AsyncWebServerRequest *request) {
+    _server.on("/api/files/delete", HTTP_DELETE, [this](AsyncWebServerRequest *request) {
+        String fsName = "littlefs";
+        if (request->hasParam("fs")) {
+            fsName = request->getParam("fs")->value();
+        }
+
+        fs::FS* pFs = &LittleFS;
+        if (fsName == "sd") {
+            if (_sd && _sd->isAvailable()) {
+                pFs = &SD;
+            } else {
+                request->send(503, "text/plain", "SD Card not available");
+                return;
+            }
+        }
+
         if(request->hasParam("path")) {
             String path = request->getParam("path")->value();
             if(!path.startsWith("/")) path = "/" + path;
-            if(LittleFS.exists(path)) {
-                LittleFS.remove(path);
+            if(pFs->exists(path)) {
+                pFs->remove(path);
                 request->send(200, "text/plain", "OK");
             } else {
                 request->send(404, "text/plain", "Fichier non trouve");
@@ -196,11 +287,25 @@ void WebManager::_setupApi() {
     // API : Upload de fichier
     _server.on("/api/files/upload", HTTP_POST, [](AsyncWebServerRequest *request){
         request->send(200);
-    }, [](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){
+    }, [this](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){
         static File fsUploadFile;
+        static fs::FS* pFsUpload;
+
         if(!index){
+            String fsName = "littlefs";
+            if (request->hasParam("fs")) {
+                fsName = request->getParam("fs")->value();
+            }
+            pFsUpload = &LittleFS;
+            if (fsName == "sd" && _sd && _sd->isAvailable()) {
+                pFsUpload = &SD;
+            } else if (fsName == "sd") {
+                // Cannot send error here, but upload will fail
+                return;
+            }
+
             if(!filename.startsWith("/")) filename = "/" + filename;
-            fsUploadFile = LittleFS.open(filename, "w");
+            fsUploadFile = pFsUpload->open(filename, "w");
         }
         if(fsUploadFile){
             fsUploadFile.write(data, len);

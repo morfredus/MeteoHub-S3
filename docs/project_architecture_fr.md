@@ -1,7 +1,7 @@
 
 # Architecture du projet
 
-Version minimale valide : 1.0.30
+Version minimale valide : 1.0.104
 
 ## Objectif
 Expliquer l’organisation du code source, la gestion des environnements OLED et LCD, et le flux de données dans le système.
@@ -48,8 +48,13 @@ Expliquer l’organisation du code source, la gestion des environnements OLED et
 5. NeoPixel (OLED) ou alerte à l’écran (LCD) reflète l’état connexion/alertes.
 
 ## Modèle de persistance
-- NVS (Preferences) : index de dernière page active
-- LittleFS : enregistrements historiques des capteurs
+- **NVS (Preferences)** : Stockage non-volatil pour les petites données (ex: index de la dernière page active).
+- **LittleFS** : Système de fichiers sur la mémoire flash interne pour les données plus volumineuses.
+  - **Historique récent** : Les dernières 24h sont ajoutées à un fichier (`/history/recent.dat`) pour minimiser l'usure de la flash.
+  - **Rôle** : Sert de cache rapide pour le redémarrage et de stockage de secours pour les logs.
+- **Carte SD** : Stockage principal pour l'archivage long terme.
+  - **Format** : Fichiers CSV journaliers (`/history/YYYY-MM-DD.csv`).
+  - **Avantage** : Capacité élevée, facilité de lecture sur PC, robustesse accrue par rapport à la flash interne pour les écritures fréquentes.
 
 ## Dépendances externes
 - Driver OLED (SH1106) et/ou LCD (Adafruit ST7789)

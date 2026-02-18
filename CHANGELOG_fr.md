@@ -1,7 +1,110 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.60
+Version minimale valide : 1.0.93
+
+## Version 1.0.104
+- **Documentation** : Révision complète des guides utilisateur et FAQ pour refléter précisément la stratégie de stockage hybride (SD principale, LittleFS cache) et les fonctionnalités actuelles de l'interface Web.
+
+## Version 1.0.103
+- **Documentation** : Mise à jour globale et vérification de la documentation utilisateur (Guides, FAQ, Architecture) pour garantir la cohérence avec les dernières fonctionnalités (Web UI, SD, Logs).
+
+## Version 1.0.102
+- **Web UI** : Harmonisation du pied de page sur toutes les pages avec une icône unique "Disquette" pour le gestionnaire de fichiers et "Parchemin" pour les logs.
+- **UI (OLED)** : Ajout de la fonctionnalité de défilement des logs sur l'écran OLED via le bouton "Confirm".
+
+## Version 1.0.101
+- **Refactorisation (Web)** : Centralisation du code du pied de page dans `footer.js` pour une maintenance aisée et une cohérence sur toutes les pages.
+- **Fonctionnalité (Web)** : Ajout de boutons dans le gestionnaire de fichiers pour basculer facilement entre la mémoire interne et la carte SD.
+
+## Version 1.0.100
+- **Web UI (Logs)** : Nouvelle page `/logs` avec coloration syntaxique (Info/Warn/Error) et rafraîchissement automatique.
+- **Web UI (Fichiers)** : Amélioration majeure du gestionnaire de fichiers avec navigation dans les dossiers, fil d'ariane et support complet de la carte SD.
+- **Web UI (Accès)** : Ajout d'une icône "Disquette" pour un accès direct aux fichiers SD depuis le pied de page.
+
+## Version 1.0.99
+- **Fonctionnalité (Web)** : Ajout d'une page `/logs` accessible via une icône dans le pied de page pour consulter les logs système en temps réel.
+- **Correctif (SD)** : Vérification automatique de l'existence du dossier `/history` avant chaque écriture pour éviter les erreurs après un formatage ou un changement de carte.
+
+## Version 1.0.98
+- **UI (Sécurité)** : Ajout d'écrans de confirmation pour les actions "Clear Logs" et "Clear History" dans le menu système, évitant les suppressions accidentelles.
+- **Web UI** : Simplification du raccourci d'accès à la carte SD vers `/sd` (redirige vers `/files.html?fs=sd`).
+
+## Version 1.0.97
+- **Amélioration (Web)** : Ajout d'un raccourci `/sd-files` redirigeant vers le gestionnaire de fichiers en mode SD (`/files.html?fs=sd`) et affichage du lien dans les logs au démarrage.
+- **Documentation** : Mise à jour des conseils sur l'alimentation (3.3V vs 5V pour le module SD).
+
+## Version 1.0.96
+- **Documentation** : Ajout d'une note de dépannage sur les interférences possibles entre la carte SD (pics de consommation) et les capteurs I2C, expliquant l'origine des valeurs aberrantes.
+
+## Version 1.0.95
+- **Correctif (Capteurs)** : Ajout d'un filtrage des valeurs aberrantes (température, humidité, pression) avant l'enregistrement dans l'historique pour éviter de polluer les données avec des erreurs de lecture.
+- **Amélioration (Web)** : Ajout d'une redirection `/files` vers `/files.html` et affichage de l'URL du gestionnaire de fichiers dans les logs au démarrage pour faciliter l'accès.
+
+## Version 1.0.94
+- **Correctif (Compilation)** : Synchronisation du fichier d'en-tête `web_manager.h` avec son implémentation pour résoudre les erreurs de compilation liées à la gestion de la carte SD dans l'interface web.
+
+## Version 1.0.93
+- **Fonctionnalité (Stockage)** : La carte SD est désormais le support de stockage principal pour l'historique haute résolution, avec des fichiers CSV créés quotidiennement (`/history/YYYY-MM-DD.csv`).
+- **Fonctionnalité (Web UI)** : Le gestionnaire de fichiers web permet maintenant de naviguer et gérer les fichiers sur la carte SD en plus de la mémoire interne.
+- **Stabilité** : L'archivage sur LittleFS est conservé comme un cache de 24h pour un redémarrage rapide.
+## Version 1.0.92
+- **Documentation** : Ajout d'une section de dépannage pour les erreurs I2C (`i2cRead returned Error -1`) et les redémarrages inattendus, en soulignant les causes matérielles probables (câblage, alimentation).
+
+## Version 1.0.91
+- **UI**: Inversion du sens de rotation de l'encodeur pour la navigation dans le menu pour une expérience plus intuitive (sens horaire = monter).
+
+## Version 1.0.90
+- **Correctif (Crash SD)** : Réécriture complète de la fonction de formatage pour être autonome et robuste, en gérant manuellement l'initialisation du bus SPI et l'allocation mémoire pour éviter les crashs de type "Guru Meditation Error".
+
+## Version 1.0.89
+- **Correctif (Crash SD)** : Utilisation des fonctions bas niveau `sdcard_init` pour le formatage, évitant le crash dû à l'échec du montage via `SD.begin`.
+
+## Version 1.0.88
+- **Correctif (Crash)** : Résolution du crash "Guru Meditation Error" lors du formatage de la carte SD en forçant la réinitialisation du matériel avant l'opération.
+- **Correctif (UI)** : Simplification et fiabilisation de la logique de l'encodeur rotatif pour une navigation cohérente dans les menus et les pages sur OLED et LCD.
+
+## Version 1.0.87
+- **Correctif (Compilation)** : Correction définitive de l'erreur `getHeight` dans `ui_manager.cpp` en remplaçant l'appel de méthode par une constante locale définie selon l'environnement (OLED/LCD).
+
+## Version 1.0.86
+- **Correctif (Compilation)** : Résolution de l'erreur de compilation `getHeight is not a member of DisplayInterface` en utilisant des constantes de hauteur d'écran dépendant de l'environnement.
+
+## Version 1.0.85
+- **Correctif (UI)** : Correction du processus de formatage de la carte SD qui ne redémarre plus l'appareil et affiche un message de succès ou d'échec.
+- **Fonctionnalité (UI)** : Le menu système est désormais scrollable sur l'écran OLED, rendant l'option "Format SD" accessible.
+- **Correctif (UI)** : Activation de la fonction "Clear Logs" dans le menu système.
+
+## Version 1.0.84
+- **Correctif (Compilation)** : Résolution d'erreurs de compilation multiples dues à l'absence de la définition `BUTTON_GUARD_MS` et à l'inclusion manquante des en-têtes de pages (`pages_sh1106.h`, `pages_st7789.h`) dans `main.cpp` et `ui_manager.cpp`.
+
+## Version 1.0.83
+- **Correctif (Compilation)** : Correction du chemin d'inclusion de `display_interface.h` dans `ui_manager.h` pour résoudre l'erreur de compilation "No such file or directory".
+
+## Version 1.0.82
+- **Fonctionnalité (Maintenance)** : Ajout d'une option "Format SD" dans le menu système pour formater la carte SD (en FAT32) directement depuis l'appareil. Une étape de confirmation a été ajoutée pour prévenir les formatages accidentels.
+
+## Version 1.0.81
+- **Amélioration (Logs)** : Message d'erreur plus explicite en cas d'échec de montage de la carte SD (suggère le formatage FAT32).
+
+## Version 1.0.80
+- **Correctif (Compilation)** : Résolution des erreurs de compilation suite à la refonte de l'historique (méthodes manquantes `clearHistory`, `getRecentStats`, `LittleFS.mounted`).
+- **Refactorisation** : Standardisation de la structure `Stats24h` pour l'API Web.
+
+## Version 1.0.79
+- **Fonctionnalité (Historique)** : Sauvegarde redondante des données sur carte SD (si présente) au format CSV (`/history_log.csv`), en plus de la mémoire interne.
+- **Stabilité (SD)** : Amélioration de l'initialisation SD avec tentative de reconnexion à fréquence réduite (4MHz) en cas d'échec.
+
+## Version 1.0.78
+- **Fonctionnalité (Matériel)** : Ajout du support initial pour carte SD via `SdManager`.
+- **Configuration** : Utilisation des définitions `SD_CS_PIN`, `SPI_SCK_PIN`, `SPI_MISO_PIN`, `SPI_MOSI_PIN` depuis `board_config.h`.
+
+## Version 1.0.77
+- **Documentation** : Ajout d'explications sur la corruption du système de fichiers (causes, prévention) et les alternatives de stockage (carte SD, Cloud) dans la FAQ et le guide de maintenance.
+
+## Version 1.0.76
+- **Correctif (Système)** : Ajout d'une procédure de récupération du système de fichiers (LittleFS). Maintenir le bouton BOOT au démarrage permet désormais de formater la mémoire en cas de corruption.
+- **Stabilité** : Initialisation explicite de LittleFS et création du dossier `/history` au démarrage pour prévenir les erreurs d'écriture et les boucles de redémarrage (WDT).
 
 ## Version 1.0.75
 - **Documentation** : Mise à jour globale de la documentation (README, Guides, FAQ) pour inclure le support LCD 240x320 et les nouveaux écrans de démarrage. Synchronisation bilingue.

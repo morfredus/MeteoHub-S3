@@ -1,6 +1,6 @@
 # Guide utilisateur
 
-Version minimale valide : 1.0.75
+Version minimale valide : 1.0.104
 
 ## Objectif
 Apprendre à utiliser le dashboard une fois le firmware démarré.
@@ -36,10 +36,8 @@ Le MeteoHub S3 dispose d'une interface Web complète accessible depuis n'importe
 - **Graphiques** : Visualisation interactive des 3 courbes sur les dernières 24h (haute résolution).
 - **Statistiques** : Page dédiée affichant les Min/Moy/Max pour la période en cours.
 - **Historique Long Terme** : Consultation des données archivées sur plusieurs mois/années.
-- **Gestionnaire de Fichiers** : Accessible via l'icône dossier 📂 en bas de page. Permet de :
-    - Télécharger les fichiers de logs (`system.log`).
-    - Télécharger les archives d'historique (`YYYY-MM.dat`).
-    - Supprimer ou téléverser des fichiers.
+- **Gestionnaire de Fichiers** : Accessible via l'icône disquette 💾 en bas de page. Permet de naviguer dans la mémoire interne et la carte SD, télécharger ou supprimer des fichiers.
+- **Logs Système** : Accessible via l'icône parchemin 📜 en bas de page. Affiche les événements système en temps réel.
 
 ## Pages principales
 Le gestionnaire UI fait défiler ces pages :
@@ -79,11 +77,12 @@ Le menu contient :
 - Redémarrer
 - Effacer les logs
 - Effacer l’historique
+- Formater la carte SD (si présente)
 
 ## Persistance des données
 - La dernière page est stockée dans Preferences (NVS).
 - **Historique Court Terme** : Les dernières 24h (1 point/min) sont en RAM et sauvegardées en continu dans `/history/recent.dat`. Le système recharge ces données au démarrage pour une disponibilité immédiate.
-- **Historique Long Terme** : Les données sont archivées mensuellement (moyenne sur 15 min) dans des fichiers `/archive/YYYY-MM.dat` sur la mémoire interne (LittleFS).
+- **Historique Long Terme** : Si une carte SD est présente, les données sont archivées quotidiennement au format CSV (`/history/YYYY-MM-DD.csv`). C'est le mode de stockage recommandé pour l'archivage.
 
 ## Lecture des valeurs météo et interprétation
 ### Température (Temp)

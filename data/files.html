@@ -19,6 +19,13 @@
             <a href="/longterm.html">Historique</a>
         </nav>
 
+        <div class="card" style="margin-bottom: 20px;">
+            <div style="display: flex; gap: 10px;">
+                <button id="btn-littlefs" onclick="switchFs('littlefs')" class="btn" style="flex:1;">Mémoire Interne</button>
+                <button id="btn-sd" onclick="switchFs('sd')" class="btn" style="flex:1;">Carte SD</button>
+            </div>
+        </div>
+
         <div class="card">
             <h2>Téléverser un fichier</h2>
             <div style="display: flex; gap: 10px; justify-content: center; align-items: center; margin-bottom: 20px;">
@@ -29,7 +36,11 @@
         </div>
 
         <div class="card" style="margin-top: 20px;">
-            <h2>Fichiers Système (LittleFS)</h2>
+            <h2 id="fsTitle">Fichiers Système</h2>
+            <div class="breadcrumb">
+                <button onclick="navigateUp()" class="btn-small">⬆️</button>
+                <span id="currentPath">/</span>
+            </div>
             <table>
                 <thead>
                     <tr>
@@ -45,9 +56,9 @@
         </div>
 
         <footer>
-            MeteoHub S3 Web Interface - v<span id="version">--</span>
         </footer>
     </div>
     <script src="files.js"></script>
+    <script src="footer.js"></script>
 </body>
 </html>
