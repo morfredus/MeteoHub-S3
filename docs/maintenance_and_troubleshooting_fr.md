@@ -54,17 +54,24 @@ Vérifier :
 - Effacer l’historique
 - Formater la carte SD (si présente)
 
+
 ### 7) Redémarrages en boucle ou blocage au démarrage (Watchdog Triggered)
 **Symptômes** : L'appareil redémarre en boucle, les logs affichent `Task watchdog got triggered` et/ou des erreurs `vfs_api.cpp:105] open(): ... does not exist, no permits for creation`. L'interface web ne répond plus.
 
 **Cause** : Le système de fichiers (LittleFS) est très probablement corrompu. Cela arrive le plus souvent après une coupure de courant ou une déconnexion USB brutale pendant que l'appareil écrivait des données (historique, logs).
 
-**Solution de récupération** :
-1.  Téléversez la version 1.0.76 ou supérieure.
-2.  Débranchez l'appareil.
-3.  Rebranchez-le tout en **maintenant le bouton BOOT (GPIO 0) enfoncé**.
-4.  L'écran affichera un message de maintenance. Continuez de maintenir le bouton pendant 3 secondes jusqu'à ce que le formatage commence.
-5.  Relâchez le bouton. L'appareil va formater la mémoire (ce qui efface les données corrompues, y compris l'historique) et redémarrer proprement.
+**Solution de récupération simple (formatage d'urgence)** :
+
+> **Astuce débutant :** Si votre MeteoHub S3 ne démarre plus correctement ou reste bloqué, il est possible de forcer un formatage de la mémoire interne (LittleFS) sans ordinateur, simplement en maintenant le bouton BOOT au démarrage.
+
+**Procédure pas à pas :**
+1.  Débranchez l'alimentation USB de l'appareil.
+2.  Appuyez et maintenez le bouton **BOOT** (généralement le petit bouton marqué "BOOT" ou relié à GPIO 0).
+3.  Tout en maintenant le bouton BOOT, rebranchez l'alimentation USB.
+4.  Gardez le bouton BOOT appuyé pendant environ 3 secondes. L'écran affichera un message de maintenance et indiquera que le formatage va commencer.
+5.  Relâchez le bouton BOOT lorsque le message de formatage apparaît. L'appareil va effacer la mémoire interne (toutes les données historiques seront perdues) puis redémarrer automatiquement.
+
+Ce mode de récupération est conçu pour être accessible à tout utilisateur, même débutant, et ne nécessite aucune manipulation logicielle ou outil externe.
 
 ### 8) Erreurs I2C (`i2cRead returned Error -1`) et redémarrages inattendus
 **Symptômes** : Les logs affichent des erreurs `i2cRead returned Error -1` et/ou `Bus already started in Master Mode`. L'appareil peut redémarrer de manière inattendue, parfois avec un message `Reason: 8 - ASSOC_LEAVE` dans les logs Wi-Fi.

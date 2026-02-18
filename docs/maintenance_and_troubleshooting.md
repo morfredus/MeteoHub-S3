@@ -73,10 +73,24 @@ Check:
 2. **Capacitor**: Add a decoupling capacitor (e.g., 100µF) on the 3.3V supply near the sensors or the SD module.
 3. **Software**: The firmware (v1.0.95+) includes a software filter to ignore these outlier values.
 
+
 ### 7) Boot Loops or System Freeze at Startup (Watchdog Triggered)
 **Symptoms**: The device reboots in a loop, logs show `Task watchdog got triggered` and/or errors like `vfs_api.cpp:105] open(): ... does not exist, no permits for creation`. The web interface is unresponsive.
 
 **Cause**: The filesystem (LittleFS) is most likely corrupted. This typically happens after a power loss or an abrupt USB disconnection while the device was writing data (history, logs).
+
+**Beginner-friendly recovery (emergency format):**
+
+> **Tip for beginners:** If your MeteoHub S3 is stuck or keeps rebooting, you can force an emergency format of the internal memory (LittleFS) without a computer, simply by holding the BOOT button at startup.
+
+**Step-by-step procedure:**
+1. Unplug the device from USB power.
+2. Press and hold the **BOOT** button (usually labeled "BOOT" or connected to GPIO 0).
+3. While holding BOOT, plug the USB power back in.
+4. Keep holding BOOT for about 3 seconds. The screen will show a maintenance message and indicate that formatting will start.
+5. Release the BOOT button when the formatting message appears. The device will erase the internal memory (all history data will be lost) and reboot automatically.
+
+This recovery mode is designed to be accessible to any user, even beginners, and does not require any software or special tools.
 
 **Recovery Solution**:
 1.  Upload firmware version 1.0.76 or newer.
