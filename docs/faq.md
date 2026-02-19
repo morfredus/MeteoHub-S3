@@ -24,11 +24,14 @@ Go to the web interface, click the floppy disk icon 💾 at the bottom of the pa
 ## Can I change page refresh speed?
 Yes, adjust `DASHBOARD_REFRESH_MS` in `include/config.h`.
 
+<<<<<<< HEAD
 ## How do I change the LCD resolution (240x240 vs 240x320)?
-Modify the `LCD_WIDTH` and `LCD_HEIGHT` constants in `include/config.h`. The UI will automatically adapt to the new resolution on the next boot.
+You can change the LCD resolution by modifying the `LCD_WIDTH` and `LCD_HEIGHT` constants in `include/config.h`. The UI will automatically adapt to the new resolution on the next boot.
 
 ## Can I change OLED contrast?
-Yes, adjust `OLED_CONTRAST` in `include/config.h`.
+Yes, you can adjust `OLED_CONTRAST` in `include/config.h`.
+=======
+>>>>>>> main
 
 ## How can I prevent data corruption or history loss?
 Filesystem corruption is rare but can happen during a power outage.
