@@ -7,6 +7,7 @@ include/secrets.h
 include/wifi-config.h
 .copilot
 .copilot.instructions.md
+.cursorrules
 
 # Fichiers divers (a ignorer si leur contenu n'est pas a partager)
 

@@ -1,6 +1,7 @@
 # FAQ
 
-Version minimale valide : 1.0.104
+Version minimale valide : 1.0.116
+
 
 ## Internet est-il obligatoire ?
 Oui, pour les mises à jour de prévisions et d’alertes. Les pages capteurs locales restent utilisables sans internet.
@@ -27,10 +28,11 @@ Allez sur l'interface Web, cliquez sur l'icône disquette 💾 en bas de page. V
 ## Puis-je changer la vitesse de rafraîchissement des pages ?
 Oui, modifier `DASHBOARD_REFRESH_MS` dans `include/config.h`.
 
+
 ## Comment puis-je éviter la corruption des données ou la perte de l'historique ?
 La corruption du système de fichiers est rare mais peut survenir lors d'une coupure de courant.
-1.  **Prévention n°1 : Alimentation stable.** Utilisez une alimentation USB de bonne qualité et un câble fiable. C'est la cause la plus fréquente de problèmes.
-2.  **Récupération :** Si une corruption se produit, la version 1.0.76+ inclut un mode de récupération. Maintenez le bouton BOOT au démarrage pour formater la partition et repartir sur une base saine (l'historique sera perdu).
+1.  **Prévention n°1 : Alimentation stable.** Utilisez une alimentation USB de bonne qualité et un câble fiable. C'est la cause la plus fréquente des problèmes.
+2.  **Récupération facile (formatage d'urgence) :** Si l'appareil est bloqué ou redémarre en boucle, vous pouvez forcer un formatage d'urgence de la mémoire interne (LittleFS) sans ordinateur. Débranchez l'alimentation, maintenez le bouton **BOOT** enfoncé, rebranchez l'alimentation, attendez le message de maintenance à l'écran, puis relâchez le bouton. L'appareil effacera la mémoire et redémarrera proprement (toutes les données d'historique seront perdues). Cette procédure est accessible à tout utilisateur, même débutant.
 3.  **Robustesse maximale (avancé) :** Pour les applications critiques, les alternatives les plus sûres sont de stocker les données sur une **carte SD** (nécessite une modification matérielle) ou de les envoyer vers un **service Cloud** (ex: ThingSpeak, broker MQTT), ce qui les met à l'abri de toute défaillance matérielle locale.
 
 Le firmware utilise déjà des techniques d'écriture robustes (ajout de données plutôt que réécriture complète) pour minimiser l'usure et les risques.
@@ -40,7 +42,7 @@ Le firmware utilise déjà des techniques d'écriture robustes (ajout de donnée
 Modifiez les constantes `LCD_WIDTH` et `LCD_HEIGHT` dans `include/config.h`. L'interface s'adaptera automatiquement à la nouvelle résolution au prochain démarrage.
 
 
-## Le projet gère-t-il à la fois OLED et LCD ?
+## Le projet gère-t-il les écrans OLED et LCD ?
 Oui. Le firmware détecte et s’adapte automatiquement à un écran OLED SH1106 (128x64, monochrome) ou un LCD TFT ST7789 (240x240 ou 240x320, couleur) au démarrage. Aucun changement de code n’est nécessaire.
 
 ## Quelles sont les principales différences entre les environnements OLED et LCD ?
@@ -54,11 +56,11 @@ Sur OLED, il faut tourner l’encodeur de deux crans pour changer de page ; sur 
 ## Puis-je passer d’un OLED à un LCD sans changer le code ?
 Oui. Le firmware auto-détecte l’afficheur connecté à chaque démarrage.
 
-## Puis-je changer le contraste OLED ?
-Oui, modifier `OLED_CONTRAST` dans `include/config.h`.
+## Puis-je changer le contraste de l'OLED ?
+Oui, modifiez `OLED_CONTRAST` dans `include/config.h`.
 
-## Où modifier le mapping des pins de la carte ?
+## Où puis-je changer le mappage des broches ?
 Dans `include/board_config.h`.
 
-## Que faire si l’upload échoue de manière répétée ?
-Essayer un autre câble USB, vérifier le port COM, fermer le moniteur série, puis relancer l’upload.
+## Que faire si le téléversement échoue à plusieurs reprises ?
+Essayez un autre câble USB, vérifiez le port COM, fermez le moniteur série, puis réessayez de téléverser.

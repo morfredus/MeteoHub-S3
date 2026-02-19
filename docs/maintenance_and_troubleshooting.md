@@ -1,6 +1,6 @@
 # Maintenance and Troubleshooting
 
-Minimum valid version: 1.0.103
+Minimum valid version: 1.0.115
 
 ## Goal
 Provide practical recovery steps when the dashboard does not behave as expected.
@@ -40,17 +40,39 @@ Check:
 - Sensor power stability
 
 ### 5) Graphs do not show values
+This behavior is no longer normal. The system reloads history at startup. If graphs remain empty, it may indicate a problem with the LittleFS file system. Try clearing the history via the system menu to force a reset.
+
+### 6) The Web UI is inaccessible
 Check:
-- NTP synchronization completed
-- Device has been running long enough to record samples
-- History not recently cleared
+- That you are on the same Wi-Fi network.
+- Try the direct IP address (e.g., `192.168.1.x`) instead of `meteohub.local` (mDNS can be tricky on some networks/OSes).
+- Check that the LittleFS partition is mounted correctly (see logs at startup).
 
 ## Maintenance actions available in UI menu
 - Reboot
 - Clear logs
 - Clear history
+- Format SD (if present)
 
-### 7) I2C Errors (`i2cRead returned Error -1`) and Unexpected Reboots
+### 7) Boot Loops or System Freeze at Startup (Watchdog Triggered)
+**Symptoms**: The device reboots in a loop, logs show `Task watchdog got triggered` and/or errors like `vfs_api.cpp:105] open(): ... does not exist, no permits for creation`. The web interface is unresponsive.
+
+**Cause**: The filesystem (LittleFS) is most likely corrupted. This typically happens after a power loss or an abrupt USB disconnection while the device was writing data (history, logs).
+
+**Beginner-friendly recovery (emergency format):**
+
+> **Tip for beginners:** If your MeteoHub S3 is stuck or keeps rebooting, you can force an emergency format of the internal memory (LittleFS) without a computer, simply by holding the BOOT button at startup.
+
+**Step-by-step procedure:**
+1. Unplug the device from USB power.
+2. Press and hold the **BOOT** button (usually labeled "BOOT" or connected to GPIO 0).
+3. While holding BOOT, plug the USB power back in.
+4. Keep holding BOOT for about 3 seconds. The screen will show a maintenance message and indicate that formatting is about to start.
+5. Release the BOOT button when the formatting message appears. The device will erase the internal memory (all history data will be lost) and then reboot automatically.
+
+This recovery mode is designed to be accessible to any user, even beginners, and requires no software or external tools.
+
+### 8) I2C Errors (`i2cRead returned Error -1`) and Unexpected Reboots
 **Symptoms**: The logs show `i2cRead returned Error -1` and/or `Bus already started in Master Mode` errors. The device may reboot unexpectedly, sometimes with a `Reason: 8 - ASSOC_LEAVE` message in the Wi-Fi logs.
 
 **Causes and Solutions**:
@@ -73,21 +95,9 @@ Check:
 2. **Capacitor**: Add a decoupling capacitor (e.g., 100µF) on the 3.3V supply near the sensors or the SD module.
 3. **Software**: The firmware (v1.0.95+) includes a software filter to ignore these outlier values.
 
-### 7) Boot Loops or System Freeze at Startup (Watchdog Triggered)
-**Symptoms**: The device reboots in a loop, logs show `Task watchdog got triggered` and/or errors like `vfs_api.cpp:105] open(): ... does not exist, no permits for creation`. The web interface is unresponsive.
+### 10) Web UI Crash (Watchdog Timeout) & SD Errors
+**Symptoms**: The device reboots when trying to read a large file (Logs, History) from the Web UI. Logs show `Task watchdog got triggered` on the `async_tcp` task, followed by `sdCommand(): crc error` or `token error` upon reboot.
 
-**Cause**: The filesystem (LittleFS) is most likely corrupted. This typically happens after a power loss or an abrupt USB disconnection while the device was writing data (history, logs).
+**Cause and Solution (Fixed in v1.114+)**: This issue was caused by a blocking operation in the web server that monopolized the CPU when handling large files or data streams (like history graphs). This triggered a safety watchdog timeout.
 
-**Recovery Solution**:
-1.  Upload firmware version 1.0.76 or newer.
-2.  Unplug the device.
-3.  Plug it back in while **holding down the BOOT button (GPIO 0)**.
-4.  The screen will display a maintenance message. Keep holding the button for 3 seconds until formatting begins.
-5.  Release the button. The device will format the memory (which erases corrupted data, including history) and reboot cleanly.
-
-## Safe update workflow
-1. Save changes.
-2. Build locally.
-3. Upload and observe boot sequence.
-4. Verify pages and LED statuses.
-5. Check logs page for anomalies.
+As of version 1.114, the web server uses a fully non-blocking streaming method that yields CPU time during long operations. This definitively resolves the issue. If you are experiencing this bug, please update your firmware to v1.114 or newer.
