@@ -8,6 +8,16 @@
 #endif
 #if defined(ESP32_S3_LCD)
 #include "modules/pages_st7789.h"
+#define C_BLACK     0x0000
+#define C_WHITE     0xFFFF
+#define C_RED       0xF800
+#define C_GREEN     0x07E0
+#define C_BLUE      0x001F
+#define C_CYAN      0x07FF
+#define C_MAGENTA   0xF81F
+#define C_YELLOW    0xFFE0
+#define C_GREY      0x8410
+#define C_DARKGREY  0x4208
 #endif
 
 void UiManager::begin(DisplayInterface& display, WifiManager& wifiMgr, SensorManager& sensorMgr, ForecastManager& forecastMgr, HistoryManager& historyMgr, SdManager& sdMgr) {

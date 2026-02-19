@@ -3,6 +3,44 @@
 
 Version minimale valide : 1.0.93
 
+## Version 1.0.116
+- **Correctif (Serveur Web)** : Implémentation du sous-échantillonnage (downsampling) côté serveur pour l'API de l'historique (`/api/history`). Cela réduit drastiquement la quantité de données envoyées pour les graphiques, corrigeant de manière définitive les redémarrages (watchdog) avec de grands volumes de données et améliorant la scalabilité.
+- **Correctif (Documentation)** : Correction d'un texte corrompu et ajout d'informations manquantes dans la FAQ en français (`faq_fr.md`).
+
+## Version 1.0.115
+- **Documentation** : Mise à jour complète de tous les guides utilisateur (Guide, FAQ, Dépannage, Architecture) pour refléter les fonctionnalités et correctifs jusqu'à la v1.114, en assurant une cohérence bilingue totale.
+
+## Version 1.0.114
+- **Correctif (Serveur Web)** : Ajout d'un petit délai dans la boucle de streaming de l'endpoint `/api/history` pour rendre la main au système, prévenant ainsi de manière définitive les redémarrages ("Watchdog Timeout") lors du chargement de très grands volumes de données d'historique.
+
+## Version 1.0.113
+- **Correctif (Compilation)** : Correction d'une erreur de syntaxe dans `web_manager.cpp` (capture lambda) qui empêchait la compilation de l'endpoint `/api/system`.
+
+## Version 1.0.112
+- **Correctif (Build)** : Déplacement des fichiers utilitaires `system_info` vers le répertoire correct `src/utils/` pour résoudre les erreurs de compilation. Nettoyage des fichiers mal placés dans `docs/`.
+
+## Version 1.0.111
+- **Refactorisation**: Création d'un utilitaire `system_info` centralisé.
+- **Fonctionnalité (API Web)**: L'endpoint `/api/system` fournit maintenant des informations système complètes (CPU, mémoire, systèmes de fichiers, réseau).
+
+## Version 1.0.110
+- **Correctif (Serveur Web)** : Optimisation de l'endpoint `/api/history` pour envoyer les données par blocs, prévenant ainsi les redémarrages ("Watchdog Timeout") lors du chargement des graphiques avec un grand nombre de points de données.
+
+## Version 1.0.109
+- **Correctif (Serveur Web)** : Correction d'un bug critique qui provoquait un redémarrage ("Watchdog Timeout") lors du téléchargement de fichiers volumineux (historique, logs) depuis l'interface web. Le gestionnaire de téléchargement utilise désormais une méthode de streaming non-bloquante au lieu de charger le fichier entier en mémoire.
+
+## Version 1.0.108
+- **Documentation** : Amélioration du guide de dépannage pour les crashs "Watchdog Timeout", en clarifiant que la solution définitive est d'utiliser le streaming de fichiers dans le code du serveur web pour éviter les opérations bloquantes.
+
+## Version 1.0.107
+- **Documentation** : Synchronisation de la documentation anglaise (`maintenance_and_troubleshooting.md`, `faq.md`) avec la version française pour corriger la numérotation, ajouter des sections manquantes et mettre à jour les informations obsolètes sur le chargement des graphiques.
+
+## Version 1.0.106
+- **Documentation** : Ajout d'une entrée de dépannage spécifique pour les crashs de l'interface Web (Watchdog Timeout) causés par une communication instable avec la carte SD (erreurs CRC).
+
+## Version 1.0.105
+- **Projet** : Ajout du fichier `.cursorrules` pour établir les règles globales de codage et le contexte du projet pour l'IA.
+
 ## Version 1.0.104
 - **Documentation** : Révision complète des guides utilisateur et FAQ pour refléter précisément la stratégie de stockage hybride (SD principale, LittleFS cache) et les fonctionnalités actuelles de l'interface Web.
 

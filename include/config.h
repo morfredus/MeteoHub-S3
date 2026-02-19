@@ -20,4 +20,4 @@
 
 // Configuration de l'écran LCD
 #define LCD_WIDTH            240
-#define LCD_HEIGHT           320 // Modifier à 240 pour l'ancien écran
+#define LCD_HEIGHT           240 // Modifier à 240 pour l'ancien écran

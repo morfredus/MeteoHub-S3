@@ -1,6 +1,6 @@
 # Guide utilisateur
 
-Version minimale valide : 1.0.104
+Version minimale valide : 1.0.115
 
 ## Objectif
 Apprendre à utiliser le dashboard une fois le firmware démarré.
@@ -15,7 +15,7 @@ Apprendre à utiliser le dashboard une fois le firmware démarré.
 - **Rotation encodeur** : navigation entre les pages
 - **Clic encodeur** : ouverture du menu ou validation d'une option
 - **Bouton Back** : page précédente ou fermeture menu
-- **Bouton Confirm** : action contextuelle (ex: défilement prévisions) ou validation
+- **Bouton Confirm** : action contextuelle (ex: défilement des prévisions, défilement des logs sur OLED) ou validation
 
 ## Séquence de démarrage
 Au boot, l’écran affiche un Splash Screen "morfredus" suivi d'une barre de progression :
