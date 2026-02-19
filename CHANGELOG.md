@@ -3,6 +3,44 @@
 
 Minimum valid version: 1.0.93
 
+## Version 1.0.116
+- **Fix (Web Server)**: Implemented server-side downsampling for the history API endpoint (`/api/history`). This drastically reduces the amount of data sent for graphs, definitively fixing watchdog reboots with large datasets and improving scalability.
+- **Fix (Documentation)**: Corrected corrupted text and added missing information in the French FAQ (`faq_fr.md`).
+
+## Version 1.0.115
+- **Documentation**: Comprehensive update of all user-facing documents (User Guide, FAQ, Troubleshooting, Architecture) to reflect features and fixes up to v1.114, ensuring full bilingual consistency.
+
+## Version 1.0.114
+- **Fix (Web Server)**: Added a small delay in the `/api/history` data streaming loop to yield control to the OS, definitively preventing "Watchdog Timeout" reboots when loading very large history datasets.
+
+## Version 1.0.113
+- **Fix (Compilation)**: Fixed syntax error in `web_manager.cpp` (lambda capture) that prevented compilation of the `/api/system` endpoint.
+
+## Version 1.0.112
+- **Fix (Build)**: Moved `system_info` utility files to the correct `src/utils/` directory to resolve compilation errors. Cleaned up misplaced files in `docs/`.
+
+## Version 1.0.111
+- **Refactor**: Created a centralized `system_info` utility.
+- **Feature (Web API)**: The `/api/system` endpoint now provides comprehensive system information (CPU, memory, filesystems, network).
+
+## Version 1.0.110
+- **Fix (Web Server)**: Optimized the `/api/history` endpoint to send data in chunks, preventing a "Watchdog Timeout" reboot when loading history graphs with a large number of data points.
+
+## Version 1.0.109
+- **Fix (Web Server)**: Fixed a critical bug causing a "Watchdog Timeout" reboot when downloading large files (history, logs) from the web UI. The file download handler now uses a non-blocking streaming method instead of loading the entire file into memory.
+
+## Version 1.0.108
+- **Documentation**: Improved the troubleshooting guide for "Watchdog Timeout" crashes, clarifying that the definitive solution is to use file streaming in the web server code to avoid blocking operations.
+
+## Version 1.0.107
+- **Documentation**: Synchronized English documentation (`maintenance_and_troubleshooting.md`, `faq.md`) with the French version to fix numbering, add missing sections, and update outdated information regarding graph loading.
+
+## Version 1.0.106
+- **Documentation**: Added a specific troubleshooting entry for Web UI crashes (Watchdog Timeout) caused by unstable SD card communication (CRC errors).
+
+## Version 1.0.105
+- **Project**: Added `.cursorrules` to establish global AI coding guidelines and project context.
+
 ## Version 1.0.104
 - **Documentation**: Complete revision of user guides and FAQ to accurately reflect the hybrid storage strategy (SD primary, LittleFS cache) and current Web UI features.
 

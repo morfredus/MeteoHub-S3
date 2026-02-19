@@ -1,6 +1,6 @@
 # FAQ
 
-Minimum valid version: 1.0.104
+Minimum valid version: 1.0.115
 
 ## Is internet required?
 Yes, for forecast and alert updates. Local sensor pages still work without internet.
@@ -9,17 +9,29 @@ Yes, for forecast and alert updates. Local sensor pages still work without inter
 Yes. The project supports partial sensor availability and fallback behavior.
 
 ## Why are graphs empty after reboot?
-History needs time samples and valid system time (NTP) to record entries.
+This issue is resolved. The system now reloads the last 24 hours of history at startup, making the graphs immediately available on all screens (OLED, LCD, and Web).
 
 ## How often is forecast updated?
 Approximately every 30 minutes.
 
 ## How many history points are stored?
-128 points are kept in memory and persisted in LittleFS.
+- **Short-term (for graphs)**: ~24 hours of high-resolution data (1 point/min) are kept in RAM and backed up.
+- **Long-term**: Unlimited (depending on SD card size) as daily CSV files.
+
+## How do I retrieve my data?
+Go to the web interface, click the floppy disk icon 💾 at the bottom of the page. You can browse the SD card and download the CSV files (`/history/YYYY-MM-DD.csv`).
 
 ## Can I change page refresh speed?
 Yes, adjust `DASHBOARD_REFRESH_MS` in `include/config.h`.
 
+<<<<<<< HEAD
+## How do I change the LCD resolution (240x240 vs 240x320)?
+You can change the LCD resolution by modifying the `LCD_WIDTH` and `LCD_HEIGHT` constants in `include/config.h`. The UI will automatically adapt to the new resolution on the next boot.
+
+## Can I change OLED contrast?
+Yes, you can adjust `OLED_CONTRAST` in `include/config.h`.
+=======
+>>>>>>> main
 
 ## How can I prevent data corruption or history loss?
 Filesystem corruption is rare but can happen during a power outage.
@@ -42,13 +54,7 @@ Yes. The firmware automatically detects and adapts to either an SH1106 OLED (128
 The UI and page layout adapt automatically to the detected display.
 
 ## How does navigation differ between OLED and LCD?
-On OLED, you must turn the encoder two detents to change page; on LCD, one detent is enough. Button mapping also differs (see user guide and hardware wiring).
-
-## Can I switch between OLED and LCD without changing the code?
-Yes. The firmware auto-detects the connected display at each boot.
-
-## Can I change OLED contrast?
-Yes, adjust `OLED_CONTRAST` in `include/config.h`.
+On OLED, you must turn the encoder two detents to change a page; on LCD, one detent is enough. Button mapping also differs (see user guide and hardware wiring).
 
 ## Where do I change board pin mapping?
 In `include/board_config.h`.

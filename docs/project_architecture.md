@@ -1,63 +1,62 @@
-
 # Project Architecture
 
-Minimum valid version: 1.0.104
+Minimum valid version: 1.0.115
 
 ## Goal
-Explain how source code is organized, how OLED and LCD environments are managed, and how data flows across the system.
+Explain the source code organization, the management of OLED and LCD environments, and the data flow within the system.
 
-## Folder structure
-- `src/main.cpp`: boot and top-level orchestration, auto-detects display type (OLED/LCD)
-- `src/modules/`: hardware/display/page modules (see below)
-- `src/managers/`: stateful managers and orchestration
-- `src/utils/`: reusable utilities
-- `include/`: reserved configuration headers
+## Folder Structure
+- `src/main.cpp`: Boot and main orchestration, auto-detection of the display type (OLED/LCD).
+- `src/modules/`: Hardware/display/page modules (see below).
+- `src/managers/`: State and orchestration managers.
+- `src/utils/`: Reusable utilities.
+- `include/`: Reserved configuration headers only.
 
-## Display environment management
-- The firmware auto-detects at boot whether an SH1106 OLED or a TFT ST7789 LCD is connected.
-- All display/page logic is abstracted via `DisplayInterface`.
-- Dedicated modules exist for each display: `sh1106_display` (OLED), `st7789_display` (LCD).
-- Page rendering logic is split: `pages_sh1106.cpp` (OLED), `pages_st7789.cpp` (LCD).
-- Navigation logic adapts: on LCD, 1 detent = 1 page; on OLED, 2 detents = 1 page.
+## Display Environment Management
+- The firmware automatically detects at startup whether an SH1106 OLED or a TFT ST7789 LCD is connected.
+- All display/page logic is abstracted through `DisplayInterface`.
+- Dedicated modules for each display: `sh1106_display` (OLED), `st7789_display` (LCD).
+- Separate page rendering logic: `pages_sh1106.cpp` (OLED), `pages_st7789.cpp` (LCD).
+- Adapted navigation: On LCD, 1 detent = 1 page; on OLED, 2 detents = 1 page.
 
-## Module responsibilities
+## Module Responsibilities
 ### `src/modules/`
-- `encoder`: rotary input decoding (hardware abstraction)
-- `neopixel_status`: LED color/status output (OLED only)
-- `sensors`: AHT20 + BMP280 acquisition
-- `sh1106_display`: OLED rendering abstraction
-- `st7789_display`: LCD rendering abstraction
-- `pages_sh1106`: page rendering logic for OLED
-- `pages_st7789`: page rendering logic for LCD
+- `encoder`: Decodes encoder inputs (hardware abstraction).
+- `neopixel_status`: Color/status LED output (OLED only).
+- `sensors`: AHT20 + BMP280 data acquisition.
+- `sh1106_display`: OLED rendering abstraction.
+- `st7789_display`: LCD rendering abstraction.
+- `pages_sh1106`: Renders pages for OLED.
+- `pages_st7789`: Renders pages for LCD.
 
 ### `src/managers/`
-- `wifi_manager`: Wi-Fi retries and connection state
-- `forecast_manager`: OpenWeatherMap fetch + parse
-- `history`: ring buffer + LittleFS persistence
-- `ui_manager`: input handling, page/menu state, navigation logic (OLED/LCD)
+- `wifi_manager`: Wi-Fi retries and connection state.
+- `forecast_manager`: OpenWeatherMap retrieval + parsing.
+- `history`: Circular buffer + LittleFS persistence.
+- `ui_manager`: Input management, page/menu state, navigation logic (OLED/LCD).
 
 ### `src/utils/`
-- `logs`: circular in-memory log buffer + log macros
-- `system_info`: runtime memory/system metrics
+- `logs`: In-memory circular log buffer + logging macros.
+- `system_info`: Runtime memory/system metrics.
 
-## Runtime data flow
-1. `main.cpp` initializes display (auto-detect), sensors, Wi-Fi, time.
-2. `ui_manager.update()` drives periodic runtime loop and adapts navigation to display type.
-3. Managers refresh data (Wi-Fi, sensors, forecast, history).
-4. Pages render current state to the detected display (OLED or LCD).
-5. NeoPixel (OLED) or on-screen alert (LCD) reflects connection/alert state.
+## Runtime Data Flow
+1. `main.cpp` initializes the display (auto-detection), sensors, Wi-Fi, and time.
+2. `ui_manager.update()` drives the periodic loop and adapts navigation based on the display.
+3. Managers refresh data (Wi-Fi, sensors, forecasts, history).
+4. Pages display the current state on the detected display (OLED or LCD).
+5. NeoPixel (OLED) or on-screen alert (LCD) reflects the connection/alert status.
 
-## Persistence model
-- **NVS (Preferences)**: Non-volatile storage for small key-value data (e.g., last active page index).
+## Persistence Model
+- **NVS (Preferences)**: Non-volatile storage for small data (e.g., index of the last active page).
 - **LittleFS**: Filesystem on the internal flash memory for larger data.
   - **Recent History**: The last 24 hours are appended to a file (`/history/recent.dat`) to minimize flash wear.
-  - **Role**: Serves as a fast cache for reboot recovery and backup storage for logs.
+  - **Role**: Serves as a fast cache for rebooting and as backup storage for logs.
 - **SD Card**: Primary storage for long-term archiving.
   - **Format**: Daily CSV files (`/history/YYYY-MM-DD.csv`).
-  - **Benefit**: High capacity, easy PC readability, increased robustness compared to internal flash for frequent writes.
+  - **Advantage**: High capacity, easy to read on a PC, increased robustness compared to internal flash for frequent writes.
 
-## External dependencies
-- OLED driver (SH1106) and/or LCD driver (Adafruit ST7789)
+## External Dependencies
+- OLED (SH1106) and/or LCD (Adafruit ST7789) driver
 - Adafruit sensor libraries
 - ArduinoJson
 - WiFi / HTTPClient / LittleFS / Preferences
