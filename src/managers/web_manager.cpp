@@ -2,6 +2,7 @@
 #include <ESPmDNS.h>
 #include <LittleFS.h>
 #include "utils/logs.h"
+#include "utils/system_info.h"
 // Inclusion du fichier généré automatiquement par le script Python
 #include "web_pages.h"
 
@@ -120,14 +121,73 @@ void WebManager::_setupApi() {
 
     // API : Historique
     _server.on("/api/history", HTTP_GET, [this](AsyncWebServerRequest *request) {
+        // The original implementation sent one data point at a time, which could be very slow
+        // and cause a watchdog timeout on large history sets.
+        // This new implementation builds the JSON response in chunks to reduce network overhead
+        // and prevent blocking the async_tcp task for too long.
+        // UPDATE v1.116: The definitive fix is to downsample the data server-side before sending it.
         AsyncResponseStream *response = request->beginResponseStream("application/json");
         response->print("{\"data\":[");
         
-        const auto& records = _history->getRecentHistory();
+        const auto& full_history = _history->getRecentHistory();
+        
+        // --- Server-side downsampling to prevent watchdog timeouts ---
+        // The web graph doesn't need all 1440 points, so we downsample to a fixed resolution.
+        // This makes the solution scalable and robust.
+        const int TARGET_GRAPH_POINTS = 500;
+        std::vector<HistoryRecord> records;
+
+        if (full_history.size() <= TARGET_GRAPH_POINTS) {
+            records = full_history;
+        } else {
+            records.reserve(TARGET_GRAPH_POINTS);
+            double bucketSize = (double)full_history.size() / TARGET_GRAPH_POINTS;
+            for (int i = 0; i < TARGET_GRAPH_POINTS; ++i) {
+                int start_index = floor(i * bucketSize);
+                int end_index = floor((i + 1) * bucketSize);
+                if (end_index > (int)full_history.size()) end_index = full_history.size();
+
+                if (start_index >= end_index) continue;
+
+                double avg_t = 0, avg_h = 0, avg_p = 0;
+                int count = 0;
+                for (int j = start_index; j < end_index; ++j) {
+                    avg_t += full_history[j].t;
+                    avg_h += full_history[j].h;
+                    avg_p += full_history[j].p;
+                    count++;
+                }
+
+                if (count > 0) {
+                    HistoryRecord record;
+                    record.timestamp = full_history[start_index].timestamp;
+                    record.t = avg_t / count;
+                    record.h = avg_h / count;
+                    record.p = avg_p / count;
+                    records.push_back(record);
+                }
+            }
+        }
+        // --- End of downsampling ---
+
+        String chunk;
+        chunk.reserve(1024); // Reserve 1KB for the chunk
+
         for (size_t i = 0; i < records.size(); ++i) {
-            if (i > 0) response->print(",");
-            // Cast explicite du timestamp en long pour correspondre à %ld (time_t est 64 bits sur ESP32)
-            response->printf("{\"t\":%ld,\"temp\":%.1f,\"hum\":%.0f,\"pres\":%.1f}", (long)records[i].timestamp, records[i].t, records[i].h, records[i].p);
+            if (i > 0) {
+                chunk += ",";
+            }
+            char buffer[128];
+            snprintf(buffer, sizeof(buffer), "{\"t\":%ld,\"temp\":%.1f,\"hum\":%.0f,\"pres\":%.1f}", (long)records[i].timestamp, records[i].t, records[i].h, records[i].p);
+            chunk += buffer;
+
+            if (chunk.length() > 800 || i == records.size() - 1) {
+                response->print(chunk);
+                chunk = ""; // Reset chunk
+                // Give time to the network stack and watchdog
+                // to prevent a timeout on very large history sets.
+                delay(1); // This delay remains as a final safety net.
+            }
         }
         
         response->print("]}");
@@ -167,10 +227,9 @@ void WebManager::_setupApi() {
     });
 
     // API : Système
-    _server.on("/api/system", HTTP_GET, [](AsyncWebServerRequest *request) {
-        AsyncResponseStream *response = request->beginResponseStream("application/json");
-        response->print("{\"version\": \"" PROJECT_VERSION "\", \"name\": \"" PROJECT_NAME "\"}");
-        request->send(response);
+    _server.on("/api/system", HTTP_GET, [this](AsyncWebServerRequest *request) {
+        std::string system_info = getSystemInfoJson(_sd);
+        request->send(200, "application/json", system_info.c_str());
     });
 
     // API : Liste des fichiers

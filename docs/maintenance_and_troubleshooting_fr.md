@@ -1,6 +1,6 @@
 # Maintenance et dépannage
 
-Version minimale valide : 1.0.103
+Version minimale valide : 1.0.115
 
 ## Objectif
 Fournir des étapes de reprise pratiques lorsque le dashboard ne se comporte pas comme prévu.
@@ -59,12 +59,18 @@ Vérifier :
 
 **Cause** : Le système de fichiers (LittleFS) est très probablement corrompu. Cela arrive le plus souvent après une coupure de courant ou une déconnexion USB brutale pendant que l'appareil écrivait des données (historique, logs).
 
-**Solution de récupération** :
-1.  Téléversez la version 1.0.76 ou supérieure.
-2.  Débranchez l'appareil.
-3.  Rebranchez-le tout en **maintenant le bouton BOOT (GPIO 0) enfoncé**.
-4.  L'écran affichera un message de maintenance. Continuez de maintenir le bouton pendant 3 secondes jusqu'à ce que le formatage commence.
-5.  Relâchez le bouton. L'appareil va formater la mémoire (ce qui efface les données corrompues, y compris l'historique) et redémarrer proprement.
+**Récupération facile (formatage d'urgence) :**
+
+> **Astuce pour débutants :** Si votre MeteoHub S3 est bloqué ou redémarre en boucle, vous pouvez forcer un formatage d'urgence de la mémoire interne (LittleFS) sans ordinateur, simplement en maintenant le bouton BOOT au démarrage.
+
+**Procédure étape par étape :**
+1. Débranchez l'appareil de son alimentation USB.
+2. Maintenez le bouton **BOOT** enfoncé (généralement étiqueté "BOOT" ou connecté au GPIO 0).
+3. Tout en maintenant BOOT, rebranchez l'alimentation USB.
+4. Continuez de maintenir BOOT pendant environ 3 secondes. L'écran affichera un message de maintenance et indiquera que le formatage va commencer.
+5. Relâchez le bouton BOOT lorsque le message de formatage apparaît. L'appareil effacera la mémoire interne (toutes les données d'historique seront perdues) puis redémarrera automatiquement.
+
+Ce mode de récupération est conçu pour être accessible à tout utilisateur, même débutant, et ne nécessite aucun logiciel ou outil externe.
 
 ### 8) Erreurs I2C (`i2cRead returned Error -1`) et redémarrages inattendus
 **Symptômes** : Les logs affichent des erreurs `i2cRead returned Error -1` et/ou `Bus already started in Master Mode`. L'appareil peut redémarrer de manière inattendue, parfois avec un message `Reason: 8 - ASSOC_LEAVE` dans les logs Wi-Fi.
@@ -88,6 +94,13 @@ Vérifier :
 1. **Alimentation 3.3V** : Si votre module SD le permet, alimentez-le en 3.3V plutôt qu'en 5V. Cela évite le régulateur interne du module (souvent bruyant) et aligne les niveaux logiques avec l'ESP32.
 2. **Condensateur** : Ajoutez un condensateur de découplage (ex: 100µF) sur l'alimentation 3.3V près des capteurs ou du module SD.
 3. **Logiciel** : Le firmware (v1.0.95+) intègre un filtre logiciel qui ignore ces valeurs aberrantes.
+
+### 10) Crash de l'interface Web (Watchdog Timeout) et erreurs SD
+**Symptômes** : L'appareil redémarre en essayant de lire un gros fichier (Logs, Historique) depuis l'interface Web. Les logs affichent `Task watchdog got triggered` sur la tâche `async_tcp`.
+
+**Cause et Solution (Corrigé en v1.114+)** : Ce problème était dû à une opération bloquante dans le serveur web qui monopolisait le processeur lors du traitement de gros fichiers ou de flux de données (comme les graphiques d'historique). Cela déclenchait un timeout du "watchdog" de sécurité.
+
+Depuis la version 1.114, le serveur web utilise une méthode de streaming entièrement non-bloquante qui rend la main au processeur pendant les opérations longues. Cela résout définitivement le problème. Si vous rencontrez ce bug, veuillez mettre à jour votre firmware vers la v1.114 ou une version plus récente.
 
 ## Workflow de mise à jour sûr
 1. Sauvegarder les changements.
