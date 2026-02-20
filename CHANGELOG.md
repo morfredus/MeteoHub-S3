@@ -1,7 +1,14 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.93
+Minimum valid version: 1.0.117
+
+
+## Version 1.0.117
+- 1) **Web UI (Shared menu)**: Added a common navigation menu injected by `data/menu.js` and used across all web pages for consistent, low-maintenance navigation.
+- 2) **Web UI (Main page)**: The dashboard chart now displays only the last 2 hours, with continuous automatic refresh and smoother rendering (monotone curves without sharp angles).
+- 3) **Web UI (Long-term history)**: The long-term history page now displays only the last 24 hours.
+- 4) **Web UI (Startup & reload)**: On UI load, historical data is immediately reloaded from the API, then refreshed periodically so restored startup history is displayed using the new time windows (2h / 24h).
 
 ## Version 1.0.116
 - **Fix (Web Server)**: Implemented server-side downsampling for the history API endpoint (`/api/history`). This drastically reduces the amount of data sent for graphs, definitively fixing watchdog reboots with large datasets and improving scalability.

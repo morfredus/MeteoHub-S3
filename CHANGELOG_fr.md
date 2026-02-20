@@ -1,7 +1,14 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.93
+Version minimale valide : 1.0.117
+
+
+## Version 1.0.117
+- 1) **Web UI (Menu partagé)** : Ajout d'un menu de navigation commun injecté par `data/menu.js` et utilisé sur toutes les pages web pour garantir une navigation identique et facile à maintenir.
+- 2) **Web UI (Page principale)** : Le graphique du tableau de bord affiche désormais uniquement les 2 dernières heures, avec mise à jour automatique continue et rendu plus fluide (courbes monotones sans angles marqués).
+- 3) **Web UI (Historique long terme)** : La page d'historique long terme affiche désormais uniquement les 24 dernières heures.
+- 4) **Web UI (Démarrage & rechargement)** : À l'ouverture de l'interface, les données historiques sont immédiatement rechargées depuis l'API, puis rafraîchies périodiquement afin d'afficher l'historique restauré après démarrage selon les nouvelles fenêtres temporelles (2h / 24h).
 
 ## Version 1.0.116
 - **Correctif (Serveur Web)** : Implémentation du sous-échantillonnage (downsampling) côté serveur pour l'API de l'historique (`/api/history`). Cela réduit drastiquement la quantité de données envoyées pour les graphiques, corrigeant de manière définitive les redémarrages (watchdog) avec de grands volumes de données et améliorant la scalabilité.
