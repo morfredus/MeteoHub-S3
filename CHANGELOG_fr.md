@@ -1,10 +1,16 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.119
+Version minimale valide : 1.0.120
 
 
 
+
+
+## Version 1.0.120
+- **Correctif (Web Performance)** : Refactor de `data/app.js` pour charger uniquement les données nécessaires selon la page (historique seulement sur Dashboard/Long-term, statistiques seulement sur la page Stats), ce qui supprime les appels API lourds inutiles et réduit les blocages UI.
+- **Correctif (API History)** : Optimisation de `/api/history` avec paramètres `window` et `points` pour limiter côté serveur la fenêtre temporelle et le nombre de points renvoyés, réduisant fortement le temps de réponse et la charge CPU.
+- **Amélioration (Web UX)** : Réduction de la fréquence de rafraîchissement des gros endpoints (`history`, `stats`) pour fluidifier l'interface et éviter les pics de charge.
 
 ## Version 1.0.119
 - **Correctif (SD)** : Renforcement du formatage SD avec plusieurs tentatives à vitesses SPI décroissantes (4MHz, 1MHz, 400kHz), réinitialisation bas niveau entre chaque essai, et remount/validation automatique après formatage.
