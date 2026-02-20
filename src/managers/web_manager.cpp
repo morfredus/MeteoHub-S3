@@ -69,6 +69,9 @@ void WebManager::_setupRoutes() {
     _server.on("/footer.js", HTTP_GET, [](AsyncWebServerRequest *request) {
         request->send(200, "application/javascript", web_footer_js);
     });
+    _server.on("/menu.js", HTTP_GET, [](AsyncWebServerRequest *request) {
+        request->send(200, "application/javascript", web_menu_js);
+    });
     _server.on("/logs.html", HTTP_GET, [](AsyncWebServerRequest *request) {
         request->send(200, "text/html", web_logs_html);
     });
