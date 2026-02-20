@@ -26,14 +26,14 @@ function getHistoryWindowSeconds() {
     return getPageName() === 'longterm' ? HISTORY_WINDOWS_SECONDS.long : HISTORY_WINDOWS_SECONDS.short;
 }
 
-function getHistoryTargetPoints() {
-    return getPageName() === 'longterm' ? 360 : 120;
+function getHistoryIntervalSeconds() {
+    return getPageName() === 'longterm' ? 30 * 60 : 5 * 60;
 }
 
 function buildHistoryUrl() {
     const params = new URLSearchParams({
         window: String(getHistoryWindowSeconds()),
-        points: String(getHistoryTargetPoints())
+        interval: String(getHistoryIntervalSeconds())
     });
     return `/api/history?${params.toString()}`;
 }
@@ -152,6 +152,7 @@ function initChart() {
                     tension: 0.45,
                     cubicInterpolationMode: 'monotone',
                     pointRadius: 0,
+                    stepped: false,
                     yAxisID: 'y'
                 },
                 {
@@ -162,6 +163,7 @@ function initChart() {
                     tension: 0.45,
                     cubicInterpolationMode: 'monotone',
                     pointRadius: 0,
+                    stepped: false,
                     yAxisID: 'y1',
                     hidden: false
                 },
@@ -173,6 +175,7 @@ function initChart() {
                     tension: 0.45,
                     cubicInterpolationMode: 'monotone',
                     pointRadius: 0,
+                    stepped: false,
                     yAxisID: 'y2',
                     hidden: false
                 }
