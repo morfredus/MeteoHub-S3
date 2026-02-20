@@ -81,7 +81,7 @@ async function fetchSystem() {
         const res = await fetch('/api/system');
         const data = await res.json();
         const version = document.getElementById('version');
-        if (version) version.textContent = data.version;
+        if (version) version.textContent = data.project_version || data.version || '--';
     } catch (e) {}
 }
 
