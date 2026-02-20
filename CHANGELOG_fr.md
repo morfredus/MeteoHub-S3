@@ -1,12 +1,22 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.121
+Version minimale valide : 1.0.123
 
 
 
 
 
+
+
+## Version 1.0.123
+- **Correctif (Build)** : Correction des littéraux JSON échappés dans `/api/history` (`web_manager.cpp`) après la mise à jour d'agrégation par intervalle, rétablissant la compilation C++.
+
+## Version 1.0.122
+- **Correctif (Graphiques Web)** : `/api/history` prend désormais en charge une agrégation explicite par `interval` avec moyenne côté serveur, afin de réduire la taille des réponses et la charge CPU tout en conservant des courbes fluides.
+- **Fonctionnalité (Graphe Dashboard)** : Le tableau de bord demande exactement les 2 dernières heures avec un pas de 5 minutes (`window=7200`, `interval=300`).
+- **Fonctionnalité (Graphe Historique 24H)** : La page historique demande exactement les 24 dernières heures avec un pas de 30 minutes (`window=86400`, `interval=1800`) pour réduire l'usage mémoire et le temps de rendu.
+- **Rendu UI** : Les datasets Chart.js utilisent explicitement des courbes monotones non "stepped" pour relier les points sans angles droits artificiels.
 
 ## Version 1.0.121
 - **Fix (Build)** : Corrected JSON string escaping in `web_manager.cpp` for `/api/history` response generation, fixing C++ compilation errors in `esp32-s3-oled` and restoring firmware build.

@@ -1,12 +1,22 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.121
+Minimum valid version: 1.0.123
 
 
 
 
 
+
+
+## Version 1.0.123
+- **Fix (Build)**: Corrected escaped JSON literals in `/api/history` (`web_manager.cpp`) after interval aggregation update, restoring C++ compilation.
+
+## Version 1.0.122
+- **Fix (Web Graphs)**: `/api/history` now supports explicit `interval` bucketing and server-side averaging to reduce payload size and CPU usage while keeping smooth chart lines.
+- **Feature (Dashboard Graph)**: The main dashboard now requests exactly the last 2 hours with a 5-minute step (`window=7200`, `interval=300`).
+- **Feature (24H History Graph)**: The long-term page now requests exactly the last 24 hours with a 30-minute step (`window=86400`, `interval=1800`) to reduce memory and rendering load.
+- **UI Rendering**: Chart datasets explicitly use non-stepped monotone curves to keep smooth point-to-point interpolation.
 
 ## Version 1.0.121
 - **Fix (Build)**: Corrected JSON string escaping in `web_manager.cpp` for `/api/history` response generation, fixing C++ compilation errors in `esp32-s3-oled` and restoring firmware build.
