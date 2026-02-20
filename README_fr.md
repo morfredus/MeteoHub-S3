@@ -2,11 +2,7 @@
 
 # MeteoHub S3
 
-<<<<<<< HEAD
-Version minimale valide : 1.0.117
-=======
-Version minimale valide : 1.0.104
->>>>>>> main
+Version minimale valide : 1.0.120
 
 ## Documentation complète
 - [Index de la documentation](docs/index_fr.md)
@@ -43,18 +39,7 @@ Les deux environnements sont détectés automatiquement au démarrage et l'inter
 - Commande de build : `platformio run`
 - Commande d’upload : `platformio run --target upload`
 
-<<<<<<< HEAD
-## Fonctionnalités
-- Acquisition des capteurs (AHT20 + BMP280)
-- Gestion Wi-Fi avec logique de reprise
-- Synchronisation NTP
-- Récupération des prévisions et alertes (OpenWeatherMap)
-- Interface par pages avec encodeur rotatif et boutons (OLED ou LCD)
-- **Interface Web** : Tableau de bord complet, graphiques, logs système et gestionnaire de fichiers (SD/Interne) accessibles via navigateur (`http://meteohub.local`).
-- Persistance de l’historique dans LittleFS (cache) et sur Carte SD (archive)
-- LED d’état avec NeoPixel (OLED) ou alerte à l’écran (LCD)
-=======
-## Fonctionnalités principales (v1.0.104)
+## Fonctionnalités principales
 
 - **Gestion avancée de la carte SD**
 	- La carte SD devient le support principal pour l’archivage long terme (fichiers CSV quotidiens)
@@ -71,7 +56,7 @@ Les deux environnements sont détectés automatiquement au démarrage et l'inter
 - **Interface Web enrichie**
 	- Tableau de bord temps réel, graphiques interactifs, statistiques et historique long terme
 	- Page logs système avec rafraîchissement automatique et coloration (Info/Warn/Error)
-	- Footer unifié avec accès direct au gestionnaire de fichiers et aux logs
+	- Footer et menu partagés pour une navigation cohérente sur toutes les pages
 	- Gestionnaire de fichiers multi-support (LittleFS/SD)
 
 - **Expérience utilisateur & sécurité**
@@ -82,7 +67,7 @@ Les deux environnements sont détectés automatiquement au démarrage et l'inter
 - **Documentation**
 	- Toute la documentation utilisateur (EN/FR) est strictement synchronisée avec le code et les fonctionnalités
 	- La version minimale requise est toujours indiquée
->>>>>>> main
+
 
 ## LCD vs OLED : Différences clés
 - **Navigation** : Sur OLED, 1 cran = 1 page (module HW-040 complet, boutons + OLED intégré) ; sur LCD, 2 crans = 1 page (module EC11 seul).

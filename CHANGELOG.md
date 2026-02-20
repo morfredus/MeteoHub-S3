@@ -1,10 +1,16 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.119
+Minimum valid version: 1.0.120
 
 
 
+
+
+## Version 1.0.120
+- **Fix (Web Performance)**: Refactored `data/app.js` to load only page-relevant data (history only on Dashboard/Long-term, stats only on Stats page), removing unnecessary heavy API calls and reducing UI freezes.
+- **Fix (History API)**: Optimized `/api/history` with `window` and `points` parameters to limit server-side time range and returned points, significantly reducing response time and CPU load.
+- **Improvement (Web UX)**: Lowered refresh rate of heavy endpoints (`history`, `stats`) to smooth UI behavior and avoid load spikes.
 
 ## Version 1.0.119
 - **Fix (SD)**: Hardened SD formatting with multi-retry attempts at decreasing SPI speeds (4MHz, 1MHz, 400kHz), low-level reinit between attempts, and automatic remount/validation after formatting.

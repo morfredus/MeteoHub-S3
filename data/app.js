@@ -5,26 +5,37 @@ const HISTORY_WINDOWS_SECONDS = {
     long: 24 * 60 * 60
 };
 
-function getPageMode() {
-    const page = document.body?.dataset?.page;
-    if (page === 'longterm') {
-        return 'long';
-    }
-    return 'short';
+const HISTORY_REFRESH_MS = 15000;
+const LIVE_REFRESH_MS = 5000;
+const STATS_REFRESH_MS = 15000;
+
+function getPageName() {
+    return document.body?.dataset?.page || 'dashboard';
 }
 
-function getTimeWindowSeconds() {
-    return HISTORY_WINDOWS_SECONDS[getPageMode()];
+function isHistoryPage() {
+    const page = getPageName();
+    return page === 'dashboard' || page === 'longterm';
 }
 
-function filterHistoryWindow(data) {
-    if (!Array.isArray(data) || data.length === 0) {
-        return [];
-    }
+function isStatsPage() {
+    return getPageName() === 'stats';
+}
 
-    const latest_timestamp = data[data.length - 1].t;
-    const min_timestamp = latest_timestamp - getTimeWindowSeconds();
-    return data.filter((point) => point.t >= min_timestamp);
+function getHistoryWindowSeconds() {
+    return getPageName() === 'longterm' ? HISTORY_WINDOWS_SECONDS.long : HISTORY_WINDOWS_SECONDS.short;
+}
+
+function getHistoryTargetPoints() {
+    return getPageName() === 'longterm' ? 360 : 120;
+}
+
+function buildHistoryUrl() {
+    const params = new URLSearchParams({
+        window: String(getHistoryWindowSeconds()),
+        points: String(getHistoryTargetPoints())
+    });
+    return `/api/history?${params.toString()}`;
 }
 
 async function fetchLive() {
@@ -54,10 +65,12 @@ async function fetchLive() {
 }
 
 async function fetchHistory() {
+    if (!chart || !isHistoryPage()) return;
+
     try {
-        const res = await fetch('/api/history');
+        const res = await fetch(buildHistoryUrl());
         const json = await res.json();
-        updateChart(filterHistoryWindow(json.data));
+        updateChart(Array.isArray(json.data) ? json.data : []);
     } catch (e) {
         console.error('Erreur historique', e);
     }
@@ -73,6 +86,8 @@ async function fetchSystem() {
 }
 
 async function fetchStats() {
+    if (!isStatsPage()) return;
+
     try {
         const res = await fetch('/api/stats');
         const data = await res.json();
@@ -121,7 +136,7 @@ function updateChart(data) {
 
 function initChart() {
     const chart_canvas = document.getElementById('historyChart');
-    if (!chart_canvas) return;
+    if (!chart_canvas || !isHistoryPage()) return;
 
     const ctx = chart_canvas.getContext('2d');
     chart = new Chart(ctx, {
@@ -198,12 +213,19 @@ function initChart() {
 }
 
 window.onload = () => {
-    initChart();
     fetchSystem();
     fetchLive();
-    fetchStats();
-    fetchHistory();
 
-    setInterval(fetchLive, 5000);
-    setInterval(fetchHistory, 5000);
+    if (isHistoryPage()) {
+        initChart();
+        fetchHistory();
+        setInterval(fetchHistory, HISTORY_REFRESH_MS);
+    }
+
+    if (isStatsPage()) {
+        fetchStats();
+        setInterval(fetchStats, STATS_REFRESH_MS);
+    }
+
+    setInterval(fetchLive, LIVE_REFRESH_MS);
 };
