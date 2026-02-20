@@ -1,13 +1,17 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.123
+Minimum valid version: 1.0.124
 
 
 
 
 
 
+
+## Version 1.0.124
+- **Fix (Web Footer)**: Removed hardcoded project name/version from `data/footer.js`; footer now reads `project_name` and `project_version` from `/api/system` (sourced from PlatformIO build flags).
+- **Fix (Web UI)**: Updated `data/app.js` to read `project_version` from `/api/system` with backward-compatible fallback.
 
 ## Version 1.0.123
 - **Fix (Build)**: Corrected escaped JSON literals in `/api/history` (`web_manager.cpp`) after interval aggregation update, restoring C++ compilation.

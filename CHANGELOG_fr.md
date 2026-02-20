@@ -1,13 +1,17 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.123
+Version minimale valide : 1.0.124
 
 
 
 
 
 
+
+## Version 1.0.124
+- **Correctif (Footer Web)** : Suppression du nom/version codés en dur dans `data/footer.js` ; le footer lit désormais `project_name` et `project_version` depuis `/api/system` (valeurs issues des flags PlatformIO).
+- **Correctif (Web UI)** : Mise à jour de `data/app.js` pour lire `project_version` depuis `/api/system` avec compatibilité descendante.
 
 ## Version 1.0.123
 - **Correctif (Build)** : Correction des littéraux JSON échappés dans `/api/history` (`web_manager.cpp`) après la mise à jour d'agrégation par intervalle, rétablissant la compilation C++.
