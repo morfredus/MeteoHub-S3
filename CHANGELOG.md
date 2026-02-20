@@ -1,9 +1,14 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.118
+Minimum valid version: 1.0.119
 
 
+
+
+## Version 1.0.119
+- **Fix (SD)**: Hardened SD formatting with multi-retry attempts at decreasing SPI speeds (4MHz, 1MHz, 400kHz), low-level reinit between attempts, and automatic remount/validation after formatting.
+- **Improvement (SD)**: Hardened SD mount at startup with multi-frequency retries (8MHz, 4MHz, 1MHz) to better tolerate unstable cards and sensitive wiring setups.
 
 ## Version 1.0.118
 - **Fix (Web UI)**: Added the `/menu.js` server route in `web_manager.cpp` to serve the new shared navigation script embedded in firmware. The shared menu now appears correctly after firmware build and browser hard refresh.
