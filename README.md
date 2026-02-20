@@ -3,7 +3,7 @@
 # MeteoHub S3
 
 <<<<<<< HEAD
-Minimum valid version: 1.0.116
+Minimum valid version: 1.0.117
 =======
 Minimum valid version: 1.0.104
 >>>>>>> main
