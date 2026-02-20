@@ -1,6 +1,6 @@
 # Project Architecture
 
-Minimum valid version: 1.0.115
+Minimum valid version: 1.0.119
 
 ## Goal
 Explain the source code organization, the management of OLED and LCD environments, and the data flow within the system.
@@ -54,6 +54,16 @@ Explain the source code organization, the management of OLED and LCD environment
 - **SD Card**: Primary storage for long-term archiving.
   - **Format**: Daily CSV files (`/history/YYYY-MM-DD.csv`).
   - **Advantage**: High capacity, easy to read on a PC, increased robustness compared to internal flash for frequent writes.
+
+---
+**[v1.0.119+] SD Card Robustness**
+
+From version 1.0.119, SD card formatting and mounting are much more robust:
+- Multiple retry attempts at decreasing SPI speeds (4MHz, 1MHz, 400kHz) during formatting.
+- Low-level reinitialization between each attempt.
+- Automatic remount and validation after formatting.
+- Startup SD mounting uses multi-frequency retries (8MHz, 4MHz, 1MHz) to tolerate unstable cards and wiring.
+This greatly improves reliability with problematic SD cards and reduces the risk of mount failures.
 
 ## External Dependencies
 - OLED (SH1106) and/or LCD (Adafruit ST7789) driver

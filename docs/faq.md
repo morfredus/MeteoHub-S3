@@ -1,6 +1,6 @@
 # FAQ
 
-Minimum valid version: 1.0.115
+Minimum valid version: 1.0.119
 
 ## Is internet required?
 Yes, for forecast and alert updates. Local sensor pages still work without internet.
@@ -40,6 +40,16 @@ Filesystem corruption is rare but can happen during a power outage.
 	- If the device is stuck or keeps rebooting, you can force an emergency format of the internal memory (LittleFS) without a computer: unplug the power, hold the **BOOT** button, plug the power back in, wait for the maintenance message on the screen, then release the button. The device will erase the memory and reboot cleanly (all history data will be lost).
 	- This procedure is accessible to any user, even beginners.
 3.  **Maximum Robustness (Advanced):** For critical applications, the safest alternatives are to store data on an **SD card** (requires a hardware modification) or send it to a **Cloud service** (e.g., ThingSpeak, MQTT broker), which protects it from any local hardware failure.
+
+---
+**[v1.0.119+] SD Card Robustness**
+
+Starting from version 1.0.119, SD card formatting and mounting are much more robust:
+- Multiple retry attempts at decreasing SPI speeds (4MHz, 1MHz, 400kHz) during formatting.
+- Low-level reinitialization between each attempt.
+- Automatic remount and validation after formatting.
+- Startup SD mounting uses multi-frequency retries (8MHz, 4MHz, 1MHz) to tolerate unstable cards and wiring.
+This greatly improves reliability with problematic SD cards and reduces the risk of mount failures.
 
 The firmware already uses robust writing techniques (appending data rather than full rewrites) to minimize wear and risks.
 
