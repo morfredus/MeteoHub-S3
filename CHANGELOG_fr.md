@@ -1,8 +1,12 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.117
+Version minimale valide : 1.0.118
 
+
+
+## Version 1.0.118
+- **Correctif (Web UI)** : Ajout de la route serveur `/menu.js` dans `web_manager.cpp` pour servir le nouveau menu partagé intégré au firmware. Le menu apparaît désormais correctement après compilation et rechargement navigateur.
 
 ## Version 1.0.117
 - 1) **Web UI (Menu partagé)** : Ajout d'un menu de navigation commun injecté par `data/menu.js` et utilisé sur toutes les pages web pour garantir une navigation identique et facile à maintenir.

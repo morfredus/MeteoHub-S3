@@ -1,8 +1,12 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.117
+Minimum valid version: 1.0.118
 
+
+
+## Version 1.0.118
+- **Fix (Web UI)**: Added the `/menu.js` server route in `web_manager.cpp` to serve the new shared navigation script embedded in firmware. The shared menu now appears correctly after firmware build and browser hard refresh.
 
 ## Version 1.0.117
 - 1) **Web UI (Shared menu)**: Added a common navigation menu injected by `data/menu.js` and used across all web pages for consistent, low-maintenance navigation.
