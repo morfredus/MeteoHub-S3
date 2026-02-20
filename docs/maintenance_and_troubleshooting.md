@@ -1,6 +1,6 @@
 # Maintenance and Troubleshooting
 
-Minimum valid version: 1.0.115
+Minimum valid version: 1.0.119
 
 ## Goal
 Provide practical recovery steps when the dashboard does not behave as expected.
@@ -53,6 +53,16 @@ Check:
 - Clear logs
 - Clear history
 - Format SD (if present)
+
+---
+**[v1.0.119+] SD Card Robustness**
+
+From version 1.0.119, SD card formatting and mounting are much more robust:
+- Multiple retry attempts at decreasing SPI speeds (4MHz, 1MHz, 400kHz) during formatting.
+- Low-level reinitialization between each attempt.
+- Automatic remount and validation after formatting.
+- Startup SD mounting uses multi-frequency retries (8MHz, 4MHz, 1MHz) to tolerate unstable cards and wiring.
+This greatly improves reliability with problematic SD cards and reduces the risk of mount failures.
 
 ### 7) Boot Loops or System Freeze at Startup (Watchdog Triggered)
 **Symptoms**: The device reboots in a loop, logs show `Task watchdog got triggered` and/or errors like `vfs_api.cpp:105] open(): ... does not exist, no permits for creation`. The web interface is unresponsive.
