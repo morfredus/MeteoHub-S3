@@ -8,18 +8,14 @@
     <!-- Chart.js depuis CDN pour l'exemple (à télécharger localement pour usage hors ligne strict) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
+<body data-page="dashboard">
     <div class="container">
         <header>
             <h1>MeteoHub S3</h1>
             <div id="status">Connexion...</div>
         </header>
 
-        <nav>
-            <a href="/" class="active">Tableau de bord</a>
-            <a href="/stats.html">Statistiques</a>
-            <a href="/longterm.html">Historique Long Terme</a>
-        </nav>
+        <nav data-shared-menu="true" data-active="/"></nav>
 
         <div class="grid">
             <div class="card">
@@ -45,6 +41,7 @@
     </div>
 
     <script src="app.js"></script>
+    <script src="menu.js"></script>
     <script src="footer.js"></script>
 </body>
 </html>
