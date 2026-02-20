@@ -1,11 +1,15 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.120
+Version minimale valide : 1.0.121
 
 
 
 
+
+
+## Version 1.0.121
+- **Fix (Build)** : Corrected JSON string escaping in `web_manager.cpp` for `/api/history` response generation, fixing C++ compilation errors in `esp32-s3-oled` and restoring firmware build.
 
 ## Version 1.0.120
 - **Correctif (Web Performance)** : Refactor de `data/app.js` pour charger uniquement les données nécessaires selon la page (historique seulement sur Dashboard/Long-term, statistiques seulement sur la page Stats), ce qui supprime les appels API lourds inutiles et réduit les blocages UI.
