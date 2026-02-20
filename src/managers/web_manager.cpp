@@ -160,7 +160,7 @@ void WebManager::_setupApi() {
         }
 
         AsyncResponseStream *response = request->beginResponseStream("application/json");
-        response->print("{"data":[");
+        response->print("{\"data\":[");
 
         bool first = true;
         for (size_t i = start_index; i < full_history.size(); i += step) {
@@ -174,7 +174,7 @@ void WebManager::_setupApi() {
             snprintf(
                 buffer,
                 sizeof(buffer),
-                "{"t":%ld,"temp":%.1f,"hum":%.0f,"pres":%.1f}",
+                "{\"t\":%ld,\"temp\":%.1f,\"hum\":%.0f,\"pres\":%.1f}",
                 static_cast<long>(record.timestamp),
                 record.t,
                 record.h,
