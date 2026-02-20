@@ -7,33 +7,26 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
+<body data-page="longterm">
     <div class="container">
         <header>
             <h1>Historique Long Terme</h1>
             <div id="status">Connexion...</div>
         </header>
 
-        <nav>
-            <a href="/">Tableau de bord</a>
-            <a href="/stats.html">Statistiques</a>
-            <a href="/longterm.html" class="active">Historique Long Terme</a>
-        </nav>
+        <nav data-shared-menu="true" data-active="/longterm.html"></nav>
 
         <div class="chart-container" style="height: 600px;">
             <canvas id="historyChart"></canvas>
         </div>
-        <p style="text-align: center; color: #666; margin-top: 10px;">Données sur 2 ans (échantillonnage optimisé)</p>
+        <p style="text-align: center; color: #666; margin-top: 10px;">Données des 24 dernières heures</p>
 
         <footer>
-            MeteoHub S3 Web Interface - v<span id="version">--</span> <a href="/files.html" class="footer-icon" title="Gestionnaire de fichiers">📂</a>
         </footer>
     </div>
 
     <script src="app.js"></script>
+    <script src="menu.js"></script>
     <script src="footer.js"></script>
-    <script>
-        window.onload = () => { initChart(); fetchSystem(); fetchHistory(); };
-    </script>
 </body>
 </html>
