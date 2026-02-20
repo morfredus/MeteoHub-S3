@@ -1,9 +1,14 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.118
+Version minimale valide : 1.0.119
 
 
+
+
+## Version 1.0.119
+- **Correctif (SD)** : Renforcement du formatage SD avec plusieurs tentatives à vitesses SPI décroissantes (4MHz, 1MHz, 400kHz), réinitialisation bas niveau entre chaque essai, et remount/validation automatique après formatage.
+- **Amélioration (SD)** : Renforcement du montage SD au démarrage avec retries multi-fréquences (8MHz, 4MHz, 1MHz) pour mieux tolérer les cartes instables et les montages sensibles.
 
 ## Version 1.0.118
 - **Correctif (Web UI)** : Ajout de la route serveur `/menu.js` dans `web_manager.cpp` pour servir le nouveau menu partagé intégré au firmware. Le menu apparaît désormais correctement après compilation et rechargement navigateur.
