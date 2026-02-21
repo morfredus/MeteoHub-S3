@@ -1,28 +1,60 @@
 // Affichage de l'alerte météo sur le dashboard
+function getAlertThemeClass(level) {
+    if (level >= 3) return 'alert-level-red';
+    if (level === 2) return 'alert-level-orange';
+    if (level === 1) return 'alert-level-yellow';
+    return 'alert-level-none';
+}
+
+function applyAlertCardTheme(level) {
+    const alertCard = document.getElementById('alertCard');
+    if (!alertCard) return;
+
+    alertCard.classList.remove('alert-level-none', 'alert-level-yellow', 'alert-level-orange', 'alert-level-red');
+    alertCard.classList.add(getAlertThemeClass(level));
+}
+
+function renderAlertFromLiveData(data) {
+    const alertText = document.getElementById('alertText');
+    if (!alertText) return;
+
+    if (data.alert_active) {
+        const level = Number.isFinite(data.alert_severity) ? data.alert_severity : 0;
+        const event = data.alert_event_fr || data.alert_event || 'Alerte météo';
+        const sender = data.alert_sender ? ` • Source: ${data.alert_sender}` : '';
+        alertText.textContent = `Niveau ${level} - ${event}${sender}`;
+        alertText.style.fontWeight = '700';
+        applyAlertCardTheme(level);
+    } else {
+        alertText.textContent = 'Aucune alerte météo en cours.';
+        alertText.style.fontWeight = '500';
+        applyAlertCardTheme(0);
+    }
+}
+
 async function fetchAlert() {
-    const alertCard = document.getElementById('alert-card');
-    const alertContent = document.getElementById('alert-content');
-    if (!alertCard || !alertContent) return;
+    const alertText = document.getElementById('alertText');
+    if (!alertText) return;
     try {
         const res = await fetch('/api/alert');
         const data = await res.json();
-        alertCard.classList.remove('alert-yellow', 'alert-orange', 'alert-red');
+
         if (data.active) {
-            let colorClass = '';
-            let label = '';
-            if (data.severity >= 3) { colorClass = 'alert-red'; label = 'Alerte rouge'; }
-            else if (data.severity === 2) { colorClass = 'alert-orange'; label = 'Alerte orange'; }
-            else { colorClass = 'alert-yellow'; label = 'Alerte jaune'; }
-            alertCard.classList.add(colorClass);
-            // Affichage du texte complet de l'alerte en français si disponible
-            let alertText = data.description && data.description.length > 0 ? data.description : data.event;
-            alertContent.innerHTML = `${label} : <b>${alertText}</b> <span style="font-weight:normal">(${data.sender})</span>`;
+            const level = Number.isFinite(data.severity) ? data.severity : 0;
+            const event = data.event_fr || data.event || 'Alerte météo';
+            const sender = data.sender ? ` • Source: ${data.sender}` : '';
+            const details = data.description ? ` — ${data.description}` : '';
+            alertText.textContent = `Niveau ${level} - ${event}${sender}${details}`;
+            alertText.style.fontWeight = '700';
+            applyAlertCardTheme(level);
         } else {
-            alertContent.textContent = "Aucune alerte météo en cours.";
+            alertText.textContent = 'Aucune alerte météo en cours.';
+            alertText.style.fontWeight = '500';
+            applyAlertCardTheme(0);
         }
     } catch (e) {
-        alertContent.textContent = "Erreur lors de la récupération de l'alerte météo.";
-        alertCard.classList.remove('alert-yellow', 'alert-orange', 'alert-red');
+        alertText.textContent = "Erreur lors de la récupération de l'alerte météo.";
+        applyAlertCardTheme(0);
     }
 }
 let chart;
@@ -83,21 +115,7 @@ async function fetchLive() {
             status.style.color = '#0f0';
         }
 
-        const alertText = document.getElementById('alertText');
-        if (alertText) {
-            if (data.alert_active) {
-                const level = Number.isFinite(data.alert_severity) ? data.alert_severity : 0;
-                const event = data.alert_event_fr || data.alert_event || 'Alerte météo';
-                const sender = data.alert_sender ? ` (${data.alert_sender})` : '';
-                alertText.textContent = `${event}${sender} - Niveau ${level}`;
-                alertText.style.color = '#ff6b6b';
-                alertText.style.fontWeight = 'bold';
-            } else {
-                alertText.textContent = 'Aucune alerte';
-                alertText.style.color = '#7CFC00';
-                alertText.style.fontWeight = 'normal';
-            }
-        }
+        renderAlertFromLiveData(data);
     } catch (e) {
         const status = document.getElementById('status');
         if (status) {
@@ -261,6 +279,7 @@ function initChart() {
 window.onload = () => {
     fetchSystem();
     fetchLive();
+    fetchAlert();
 
     if (isHistoryPage()) {
         initChart();
@@ -274,4 +293,5 @@ window.onload = () => {
     }
 
     setInterval(fetchLive, LIVE_REFRESH_MS);
+    setInterval(fetchAlert, LIVE_REFRESH_MS);
 };

@@ -1,13 +1,19 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.127
+Version minimale valide : 1.0.128
 
 
 
 
 
 
+
+## Version 1.0.128
+- **Correctif (Alertes Web)** : Ajout d'un endpoint dédié `/api/alert` et utilisation systématique de la traduction française (`event_fr`) pour aligner l'UI Web avec l'OLED.
+- **Amélioration (UX Alerte Web)** : Le cartouche d'alerte du dashboard adapte maintenant sa couleur de fond et de texte selon la sévérité, avec contraste lisible, et affiche des détails plus complets (source + description).
+- **Correctif (Valeurs capteurs live)** : `/api/live` renvoie désormais les vraies mesures issues de `SensorManager` (`temp`, `hum`, `pres`) au lieu de valeurs fictives, pour afficher les données réelles dans les cartouches.
+- **Intégration** : `WebManager` reçoit maintenant `SensorManager` au démarrage pour alimenter les APIs live.
 
 ## Version 1.0.127
 - **Correctif (Langue Alerte Web)** : L'API Web `/api/live` expose désormais les champs d'alerte météo depuis `ForecastManager`, avec un libellé traduit en français (`alert_event_fr`) pour aligner le rendu Web avec l'OLED.

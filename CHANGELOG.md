@@ -1,13 +1,19 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.127
+Minimum valid version: 1.0.128
 
 
 
 
 
 
+
+## Version 1.0.128
+- **Fix (Web Alerts)**: Added dedicated `/api/alert` endpoint and ensured web alert title uses French translation (`event_fr`) to match OLED language.
+- **Improvement (Web Alert UX)**: Dashboard alert card now changes background/text colors by severity with accessible contrast, and shows richer alert details (source + description).
+- **Fix (Live Sensor Values)**: `/api/live` now returns real values from `SensorManager` (`temp`, `hum`, `pres`) instead of placeholders, so dashboard cards display actual sensor readings.
+- **Integration**: `WebManager` now receives `SensorManager` at startup to provide live sensor data to web APIs.
 
 ## Version 1.0.127
 - **Fix (Web Alert Language)**: Web API `/api/live` now exposes weather alert fields from `ForecastManager`, including a French-translated alert label (`alert_event_fr`) for UI consistency with OLED.
