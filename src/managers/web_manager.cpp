@@ -69,6 +69,9 @@ void WebManager::_setupRoutes() {
     _server.on("/footer.js", HTTP_GET, [](AsyncWebServerRequest *request) {
         request->send(200, "application/javascript", web_footer_js);
     });
+    _server.on("/menu.js", HTTP_GET, [](AsyncWebServerRequest *request) {
+        request->send(200, "application/javascript", web_menu_js);
+    });
     _server.on("/logs.html", HTTP_GET, [](AsyncWebServerRequest *request) {
         request->send(200, "text/html", web_logs_html);
     });
@@ -121,75 +124,126 @@ void WebManager::_setupApi() {
 
     // API : Historique
     _server.on("/api/history", HTTP_GET, [this](AsyncWebServerRequest *request) {
-        // The original implementation sent one data point at a time, which could be very slow
-        // and cause a watchdog timeout on large history sets.
-        // This new implementation builds the JSON response in chunks to reduce network overhead
-        // and prevent blocking the async_tcp task for too long.
-        // UPDATE v1.116: The definitive fix is to downsample the data server-side before sending it.
+        // Endpoint optimisé : réduction mémoire + réponse rapide
+        // Params:
+        // - window=<seconds>   : fenêtre temporelle depuis le dernier point
+        // - interval=<seconds> : agrégation temporelle (moyenne par bucket)
+        // - points=<N>         : fallback de décimation si interval absent
+        const auto& full_history = _history->getRecentHistory();
+
+        int window_s = 0;
+        if (request->hasParam("window")) {
+            window_s = request->getParam("window")->value().toInt();
+            if (window_s < 0) window_s = 0;
+        }
+
+        int interval_s = 0;
+        if (request->hasParam("interval")) {
+            interval_s = request->getParam("interval")->value().toInt();
+            if (interval_s < 0) interval_s = 0;
+        }
+
+        int max_points = 0;
+        if (request->hasParam("points")) {
+            max_points = request->getParam("points")->value().toInt();
+            if (max_points < 0) max_points = 0;
+        }
+
+        size_t start_index = 0;
+        if (!full_history.empty() && window_s > 0) {
+            const long latest_ts = static_cast<long>(full_history.back().timestamp);
+            const long min_ts = latest_ts - static_cast<long>(window_s);
+
+            size_t i = full_history.size();
+            while (i > 0 && static_cast<long>(full_history[i - 1].timestamp) >= min_ts) {
+                i--;
+            }
+            start_index = i;
+        }
+
         AsyncResponseStream *response = request->beginResponseStream("application/json");
         response->print("{\"data\":[");
-        
-        const auto& full_history = _history->getRecentHistory();
-        
-        // --- Server-side downsampling to prevent watchdog timeouts ---
-        // The web graph doesn't need all 1440 points, so we downsample to a fixed resolution.
-        // This makes the solution scalable and robust.
-        const int TARGET_GRAPH_POINTS = 500;
-        std::vector<HistoryRecord> records;
 
-        if (full_history.size() <= TARGET_GRAPH_POINTS) {
-            records = full_history;
-        } else {
-            records.reserve(TARGET_GRAPH_POINTS);
-            double bucketSize = (double)full_history.size() / TARGET_GRAPH_POINTS;
-            for (int i = 0; i < TARGET_GRAPH_POINTS; ++i) {
-                int start_index = floor(i * bucketSize);
-                int end_index = floor((i + 1) * bucketSize);
-                if (end_index > (int)full_history.size()) end_index = full_history.size();
+        bool first = true;
+        const size_t available_points = full_history.size() - start_index;
 
-                if (start_index >= end_index) continue;
+        if (interval_s > 0 && available_points > 0) {
+            const long latest_ts = static_cast<long>(full_history.back().timestamp);
+            const long window_start_ts = (window_s > 0) ? (latest_ts - static_cast<long>(window_s)) : static_cast<long>(full_history[start_index].timestamp);
 
-                double avg_t = 0, avg_h = 0, avg_p = 0;
+            size_t idx = start_index;
+            for (long bucket_start = window_start_ts; bucket_start <= latest_ts; bucket_start += interval_s) {
+                const long bucket_end = bucket_start + interval_s;
+                double sum_t = 0.0;
+                double sum_h = 0.0;
+                double sum_p = 0.0;
                 int count = 0;
-                for (int j = start_index; j < end_index; ++j) {
-                    avg_t += full_history[j].t;
-                    avg_h += full_history[j].h;
-                    avg_p += full_history[j].p;
+
+                while (idx < full_history.size()) {
+                    const long ts = static_cast<long>(full_history[idx].timestamp);
+                    if (ts < bucket_start) {
+                        idx++;
+                        continue;
+                    }
+                    if (ts >= bucket_end) {
+                        break;
+                    }
+
+                    sum_t += full_history[idx].t;
+                    sum_h += full_history[idx].h;
+                    sum_p += full_history[idx].p;
                     count++;
+                    idx++;
                 }
 
-                if (count > 0) {
-                    HistoryRecord record;
-                    record.timestamp = full_history[start_index].timestamp;
-                    record.t = avg_t / count;
-                    record.h = avg_h / count;
-                    record.p = avg_p / count;
-                    records.push_back(record);
+                if (count == 0) {
+                    continue;
                 }
+
+                if (!first) {
+                    response->print(",");
+                }
+                first = false;
+
+                char buffer[128];
+                snprintf(
+                    buffer,
+                    sizeof(buffer),
+                    "{\"t\":%ld,\"temp\":%.1f,\"hum\":%.0f,\"pres\":%.1f}",
+                    bucket_end,
+                    sum_t / count,
+                    sum_h / count,
+                    sum_p / count
+                );
+                response->print(buffer);
+            }
+        } else {
+            size_t step = 1;
+            if (max_points > 0 && available_points > static_cast<size_t>(max_points)) {
+                step = (available_points + static_cast<size_t>(max_points) - 1) / static_cast<size_t>(max_points);
+            }
+
+            for (size_t i = start_index; i < full_history.size(); i += step) {
+                if (!first) {
+                    response->print(",");
+                }
+                first = false;
+
+                const auto& record = full_history[i];
+                char buffer[128];
+                snprintf(
+                    buffer,
+                    sizeof(buffer),
+                    "{\"t\":%ld,\"temp\":%.1f,\"hum\":%.0f,\"pres\":%.1f}",
+                    static_cast<long>(record.timestamp),
+                    record.t,
+                    record.h,
+                    record.p
+                );
+                response->print(buffer);
             }
         }
-        // --- End of downsampling ---
 
-        String chunk;
-        chunk.reserve(1024); // Reserve 1KB for the chunk
-
-        for (size_t i = 0; i < records.size(); ++i) {
-            if (i > 0) {
-                chunk += ",";
-            }
-            char buffer[128];
-            snprintf(buffer, sizeof(buffer), "{\"t\":%ld,\"temp\":%.1f,\"hum\":%.0f,\"pres\":%.1f}", (long)records[i].timestamp, records[i].t, records[i].h, records[i].p);
-            chunk += buffer;
-
-            if (chunk.length() > 800 || i == records.size() - 1) {
-                response->print(chunk);
-                chunk = ""; // Reset chunk
-                // Give time to the network stack and watchdog
-                // to prevent a timeout on very large history sets.
-                delay(1); // This delay remains as a final safety net.
-            }
-        }
-        
         response->print("]}");
         request->send(response);
     });

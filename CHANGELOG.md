@@ -1,7 +1,55 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.93
+Minimum valid version: 1.0.126
+
+
+
+
+
+
+
+## Version 1.0.126
+- **Fix (Documentation Consistency)**: Removed unresolved merge markers and fully synchronized troubleshooting/FAQ docs (`docs/*.md` and `docs/*_fr.md`).
+- **Optimization (History Load)**: Optimized oversized history trimming in `HistoryManager::loadRecent()` using single-range erase instead of repeated front erases.
+
+## Version 1.0.125
+- **Fix (History CSV Integrity)**: Fixed undefined behavior when writing SD CSV history timestamps by using a 64-bit-safe format (`%lld`) and explicit buffer-length validation before write. This prevents corrupted binary fragments in CSV files.
+- **Improvement (History SD Write)**: Switched to explicit `File.write()` with exact byte count for each formatted line to improve write robustness.
+
+## Version 1.0.124
+- **Fix (Web Footer)**: Removed hardcoded project name/version from `data/footer.js`; footer now reads `project_name` and `project_version` from `/api/system` (sourced from PlatformIO build flags).
+- **Fix (Web UI)**: Updated `data/app.js` to read `project_version` from `/api/system` with backward-compatible fallback.
+
+## Version 1.0.123
+- **Fix (Build)**: Corrected escaped JSON literals in `/api/history` (`web_manager.cpp`) after interval aggregation update, restoring C++ compilation.
+
+## Version 1.0.122
+- **Fix (Web Graphs)**: `/api/history` now supports explicit `interval` bucketing and server-side averaging to reduce payload size and CPU usage while keeping smooth chart lines.
+- **Feature (Dashboard Graph)**: The main dashboard now requests exactly the last 2 hours with a 5-minute step (`window=7200`, `interval=300`).
+- **Feature (24H History Graph)**: The long-term page now requests exactly the last 24 hours with a 30-minute step (`window=86400`, `interval=1800`) to reduce memory and rendering load.
+- **UI Rendering**: Chart datasets explicitly use non-stepped monotone curves to keep smooth point-to-point interpolation.
+
+## Version 1.0.121
+- **Fix (Build)**: Corrected JSON string escaping in `web_manager.cpp` for `/api/history` response generation, fixing C++ compilation errors in `esp32-s3-oled` and restoring firmware build.
+
+## Version 1.0.120
+- **Fix (Web Performance)**: Refactored `data/app.js` to load only page-relevant data (history only on Dashboard/Long-term, stats only on Stats page), removing unnecessary heavy API calls and reducing UI freezes.
+- **Fix (History API)**: Optimized `/api/history` with `window` and `points` parameters to limit server-side time range and returned points, significantly reducing response time and CPU load.
+- **Improvement (Web UX)**: Lowered refresh rate of heavy endpoints (`history`, `stats`) to smooth UI behavior and avoid load spikes.
+
+## Version 1.0.119
+- **Fix (SD)**: Hardened SD formatting with multi-retry attempts at decreasing SPI speeds (4MHz, 1MHz, 400kHz), low-level reinit between attempts, and automatic remount/validation after formatting.
+- **Improvement (SD)**: Hardened SD mount at startup with multi-frequency retries (8MHz, 4MHz, 1MHz) to better tolerate unstable cards and sensitive wiring setups.
+
+## Version 1.0.118
+- **Fix (Web UI)**: Added the `/menu.js` server route in `web_manager.cpp` to serve the new shared navigation script embedded in firmware. The shared menu now appears correctly after firmware build and browser hard refresh.
+
+## Version 1.0.117
+- 1) **Web UI (Shared menu)**: Added a common navigation menu injected by `data/menu.js` and used across all web pages for consistent, low-maintenance navigation.
+- 2) **Web UI (Main page)**: The dashboard chart now displays only the last 2 hours, with continuous automatic refresh and smoother rendering (monotone curves without sharp angles).
+- 3) **Web UI (Long-term history)**: The long-term history page now displays only the last 24 hours.
+- 4) **Web UI (Startup & reload)**: On UI load, historical data is immediately reloaded from the API, then refreshed periodically so restored startup history is displayed using the new time windows (2h / 24h).
 
 ## Version 1.0.116
 - **Fix (Web Server)**: Implemented server-side downsampling for the history API endpoint (`/api/history`). This drastically reduces the amount of data sent for graphs, definitively fixing watchdog reboots with large datasets and improving scalability.
