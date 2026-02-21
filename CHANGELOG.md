@@ -1,13 +1,17 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.131
+Minimum valid version: 1.0.132
 
 
 
 
 
 
+
+## Version 1.0.132
+- **Optimization (Alert Refresh)**: Web UI alert polling now runs every 15 minutes (`ALERT_REFRESH_MS`) instead of every 5 seconds to reduce unnecessary requests.
+- **Behavior Update (Dashboard)**: Alert card is no longer refreshed from `/api/live`; alert content now updates only through dedicated `/api/alert` refresh scheduling.
 
 ## Version 1.0.131
 - **Fix (Alert Details Language)**: Web alert details now prioritize French-only description fields and use a French fallback summary when raw provider text cannot be translated reliably.

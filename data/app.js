@@ -124,21 +124,6 @@ function initAlertModal() {
     });
 }
 
-function renderAlertFromLiveData(data) {
-    const minimalPayload = {
-        alert_active: data.alert_active,
-        alert_severity: data.alert_severity,
-        alert_level_label_fr: data.alert_level_label_fr,
-        alert_event_fr: data.alert_event_fr,
-        alert_event: data.alert_event,
-        alert_sender: data.alert_sender,
-        alert_start_unix: data.alert_start_unix,
-        alert_end_unix: data.alert_end_unix
-    };
-
-    renderAlertCard(minimalPayload, false);
-}
-
 async function fetchAlert() {
     const alertText = document.getElementById('alertText');
     if (!alertText) return;
@@ -163,6 +148,7 @@ const HISTORY_WINDOWS_SECONDS = {
 
 const HISTORY_REFRESH_MS = 15000;
 const LIVE_REFRESH_MS = 5000;
+const ALERT_REFRESH_MS = 15 * 60 * 1000;
 const STATS_REFRESH_MS = 15000;
 
 function getPageName() {
@@ -214,7 +200,6 @@ async function fetchLive() {
             status.style.color = '#0f0';
         }
 
-        renderAlertFromLiveData(data);
     } catch (e) {
         const status = document.getElementById('status');
         if (status) {
@@ -393,5 +378,5 @@ window.onload = () => {
     }
 
     setInterval(fetchLive, LIVE_REFRESH_MS);
-    setInterval(fetchAlert, LIVE_REFRESH_MS);
+    setInterval(fetchAlert, ALERT_REFRESH_MS);
 };

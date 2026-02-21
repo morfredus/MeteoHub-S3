@@ -1,13 +1,17 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.131
+Version minimale valide : 1.0.132
 
 
 
 
 
 
+
+## Version 1.0.132
+- **Optimisation (Rafraîchissement Alerte)** : Le polling d’alerte Web passe à 15 minutes (`ALERT_REFRESH_MS`) au lieu de 5 secondes pour réduire les requêtes inutiles.
+- **Mise à jour de comportement (Dashboard)** : Le cartouche d’alerte n’est plus rafraîchi via `/api/live` ; il est mis à jour uniquement via la planification dédiée de `/api/alert`.
 
 ## Version 1.0.131
 - **Correctif (Langue Détails Alerte)** : Les détails d’alerte Web utilisent désormais uniquement les champs français et appliquent un résumé de secours en français quand le texte fournisseur n’est pas traduisible de façon fiable.
