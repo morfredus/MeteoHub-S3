@@ -1,4 +1,3 @@
-
 # Journal des modifications du projet
 
 Version minimale valide : 1.0.126
