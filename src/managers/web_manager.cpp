@@ -1,4 +1,3 @@
-    // ...existing code...
 #include "managers/web_manager.h"
 #include "managers/forecast_manager.h"
 #include <ESPmDNS.h>
@@ -21,6 +20,19 @@ static std::string toLowerCopy(const std::string& text) {
         character = static_cast<char>(std::tolower(static_cast<unsigned char>(character)));
     }
     return lower;
+}
+
+static const char* getAlertLevelLabelFr(int severity) {
+    if (severity >= 3) {
+        return "Rouge";
+    }
+    if (severity == 2) {
+        return "Orange";
+    }
+    if (severity == 1) {
+        return "Jaune";
+    }
+    return "Aucune";
 }
 
 static std::string translateAlertToFrench(const std::string& event) {
@@ -51,15 +63,94 @@ static std::string translateAlertToFrench(const std::string& event) {
     return event;
 }
 
+static void replaceAllInPlace(std::string& text, const std::string& from, const std::string& to) {
+    if (from.empty()) {
+        return;
+    }
+
+    size_t start_pos = 0;
+    while ((start_pos = text.find(from, start_pos)) != std::string::npos) {
+        text.replace(start_pos, from.length(), to);
+        start_pos += to.length();
+    }
+}
+
+static std::string buildAlertDescriptionSummaryFr(const std::string& event_fr, int severity) {
+    std::string level = "jaune";
+    if (severity >= 3) {
+        level = "rouge";
+    } else if (severity == 2) {
+        level = "orange";
+    }
+
+    std::string summary = "Alerte ";
+    summary += level;
+    summary += " : ";
+    summary += event_fr.empty() ? "événement météo" : event_fr;
+    summary += ". Restez informé via les canaux officiels et limitez les déplacements non essentiels.";
+    return summary;
+}
+
+static std::string translateAlertDescriptionToFrench(const std::string& description) {
+    if (description.empty()) {
+        return description;
+    }
+
+    std::string translated = description;
+
+    replaceAllInPlace(translated, "Thunderstorm", "Orage");
+    replaceAllInPlace(translated, "thunderstorm", "orage");
+    replaceAllInPlace(translated, "Heavy rain", "Fortes pluies");
+    replaceAllInPlace(translated, "heavy rain", "fortes pluies");
+    replaceAllInPlace(translated, "Rain", "Pluie");
+    replaceAllInPlace(translated, "rain", "pluie");
+    replaceAllInPlace(translated, "Snow", "Neige");
+    replaceAllInPlace(translated, "snow", "neige");
+    replaceAllInPlace(translated, "Wind", "Vent");
+    replaceAllInPlace(translated, "wind", "vent");
+    replaceAllInPlace(translated, "Flood", "Inondation");
+    replaceAllInPlace(translated, "flood", "inondation");
+    replaceAllInPlace(translated, "Warning", "Alerte");
+    replaceAllInPlace(translated, "warning", "alerte");
+    replaceAllInPlace(translated, "Advisory", "Vigilance");
+    replaceAllInPlace(translated, "advisory", "vigilance");
+    replaceAllInPlace(translated, "Expected", "Prévu");
+    replaceAllInPlace(translated, "expected", "prévu");
+    replaceAllInPlace(translated, "Possible", "Possible");
+    replaceAllInPlace(translated, "possible", "possible");
+    replaceAllInPlace(translated, "until", "jusqu'à");
+    replaceAllInPlace(translated, "from", "de");
+
+    return translated;
+}
+
+static std::string getAlertDescriptionFr(const ForecastManager* forecast) {
+    if (!forecast) {
+        return "";
+    }
+
+    std::string translated = translateAlertDescriptionToFrench(forecast->alert.description);
+    if (!forecast->alert.description.empty() && translated == forecast->alert.description) {
+        return buildAlertDescriptionSummaryFr(translateAlertToFrench(forecast->alert.event), forecast->alert.severity);
+    }
+
+    if (translated.empty() && forecast->alert_active) {
+        return buildAlertDescriptionSummaryFr(translateAlertToFrench(forecast->alert.event), forecast->alert.severity);
+    }
+
+    return translated;
+}
+
 WebManager::WebManager() : _server(80) {
 }
 
-void WebManager::begin(HistoryManager& history, SdManager& sd, ForecastManager& forecast) {
+void WebManager::begin(HistoryManager& history, SdManager& sd, ForecastManager& forecast, SensorManager& sensors) {
     LOG_INFO("Initialisation du WebManager...");
 
     _history = &history;
     _sd = &sd;
     _forecast = &forecast;
+    _sensors = &sensors;
     // LittleFS n'est plus requis ici pour les pages web (géré par HistoryManager pour les données)
     // Configuration mDNS
     if (MDNS.begin(WEB_MDNS_HOSTNAME)) {
@@ -148,13 +239,18 @@ void WebManager::_setupRoutes() {
 void WebManager::_setupApi() {
     // API : État actuel (Live)
     _server.on("/api/live", HTTP_GET, [this](AsyncWebServerRequest *request) {
-        // TODO: Récupérer les vraies valeurs via SensorManager
         AsyncResponseStream *response = request->beginResponseStream("application/json");
         DynamicJsonDocument doc(768);
 
-        doc["temp"] = 22.5; // Placeholder
-        doc["hum"] = 45.0;  // Placeholder
-        doc["pres"] = 1013.2; // Placeholder
+        SensorData live_data = {0.0f, 0.0f, 0.0f, false};
+        if (_sensors) {
+            live_data = _sensors->read();
+        }
+
+        doc["temp"] = live_data.temperature;
+        doc["hum"] = live_data.humidity;
+        doc["pres"] = live_data.pressure;
+        doc["sensor_valid"] = live_data.valid;
         doc["wifi_rssi"] = WiFi.RSSI();
         doc["uptime"] = millis() / 1000;
 
@@ -164,12 +260,52 @@ void WebManager::_setupApi() {
             doc["alert_sender"] = _forecast->alert.sender.c_str();
             doc["alert_event"] = _forecast->alert.event.c_str();
             doc["alert_event_fr"] = translateAlertToFrench(_forecast->alert.event).c_str();
+            doc["alert_description_fr"] = getAlertDescriptionFr(_forecast).c_str();
+            doc["alert_level_label_fr"] = getAlertLevelLabelFr(_forecast->alert.severity);
+            doc["alert_start_unix"] = _forecast->alert.start_unix;
+            doc["alert_end_unix"] = _forecast->alert.end_unix;
         } else {
             doc["alert_active"] = false;
             doc["alert_severity"] = 0;
             doc["alert_sender"] = "";
             doc["alert_event"] = "";
             doc["alert_event_fr"] = "";
+            doc["alert_description_fr"] = "";
+            doc["alert_level_label_fr"] = "Aucune";
+            doc["alert_start_unix"] = 0;
+            doc["alert_end_unix"] = 0;
+        }
+
+        serializeJson(doc, *response);
+        request->send(response);
+    });
+
+    _server.on("/api/alert", HTTP_GET, [this](AsyncWebServerRequest *request) {
+        AsyncResponseStream *response = request->beginResponseStream("application/json");
+        DynamicJsonDocument doc(1024);
+
+        if (_forecast) {
+            doc["active"] = _forecast->alert_active;
+            doc["severity"] = _forecast->alert.severity;
+            doc["sender"] = _forecast->alert.sender.c_str();
+            doc["event"] = _forecast->alert.event.c_str();
+            doc["event_fr"] = translateAlertToFrench(_forecast->alert.event).c_str();
+            doc["description"] = _forecast->alert.description.c_str();
+            doc["description_fr"] = getAlertDescriptionFr(_forecast).c_str();
+            doc["alert_level_label_fr"] = getAlertLevelLabelFr(_forecast->alert.severity);
+            doc["start_unix"] = _forecast->alert.start_unix;
+            doc["end_unix"] = _forecast->alert.end_unix;
+        } else {
+            doc["active"] = false;
+            doc["severity"] = 0;
+            doc["sender"] = "";
+            doc["event"] = "";
+            doc["event_fr"] = "";
+            doc["description"] = "";
+            doc["description_fr"] = "";
+            doc["alert_level_label_fr"] = "Aucune";
+            doc["start_unix"] = 0;
+            doc["end_unix"] = 0;
         }
 
         serializeJson(doc, *response);
