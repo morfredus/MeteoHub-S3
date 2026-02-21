@@ -55,6 +55,7 @@ Likely hardware/power issue:
 - Clear history
 - Format SD (if present)
 
+As of version 1.114, the web server uses a fully non-blocking streaming method that yields CPU time during long operations. This definitively resolves the issue. If you are experiencing this bug, please update your firmware to v1.114 or newer.
 ## Safe update workflow
 1. Save config/code changes.
 2. Build firmware.
