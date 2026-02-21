@@ -1,10 +1,42 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.119
+Version minimale valide : 1.0.126
 
 
 
+
+
+
+
+## Version 1.0.126
+- **Correctif (Cohérence Documentation)** : Suppression des marqueurs de fusion non résolus et resynchronisation complète des documents FAQ/dépannage (`docs/*.md` et `docs/*_fr.md`).
+- **Optimisation (Chargement Historique)** : Optimisation du tronquage d'historique surdimensionné dans `HistoryManager::loadRecent()` via une suppression en plage unique au lieu de suppressions successives en tête.
+
+## Version 1.0.125
+- **Correctif (Intégrité CSV Historique)** : Correction d'un comportement indéfini lors de l'écriture du timestamp dans le CSV SD en utilisant un format compatible 64 bits (`%lld`) avec validation stricte de la taille du buffer avant écriture. Cela évite l'insertion de fragments binaires corrompus dans les fichiers CSV.
+- **Amélioration (Écriture SD Historique)** : Utilisation de `File.write()` avec un nombre exact d'octets pour chaque ligne formatée afin de fiabiliser l'écriture.
+
+## Version 1.0.124
+- **Correctif (Footer Web)** : Suppression du nom/version codés en dur dans `data/footer.js` ; le footer lit désormais `project_name` et `project_version` depuis `/api/system` (valeurs issues des flags PlatformIO).
+- **Correctif (Web UI)** : Mise à jour de `data/app.js` pour lire `project_version` depuis `/api/system` avec compatibilité descendante.
+
+## Version 1.0.123
+- **Correctif (Build)** : Correction des littéraux JSON échappés dans `/api/history` (`web_manager.cpp`) après la mise à jour d'agrégation par intervalle, rétablissant la compilation C++.
+
+## Version 1.0.122
+- **Correctif (Graphiques Web)** : `/api/history` prend désormais en charge une agrégation explicite par `interval` avec moyenne côté serveur, afin de réduire la taille des réponses et la charge CPU tout en conservant des courbes fluides.
+- **Fonctionnalité (Graphe Dashboard)** : Le tableau de bord demande exactement les 2 dernières heures avec un pas de 5 minutes (`window=7200`, `interval=300`).
+- **Fonctionnalité (Graphe Historique 24H)** : La page historique demande exactement les 24 dernières heures avec un pas de 30 minutes (`window=86400`, `interval=1800`) pour réduire l'usage mémoire et le temps de rendu.
+- **Rendu UI** : Les datasets Chart.js utilisent explicitement des courbes monotones non "stepped" pour relier les points sans angles droits artificiels.
+
+## Version 1.0.121
+- **Fix (Build)** : Corrected JSON string escaping in `web_manager.cpp` for `/api/history` response generation, fixing C++ compilation errors in `esp32-s3-oled` and restoring firmware build.
+
+## Version 1.0.120
+- **Correctif (Web Performance)** : Refactor de `data/app.js` pour charger uniquement les données nécessaires selon la page (historique seulement sur Dashboard/Long-term, statistiques seulement sur la page Stats), ce qui supprime les appels API lourds inutiles et réduit les blocages UI.
+- **Correctif (API History)** : Optimisation de `/api/history` avec paramètres `window` et `points` pour limiter côté serveur la fenêtre temporelle et le nombre de points renvoyés, réduisant fortement le temps de réponse et la charge CPU.
+- **Amélioration (Web UX)** : Réduction de la fréquence de rafraîchissement des gros endpoints (`history`, `stats`) pour fluidifier l'interface et éviter les pics de charge.
 
 ## Version 1.0.119
 - **Correctif (SD)** : Renforcement du formatage SD avec plusieurs tentatives à vitesses SPI décroissantes (4MHz, 1MHz, 400kHz), réinitialisation bas niveau entre chaque essai, et remount/validation automatique après formatage.
