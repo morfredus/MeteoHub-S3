@@ -230,6 +230,30 @@ void WebManager::_setupApi() {
         request->send(response);
     });
 
+    _server.on("/api/alert", HTTP_GET, [this](AsyncWebServerRequest *request) {
+        AsyncResponseStream *response = request->beginResponseStream("application/json");
+        DynamicJsonDocument doc(1024);
+
+        if (_forecast) {
+            doc["active"] = _forecast->alert_active;
+            doc["severity"] = _forecast->alert.severity;
+            doc["sender"] = _forecast->alert.sender.c_str();
+            doc["event"] = _forecast->alert.event.c_str();
+            doc["event_fr"] = translateAlertToFrench(_forecast->alert.event).c_str();
+            doc["description"] = _forecast->alert.description.c_str();
+        } else {
+            doc["active"] = false;
+            doc["severity"] = 0;
+            doc["sender"] = "";
+            doc["event"] = "";
+            doc["event_fr"] = "";
+            doc["description"] = "";
+        }
+
+        serializeJson(doc, *response);
+        request->send(response);
+    });
+
     // API : Historique
     _server.on("/api/history", HTTP_GET, [this](AsyncWebServerRequest *request) {
         // Endpoint optimisé : réduction mémoire + réponse rapide
