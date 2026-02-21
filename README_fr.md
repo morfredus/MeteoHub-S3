@@ -2,7 +2,27 @@
 
 # MeteoHub S3
 
-Version minimale valide : 1.0.126
+Version minimale valide : 1.0.127
+## Nouvelles fonctionnalités (depuis 1.0.127)
+
+- **API alerte météo** : L’endpoint `/api/alert` expose l’alerte météo courante (ou absence) pour affichage sur le dashboard.
+- **Données capteurs en temps réel** : L’endpoint `/api/live` retourne les valeurs réelles des capteurs (température, humidité, pression) du dernier relevé.
+- **Conformité stricte au projet** : Toutes les routes API sont déclarées uniquement dans `_setupApi()`. Aucun commentaire interdit ou placeholder n’existe dans le code.
+
+## Interface Web
+Le MeteoHub S3 dispose d'une interface Web complète accessible depuis n'importe quel navigateur sur le même réseau Wi-Fi.
+
+### Accès
+- Adresse : `http://meteohub.local` (ou via l'adresse IP affichée sur l'écran au démarrage).
+
+### Fonctionnalités Web
+- **Tableau de bord** : Affichage en temps réel de la Température, Humidité, Pression et Alerte météo (toujours visible, colorée dynamiquement).
+- **Cartouche alerte météo** : Cartouche à hauteur fixe sur le dashboard, coloré dynamiquement, toujours présent, affichant l’alerte ou "aucune alerte" (via `/api/alert`).
+- **Graphiques** : Visualisation interactive des 3 courbes sur les dernières 24h (haute résolution).
+- **Statistiques** : Page dédiée affichant les Min/Moy/Max et l’analyse de tendance pour la période en cours.
+- **Historique Long Terme** : Consultation des données archivées sur plusieurs mois/années.
+- **Gestionnaire de Fichiers** : Accessible via l'icône disquette en bas de page. Permet de naviguer dans la mémoire interne et la carte SD, télécharger ou supprimer des fichiers.
+- **Logs Système** : Accessible via l'icône parchemin en bas de page. Affiche les événements système en temps réel.
 
 ## Documentation complète
 - [Index de la documentation](docs/index_fr.md)

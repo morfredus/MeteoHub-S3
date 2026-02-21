@@ -1,13 +1,11 @@
-
-# Project Changelog
-
-Minimum valid version: 1.0.126
-
-
-
-
-
-
+## Version 1.0.127
+1. **Feature (Weather Trend Analysis)**: Added trend analysis for temperature, humidity, and pressure in HistoryManager, exposed via API and displayed on the Statistics page.
+2. **Feature (Weather Alert API)**: Added `/api/alert` endpoint in WebManager to expose current weather alert (or absence).
+3. **UI (Dashboard Alert Card)**: Added a fixed-height alert card to the dashboard, dynamically colored and always present, showing alert or "no alert".
+4. **Bugfix (API Route Declaration)**: Removed all residual `_server.on("/api/alert", ...)` code outside methods, ensuring correct compilation and route exposure.
+5. **UI (Statistics Trend Table)**: Added trend table to statistics page, showing 1h/24h variations and direction for each metric.
+6. **Style (Alert Card CSS)**: Added CSS classes for alert card with fixed height and severity color.
+7. **Refactor (API Consistency)**: Ensured all new API routes are declared only inside `_setupApi()`.
 
 ## Version 1.0.126
 - **Fix (Documentation Consistency)**: Removed unresolved merge markers and fully synchronized troubleshooting/FAQ docs (`docs/*.md` and `docs/*_fr.md`).
