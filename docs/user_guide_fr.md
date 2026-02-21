@@ -1,6 +1,6 @@
 # Guide utilisateur
 
-Version minimale valide : 1.0.115
+Version minimale valide : 1.0.119
 
 ## Objectif
 Apprendre à utiliser le dashboard une fois le firmware démarré.

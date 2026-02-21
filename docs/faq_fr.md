@@ -1,6 +1,6 @@
 # FAQ
 
-Version minimale valide : 1.0.116
+Version minimale valide : 1.0.119
 
 
 ## Internet est-il obligatoire ?
@@ -36,6 +36,16 @@ La corruption du système de fichiers est rare mais peut survenir lors d'une cou
 	- Si l'appareil ne démarre plus ou redémarre en boucle, il est possible de forcer un formatage de la mémoire interne (LittleFS) sans ordinateur : débranchez l'alimentation, maintenez le bouton **BOOT** enfoncé, rebranchez l'alimentation, attendez le message de maintenance à l'écran puis relâchez le bouton. L'appareil effacera la mémoire et redémarrera proprement (toutes les données historiques seront perdues).
 	- Cette procédure est accessible à tout utilisateur, même débutant.
 3.  **Robustesse maximale (avancé) :** Pour les applications critiques, les alternatives les plus sûres sont de stocker les données sur une **carte SD** (nécessite une modification matérielle) ou de les envoyer vers un **service Cloud** (ex: ThingSpeak, broker MQTT), ce qui les met à l'abri de toute défaillance matérielle locale.
+
+---
+**[v1.0.119+] Robustesse carte SD**
+
+Depuis la version 1.0.119, le formatage et le montage SD sont beaucoup plus robustes :
+- Plusieurs tentatives de formatage à des vitesses SPI décroissantes (4MHz, 1MHz, 400kHz).
+- Réinitialisation bas niveau entre chaque essai.
+- Remontage et validation automatique après formatage.
+- Au démarrage, le montage SD utilise des retries multi-fréquences (8MHz, 4MHz, 1MHz) pour tolérer les cartes instables et les montages sensibles.
+Ceci améliore grandement la fiabilité avec les cartes SD problématiques et réduit le risque d'échec de montage.
 
 Le firmware utilise déjà des techniques d'écriture robustes (ajout de données plutôt que réécriture complète) pour minimiser l'usure et les risques.
 
