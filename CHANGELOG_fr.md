@@ -1,3 +1,8 @@
+## Version 1.0.128
+1. **Fonctionnalité (Description alerte météo)** : L’API `/api/alert` retourne désormais le texte complet de l’alerte (en français si disponible), et le dashboard web affiche ce texte pour une clarté et une localisation maximale. La structure Alert et la logique de parsing ont été adaptées.
+2. **Correctif (Compilation)** : Ajout du champ description à la structure Alert et remplissage correct lors du parsing, ce qui corrige les erreurs de compilation et garantit la cohérence de l’API.
+3. **Docs (Guide utilisateur/FAQ/Config/Arch)** : Mise à jour de toute la documentation utilisateur (FR/EN) pour expliquer le nouveau champ description, sa logique d’affichage, et la meilleure localisation française des alertes météo.
+
 ## Version 1.0.127
 1. **Fonctionnalité (Analyse de tendance météo)** : Ajout de l’analyse de tendance (température, humidité, pression) dans HistoryManager, exposée via l’API et affichée sur la page Statistiques.
 2. **Fonctionnalité (API alerte météo)** : Ajout de l’endpoint `/api/alert` dans WebManager pour exposer l’alerte météo courante (ou absence).

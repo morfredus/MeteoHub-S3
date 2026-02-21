@@ -1,3 +1,5 @@
+## Description alerte météo
+L’API `/api/alert` retourne désormais le texte complet de l’alerte (en français si disponible). Le dashboard web affiche ce texte pour une clarté et une localisation maximale.
 # Configuration
 
 Version minimale valide : 1.0.127

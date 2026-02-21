@@ -1,3 +1,7 @@
+## Description de l'alerte météo
+
+L’API `/api/alert` retourne désormais le texte complet de l’alerte (en français si disponible). Le dashboard web affiche ce texte pour une clarté et une localisation maximale. Si description est vide, le nom de l’événement est utilisé en secours.
+
 ## Affichage des données : Dashboard vs Historique
 
 ### Dashboard

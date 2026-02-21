@@ -136,6 +136,7 @@ void ForecastManager::parseResponse(const std::string& payload) {
         int bestScore = -1;
         std::string bestSender;
         std::string bestEvent;
+        std::string bestDescription;
         int bestSeverity = 1;
 
         int index = 0;
@@ -153,6 +154,7 @@ void ForecastManager::parseResponse(const std::string& payload) {
                 bestScore = score;
                 bestSender = sender;
                 bestEvent = event;
+                bestDescription = description;
                 bestSeverity = severity;
             }
             index++;
@@ -160,6 +162,7 @@ void ForecastManager::parseResponse(const std::string& payload) {
 
         alert.sender = bestSender;
         alert.event = bestEvent;
+        alert.description = bestDescription;
         alert.severity = bestSeverity;
     } else {
         alert_active = false;

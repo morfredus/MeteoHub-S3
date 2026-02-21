@@ -1,3 +1,8 @@
+## Version 1.0.128
+1. **Feature (Weather Alert Description)**: The API /api/alert now returns the full alert description (in French when available), and the web dashboard displays this text for maximum clarity and localization. The Alert struct and parsing logic have been updated accordingly.
+2. **Bugfix (Compilation)**: Added description field to Alert struct and ensured correct population during parsing, fixing compilation errors and guaranteeing API consistency.
+3. **Docs (User Guide/FAQ/Config/Arch)**: Updated all user-facing documentation (EN/FR) to explain the new alert description field, its display logic, and the improved French localization for weather alerts.
+
 ## Version 1.0.127
 1. **Feature (Weather Trend Analysis)**: Added trend analysis for temperature, humidity, and pressure in HistoryManager, exposed via API and displayed on the Statistics page.
 2. **Feature (Weather Alert API)**: Added `/api/alert` endpoint in WebManager to expose current weather alert (or absence).
