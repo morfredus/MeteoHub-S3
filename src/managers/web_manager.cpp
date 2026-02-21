@@ -63,6 +63,51 @@ static std::string translateAlertToFrench(const std::string& event) {
     return event;
 }
 
+static void replaceAllInPlace(std::string& text, const std::string& from, const std::string& to) {
+    if (from.empty()) {
+        return;
+    }
+
+    size_t start_pos = 0;
+    while ((start_pos = text.find(from, start_pos)) != std::string::npos) {
+        text.replace(start_pos, from.length(), to);
+        start_pos += to.length();
+    }
+}
+
+static std::string translateAlertDescriptionToFrench(const std::string& description) {
+    if (description.empty()) {
+        return description;
+    }
+
+    std::string translated = description;
+
+    replaceAllInPlace(translated, "Thunderstorm", "Orage");
+    replaceAllInPlace(translated, "thunderstorm", "orage");
+    replaceAllInPlace(translated, "Heavy rain", "Fortes pluies");
+    replaceAllInPlace(translated, "heavy rain", "fortes pluies");
+    replaceAllInPlace(translated, "Rain", "Pluie");
+    replaceAllInPlace(translated, "rain", "pluie");
+    replaceAllInPlace(translated, "Snow", "Neige");
+    replaceAllInPlace(translated, "snow", "neige");
+    replaceAllInPlace(translated, "Wind", "Vent");
+    replaceAllInPlace(translated, "wind", "vent");
+    replaceAllInPlace(translated, "Flood", "Inondation");
+    replaceAllInPlace(translated, "flood", "inondation");
+    replaceAllInPlace(translated, "Warning", "Alerte");
+    replaceAllInPlace(translated, "warning", "alerte");
+    replaceAllInPlace(translated, "Advisory", "Vigilance");
+    replaceAllInPlace(translated, "advisory", "vigilance");
+    replaceAllInPlace(translated, "Expected", "Prévu");
+    replaceAllInPlace(translated, "expected", "prévu");
+    replaceAllInPlace(translated, "Possible", "Possible");
+    replaceAllInPlace(translated, "possible", "possible");
+    replaceAllInPlace(translated, "until", "jusqu'à");
+    replaceAllInPlace(translated, "from", "de");
+
+    return translated;
+}
+
 WebManager::WebManager() : _server(80) {
 }
 
@@ -182,6 +227,7 @@ void WebManager::_setupApi() {
             doc["alert_sender"] = _forecast->alert.sender.c_str();
             doc["alert_event"] = _forecast->alert.event.c_str();
             doc["alert_event_fr"] = translateAlertToFrench(_forecast->alert.event).c_str();
+            doc["alert_description_fr"] = translateAlertDescriptionToFrench(_forecast->alert.description).c_str();
             doc["alert_level_label_fr"] = getAlertLevelLabelFr(_forecast->alert.severity);
             doc["alert_start_unix"] = _forecast->alert.start_unix;
             doc["alert_end_unix"] = _forecast->alert.end_unix;
@@ -191,6 +237,7 @@ void WebManager::_setupApi() {
             doc["alert_sender"] = "";
             doc["alert_event"] = "";
             doc["alert_event_fr"] = "";
+            doc["alert_description_fr"] = "";
             doc["alert_level_label_fr"] = "Aucune";
             doc["alert_start_unix"] = 0;
             doc["alert_end_unix"] = 0;
@@ -211,6 +258,7 @@ void WebManager::_setupApi() {
             doc["event"] = _forecast->alert.event.c_str();
             doc["event_fr"] = translateAlertToFrench(_forecast->alert.event).c_str();
             doc["description"] = _forecast->alert.description.c_str();
+            doc["description_fr"] = translateAlertDescriptionToFrench(_forecast->alert.description).c_str();
             doc["alert_level_label_fr"] = getAlertLevelLabelFr(_forecast->alert.severity);
             doc["start_unix"] = _forecast->alert.start_unix;
             doc["end_unix"] = _forecast->alert.end_unix;
@@ -221,33 +269,10 @@ void WebManager::_setupApi() {
             doc["event"] = "";
             doc["event_fr"] = "";
             doc["description"] = "";
+            doc["description_fr"] = "";
             doc["alert_level_label_fr"] = "Aucune";
             doc["start_unix"] = 0;
             doc["end_unix"] = 0;
-        }
-
-        serializeJson(doc, *response);
-        request->send(response);
-    });
-
-    _server.on("/api/alert", HTTP_GET, [this](AsyncWebServerRequest *request) {
-        AsyncResponseStream *response = request->beginResponseStream("application/json");
-        DynamicJsonDocument doc(1024);
-
-        if (_forecast) {
-            doc["active"] = _forecast->alert_active;
-            doc["severity"] = _forecast->alert.severity;
-            doc["sender"] = _forecast->alert.sender.c_str();
-            doc["event"] = _forecast->alert.event.c_str();
-            doc["event_fr"] = translateAlertToFrench(_forecast->alert.event).c_str();
-            doc["description"] = _forecast->alert.description.c_str();
-        } else {
-            doc["active"] = false;
-            doc["severity"] = 0;
-            doc["sender"] = "";
-            doc["event"] = "";
-            doc["event_fr"] = "";
-            doc["description"] = "";
         }
 
         serializeJson(doc, *response);

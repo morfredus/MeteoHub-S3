@@ -1,13 +1,17 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.129
+Minimum valid version: 1.0.130
 
 
 
 
 
 
+
+## Version 1.0.130
+- **Fix (Web Alert Language)**: Added a French-translated alert description field (`description_fr`) in `/api/alert` and `alert_description_fr` in `/api/live`.
+- **Fix (Web Alert Details Modal)**: Dashboard now prioritizes French alert description fields for both card details and modal content.
 
 ## Version 1.0.129
 - **Feature (Web Alert Context)**: Added alert validity window fields (`start_unix`, `end_unix`) and `alert_level_label_fr` in web APIs to provide direct French severity labels and timing context.

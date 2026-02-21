@@ -55,7 +55,8 @@ function renderAlertCard(data, isDetailed) {
         const event = data.alert_event_fr || data.event_fr || data.alert_event || data.event || 'Alerte météo';
         const senderValue = data.alert_sender || data.sender || '';
         const sender = senderValue ? ` • Source: ${senderValue}` : '';
-        const details = isDetailed && data.description ? ` — ${data.description}` : '';
+        const detailsText = data.description_fr || data.alert_description_fr || data.description || "";
+        const details = isDetailed && detailsText ? ` — ${detailsText}` : "";
 
         alertText.textContent = `${levelLabel} (${level}) - ${event}${sender}${details}`;
         alertText.style.fontWeight = '700';
@@ -83,7 +84,7 @@ function openAlertModal() {
         const levelLabel = current_alert_payload.alert_level_label_fr || 'Alerte';
         const event = current_alert_payload.event_fr || current_alert_payload.alert_event_fr || current_alert_payload.event || current_alert_payload.alert_event || 'Alerte météo';
         const senderValue = current_alert_payload.sender || current_alert_payload.alert_sender || 'Inconnu';
-        const description = current_alert_payload.description || 'Aucune description détaillée fournie.';
+        const description = current_alert_payload.description_fr || current_alert_payload.alert_description_fr || current_alert_payload.description || 'Aucune description détaillée fournie.';
         const validity = formatAlertValidity(current_alert_payload.start_unix || current_alert_payload.alert_start_unix, current_alert_payload.end_unix || current_alert_payload.alert_end_unix);
 
         body.innerHTML = `<p><strong>${levelLabel} (${level})</strong> — ${event}</p><p><strong>Source :</strong> ${senderValue}</p><p><strong>${validity}</strong></p><p>${description}</p><p><strong>Consigne :</strong> Surveillez l’évolution locale et limitez les déplacements non essentiels.</p>`;
