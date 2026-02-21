@@ -1,6 +1,13 @@
 # Project Architecture
 
-Minimum valid version: 1.0.119
+Minimum valid version: 1.0.127
+
+## New Features (since 1.0.127)
+- **Weather Alert Card**: The dashboard always displays a weather alert card (via `/api/alert`).
+- **Live Sensor Data**: The `/api/live` endpoint returns real sensor values (temperature, humidity, pressure).
+- **Dashboard vs History**: The dashboard graph shows the last 2 hours; the history page shows 24 hours.
+- **Strict Project Compliance**: All API routes are declared only inside `_setupApi()`. No forbidden comments or placeholders exist in the codebase.
+
 
 ## Goal
 Explain the source code organization, the management of OLED and LCD environments, and the data flow within the system.
