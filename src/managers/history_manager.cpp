@@ -2,6 +2,7 @@
 #include <LittleFS.h>
 #include "../utils/logs.h"
 #include <time.h>
+#include <inttypes.h>
 
 #define HISTORY_FILE "/history/recent.dat"
 #define MAX_RECENT_RECORDS 1440 // 24h à 1 point/min
@@ -121,9 +122,14 @@ void HistoryManager::saveToSd(const HistoryRecord& record) {
             LOG_INFO("Creating new daily history file on SD: " + std::string(filename));
             f.println("Timestamp,Temperature,Humidity,Pressure");
         }
-        char line[64];
-        snprintf(line, sizeof(line), "%ld,%.2f,%.1f,%.1f\n", record.timestamp, record.t, record.h, record.p);
-        f.print(line);
+        char line[96];
+        const long long ts = static_cast<long long>(record.timestamp);
+        int written = snprintf(line, sizeof(line), "%lld,%.2f,%.1f,%.1f\n", ts, record.t, record.h, record.p);
+        if (written > 0 && written < static_cast<int>(sizeof(line))) {
+            f.write(reinterpret_cast<const uint8_t*>(line), written);
+        } else {
+            LOG_WARNING("Failed to format SD CSV history line");
+        }
         f.close();
     } else {
         LOG_WARNING("Failed to write to SD file: " + std::string(filename));

@@ -1,13 +1,17 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.124
+Minimum valid version: 1.0.125
 
 
 
 
 
 
+
+## Version 1.0.125
+- **Fix (History CSV Integrity)**: Fixed undefined behavior when writing SD CSV history timestamps by using a 64-bit-safe format (`%lld`) and explicit buffer-length validation before write. This prevents corrupted binary fragments in CSV files.
+- **Improvement (History SD Write)**: Switched to explicit `File.write()` with exact byte count for each formatted line to improve write robustness.
 
 ## Version 1.0.124
 - **Fix (Web Footer)**: Removed hardcoded project name/version from `data/footer.js`; footer now reads `project_name` and `project_version` from `/api/system` (sourced from PlatformIO build flags).
