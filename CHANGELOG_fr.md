@@ -1,16 +1,18 @@
-## Version 1.0.128
-1. **Fonctionnalité (Description alerte météo)** : L’API `/api/alert` retourne désormais le texte complet de l’alerte (en français si disponible), et le dashboard web affiche ce texte pour une clarté et une localisation maximale. La structure Alert et la logique de parsing ont été adaptées.
-2. **Correctif (Compilation)** : Ajout du champ description à la structure Alert et remplissage correct lors du parsing, ce qui corrige les erreurs de compilation et garantit la cohérence de l’API.
-3. **Docs (Guide utilisateur/FAQ/Config/Arch)** : Mise à jour de toute la documentation utilisateur (FR/EN) pour expliquer le nouveau champ description, sa logique d’affichage, et la meilleure localisation française des alertes météo.
+
+# Journal des modifications du projet
+
+Version minimale valide : 1.0.127
+
+
+
+
+
+
 
 ## Version 1.0.127
-1. **Fonctionnalité (Analyse de tendance météo)** : Ajout de l’analyse de tendance (température, humidité, pression) dans HistoryManager, exposée via l’API et affichée sur la page Statistiques.
-2. **Fonctionnalité (API alerte météo)** : Ajout de l’endpoint `/api/alert` dans WebManager pour exposer l’alerte météo courante (ou absence).
-3. **UI (Cartouche alerte dashboard)** : Ajout d’un cartouche d’alerte météo à hauteur fixe sur le dashboard, coloré dynamiquement et toujours présent, affichant l’alerte ou "aucune alerte".
-4. **Correctif (Déclaration route API)** : Suppression de tout code résiduel `_server.on("/api/alert", ...)` hors méthode, garantissant la compilation et l’exposition correcte de la route.
-5. **UI (Table tendance statistiques)** : Ajout d’un tableau de tendance sur la page Statistiques, affichant les variations 1h/24h et la direction pour chaque métrique.
-6. **Style (CSS cartouche alerte)** : Ajout des classes CSS pour le cartouche d’alerte avec hauteur fixe et couleur selon la sévérité.
-7. **Refactor (Cohérence API)** : Toutes les nouvelles routes API sont désormais déclarées uniquement dans `_setupApi()`.
+- **Correctif (Langue Alerte Web)** : L'API Web `/api/live` expose désormais les champs d'alerte météo depuis `ForecastManager`, avec un libellé traduit en français (`alert_event_fr`) pour aligner le rendu Web avec l'OLED.
+- **Fonctionnalité (Dashboard Web)** : Ajout d'une carte d'alerte météo sur la page principale, alimentée en temps réel par `data/app.js` (événement, niveau, émetteur).
+- **Correctif (Intégration)** : `WebManager` reçoit désormais une référence à `ForecastManager` au démarrage pour rendre les alertes disponibles côté endpoints Web.
 
 ## Version 1.0.126
 - **Correctif (Cohérence Documentation)** : Suppression des marqueurs de fusion non résolus et resynchronisation complète des documents FAQ/dépannage (`docs/*.md` et `docs/*_fr.md`).

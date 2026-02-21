@@ -82,6 +82,22 @@ async function fetchLive() {
             status.textContent = 'En ligne';
             status.style.color = '#0f0';
         }
+
+        const alertText = document.getElementById('alertText');
+        if (alertText) {
+            if (data.alert_active) {
+                const level = Number.isFinite(data.alert_severity) ? data.alert_severity : 0;
+                const event = data.alert_event_fr || data.alert_event || 'Alerte météo';
+                const sender = data.alert_sender ? ` (${data.alert_sender})` : '';
+                alertText.textContent = `${event}${sender} - Niveau ${level}`;
+                alertText.style.color = '#ff6b6b';
+                alertText.style.fontWeight = 'bold';
+            } else {
+                alertText.textContent = 'Aucune alerte';
+                alertText.style.color = '#7CFC00';
+                alertText.style.fontWeight = 'normal';
+            }
+        }
     } catch (e) {
         const status = document.getElementById('status');
         if (status) {
@@ -141,31 +157,6 @@ async function fetchStats() {
                 <td>${data.pres.max.toFixed(0)}</td>
             </tr>
         `;
-
-        // Ajout de la tendance météo
-        const trendBody = document.getElementById('trendBody');
-        if (trendBody && data.trend) {
-            trendBody.innerHTML = `
-                <tr>
-                    <td>Température</td>
-                    <td>${data.trend.temp.delta_1h.toFixed(1)}°C (${data.trend.temp.direction_1h})</td>
-                    <td>${data.trend.temp.delta_24h.toFixed(1)}°C (${data.trend.temp.direction_24h})</td>
-                    <td>${data.trend.temp.direction_1h === data.trend.temp.direction_24h ? data.trend.temp.direction_1h : data.trend.temp.direction_1h + '/' + data.trend.temp.direction_24h}</td>
-                </tr>
-                <tr>
-                    <td>Humidité</td>
-                    <td>${data.trend.hum.delta_1h.toFixed(0)}% (${data.trend.hum.direction_1h})</td>
-                    <td>${data.trend.hum.delta_24h.toFixed(0)}% (${data.trend.hum.direction_24h})</td>
-                    <td>${data.trend.hum.direction_1h === data.trend.hum.direction_24h ? data.trend.hum.direction_1h : data.trend.hum.direction_1h + '/' + data.trend.hum.direction_24h}</td>
-                </tr>
-                <tr>
-                    <td>Pression</td>
-                    <td>${data.trend.pres.delta_1h.toFixed(1)} hPa (${data.trend.pres.direction_1h})</td>
-                    <td>${data.trend.pres.delta_24h.toFixed(1)} hPa (${data.trend.pres.direction_24h})</td>
-                    <td>${data.trend.pres.direction_1h === data.trend.pres.direction_24h ? data.trend.pres.direction_1h : data.trend.pres.direction_1h + '/' + data.trend.pres.direction_24h}</td>
-                </tr>
-            `;
-        }
 
         const status = document.getElementById('status');
         if (status) {
@@ -268,10 +259,6 @@ function initChart() {
 }
 
 window.onload = () => {
-    if (getPageName() === 'dashboard') {
-        fetchAlert();
-        setInterval(fetchAlert, 15000);
-    }
     fetchSystem();
     fetchLive();
 

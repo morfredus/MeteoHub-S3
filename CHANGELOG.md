@@ -1,16 +1,18 @@
-## Version 1.0.128
-1. **Feature (Weather Alert Description)**: The API /api/alert now returns the full alert description (in French when available), and the web dashboard displays this text for maximum clarity and localization. The Alert struct and parsing logic have been updated accordingly.
-2. **Bugfix (Compilation)**: Added description field to Alert struct and ensured correct population during parsing, fixing compilation errors and guaranteeing API consistency.
-3. **Docs (User Guide/FAQ/Config/Arch)**: Updated all user-facing documentation (EN/FR) to explain the new alert description field, its display logic, and the improved French localization for weather alerts.
+
+# Project Changelog
+
+Minimum valid version: 1.0.127
+
+
+
+
+
+
 
 ## Version 1.0.127
-1. **Feature (Weather Trend Analysis)**: Added trend analysis for temperature, humidity, and pressure in HistoryManager, exposed via API and displayed on the Statistics page.
-2. **Feature (Weather Alert API)**: Added `/api/alert` endpoint in WebManager to expose current weather alert (or absence).
-3. **UI (Dashboard Alert Card)**: Added a fixed-height alert card to the dashboard, dynamically colored and always present, showing alert or "no alert".
-4. **Bugfix (API Route Declaration)**: Removed all residual `_server.on("/api/alert", ...)` code outside methods, ensuring correct compilation and route exposure.
-5. **UI (Statistics Trend Table)**: Added trend table to statistics page, showing 1h/24h variations and direction for each metric.
-6. **Style (Alert Card CSS)**: Added CSS classes for alert card with fixed height and severity color.
-7. **Refactor (API Consistency)**: Ensured all new API routes are declared only inside `_setupApi()`.
+- **Fix (Web Alert Language)**: Web API `/api/live` now exposes weather alert fields from `ForecastManager`, including a French-translated alert label (`alert_event_fr`) for UI consistency with OLED.
+- **Feature (Web Dashboard)**: Added a weather alert card on the main web page and wired live refresh in `data/app.js` to display active alerts in French with severity/sender.
+- **Fix (Integration)**: `WebManager` now receives `ForecastManager` reference at startup so alert data is available to Web UI endpoints.
 
 ## Version 1.0.126
 - **Fix (Documentation Consistency)**: Removed unresolved merge markers and fully synchronized troubleshooting/FAQ docs (`docs/*.md` and `docs/*_fr.md`).

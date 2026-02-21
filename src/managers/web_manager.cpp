@@ -3,6 +3,8 @@
 #include "managers/forecast_manager.h"
 #include <ESPmDNS.h>
 #include <LittleFS.h>
+#include <cctype>
+#include <string>
 #include "utils/logs.h"
 #include "utils/system_info.h"
 // Inclusion du fichier généré automatiquement par le script Python
@@ -13,14 +15,51 @@
 #define WEB_MDNS_HOSTNAME "meteohub"
 #endif
 
+static std::string toLowerCopy(const std::string& text) {
+    std::string lower = text;
+    for (auto& character : lower) {
+        character = static_cast<char>(std::tolower(static_cast<unsigned char>(character)));
+    }
+    return lower;
+}
+
+static std::string translateAlertToFrench(const std::string& event) {
+    const std::string lower = toLowerCopy(event);
+
+    if (lower.find("flood") != std::string::npos || lower.find("inond") != std::string::npos || lower.find("crue") != std::string::npos) {
+        return "Risque d'inondation";
+    }
+    if (lower.find("thunder") != std::string::npos || lower.find("orage") != std::string::npos) {
+        return "Orages";
+    }
+    if (lower.find("rain") != std::string::npos || lower.find("pluie") != std::string::npos) {
+        return "Fortes pluies";
+    }
+    if (lower.find("wind") != std::string::npos || lower.find("vent") != std::string::npos) {
+        return "Vent fort";
+    }
+    if (lower.find("snow") != std::string::npos || lower.find("neige") != std::string::npos) {
+        return "Neige";
+    }
+    if (lower.find("heat") != std::string::npos || lower.find("chaleur") != std::string::npos) {
+        return "Canicule";
+    }
+    if (lower.find("cold") != std::string::npos || lower.find("froid") != std::string::npos || lower.find("gel") != std::string::npos) {
+        return "Grand froid";
+    }
+
+    return event;
+}
+
 WebManager::WebManager() : _server(80) {
 }
 
-void WebManager::begin(HistoryManager& history, SdManager& sd) {
+void WebManager::begin(HistoryManager& history, SdManager& sd, ForecastManager& forecast) {
     LOG_INFO("Initialisation du WebManager...");
 
     _history = &history;
     _sd = &sd;
+    _forecast = &forecast;
     // LittleFS n'est plus requis ici pour les pages web (géré par HistoryManager pour les données)
     // Configuration mDNS
     if (MDNS.begin(WEB_MDNS_HOSTNAME)) {
@@ -109,51 +148,30 @@ void WebManager::_setupRoutes() {
 void WebManager::_setupApi() {
     // API : État actuel (Live)
     _server.on("/api/live", HTTP_GET, [this](AsyncWebServerRequest *request) {
+        // TODO: Récupérer les vraies valeurs via SensorManager
         AsyncResponseStream *response = request->beginResponseStream("application/json");
-        DynamicJsonDocument doc(512);
+        DynamicJsonDocument doc(768);
 
-        // Récupération des valeurs réelles via SensorManager
-        float temp = 0.0;
-        float hum = 0.0;
-        float pres = 0.0;
-        bool sensor_ok = false;
-
-        if (_history) {
-            const auto& history = _history->getRecentHistory();
-            if (!history.empty()) {
-                const auto& last = history.back();
-                temp = last.t;
-                hum = last.h;
-                pres = last.p;
-                sensor_ok = true;
-            }
-        }
-
-        doc["temp"] = sensor_ok ? temp : 0.0;
-        doc["hum"] = sensor_ok ? hum : 0.0;
-        doc["pres"] = sensor_ok ? pres : 0.0;
+        doc["temp"] = 22.5; // Placeholder
+        doc["hum"] = 45.0;  // Placeholder
+        doc["pres"] = 1013.2; // Placeholder
         doc["wifi_rssi"] = WiFi.RSSI();
         doc["uptime"] = millis() / 1000;
 
-        serializeJson(doc, *response);
-        request->send(response);
-    });
-
-    // API : Alerte météo
-    _server.on("/api/alert", HTTP_GET, [](AsyncWebServerRequest *request) {
-        AsyncResponseStream *response = request->beginResponseStream("application/json");
-        DynamicJsonDocument doc(1024);
-        extern ForecastManager forecast;
-        if (forecast.alert_active) {
-            doc["active"] = true;
-            doc["sender"] = forecast.alert.sender.c_str();
-            doc["event"] = forecast.alert.event.c_str();
-            doc["severity"] = forecast.alert.severity;
-            // Ajout du texte complet de l'alerte
-            doc["description"] = forecast.alert.description.c_str();
+        if (_forecast) {
+            doc["alert_active"] = _forecast->alert_active;
+            doc["alert_severity"] = _forecast->alert.severity;
+            doc["alert_sender"] = _forecast->alert.sender.c_str();
+            doc["alert_event"] = _forecast->alert.event.c_str();
+            doc["alert_event_fr"] = translateAlertToFrench(_forecast->alert.event).c_str();
         } else {
-            doc["active"] = false;
+            doc["alert_active"] = false;
+            doc["alert_severity"] = 0;
+            doc["alert_sender"] = "";
+            doc["alert_event"] = "";
+            doc["alert_event_fr"] = "";
         }
+
         serializeJson(doc, *response);
         request->send(response);
     });
