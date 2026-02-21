@@ -1,3 +1,30 @@
+// Affichage de l'alerte météo sur le dashboard
+async function fetchAlert() {
+    const alertCard = document.getElementById('alert-card');
+    const alertContent = document.getElementById('alert-content');
+    if (!alertCard || !alertContent) return;
+    try {
+        const res = await fetch('/api/alert');
+        const data = await res.json();
+        alertCard.classList.remove('alert-yellow', 'alert-orange', 'alert-red');
+        if (data.active) {
+            let colorClass = '';
+            let label = '';
+            if (data.severity >= 3) { colorClass = 'alert-red'; label = 'Alerte rouge'; }
+            else if (data.severity === 2) { colorClass = 'alert-orange'; label = 'Alerte orange'; }
+            else { colorClass = 'alert-yellow'; label = 'Alerte jaune'; }
+            alertCard.classList.add(colorClass);
+            // Affichage du texte complet de l'alerte en français si disponible
+            let alertText = data.description && data.description.length > 0 ? data.description : data.event;
+            alertContent.innerHTML = `${label} : <b>${alertText}</b> <span style="font-weight:normal">(${data.sender})</span>`;
+        } else {
+            alertContent.textContent = "Aucune alerte météo en cours.";
+        }
+    } catch (e) {
+        alertContent.textContent = "Erreur lors de la récupération de l'alerte météo.";
+        alertCard.classList.remove('alert-yellow', 'alert-orange', 'alert-red');
+    }
+}
 let chart;
 
 const HISTORY_WINDOWS_SECONDS = {

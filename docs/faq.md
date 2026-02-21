@@ -1,3 +1,5 @@
+## Weather Alert Description
+The API /api/alert now returns the full alert description (in French when available). The web dashboard displays this text for maximum clarity and localization.
 # FAQ
 
 Minimum valid version: 1.0.126

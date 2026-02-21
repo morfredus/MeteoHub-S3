@@ -13,6 +13,7 @@ struct Forecast {
 struct Alert {
     std::string sender;
     std::string event;
+    std::string description;
     int severity; // 1=Yellow, 2=Orange, 3=Red
 };
 
