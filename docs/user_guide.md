@@ -1,3 +1,7 @@
+## Weather Alert Description
+
+The API /api/alert now returns the full alert description (in French when available). The dashboard web displays this text for maximum clarity and localization. If description is empty, the event name is used as fallback.
+
 ## Data Display: Dashboard vs History
 
 ### Dashboard

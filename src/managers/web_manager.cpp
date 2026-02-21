@@ -142,13 +142,15 @@ void WebManager::_setupApi() {
     // API : Alerte météo
     _server.on("/api/alert", HTTP_GET, [](AsyncWebServerRequest *request) {
         AsyncResponseStream *response = request->beginResponseStream("application/json");
-        DynamicJsonDocument doc(512);
+        DynamicJsonDocument doc(1024);
         extern ForecastManager forecast;
         if (forecast.alert_active) {
             doc["active"] = true;
             doc["sender"] = forecast.alert.sender.c_str();
             doc["event"] = forecast.alert.event.c_str();
             doc["severity"] = forecast.alert.severity;
+            // Ajout du texte complet de l'alerte
+            doc["description"] = forecast.alert.description.c_str();
         } else {
             doc["active"] = false;
         }

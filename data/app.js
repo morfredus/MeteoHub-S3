@@ -14,7 +14,9 @@ async function fetchAlert() {
             else if (data.severity === 2) { colorClass = 'alert-orange'; label = 'Alerte orange'; }
             else { colorClass = 'alert-yellow'; label = 'Alerte jaune'; }
             alertCard.classList.add(colorClass);
-            alertContent.innerHTML = `${label} : <b>${data.event}</b> <span style="font-weight:normal">(${data.sender})</span>`;
+            // Affichage du texte complet de l'alerte en français si disponible
+            let alertText = data.description && data.description.length > 0 ? data.description : data.event;
+            alertContent.innerHTML = `${label} : <b>${alertText}</b> <span style="font-weight:normal">(${data.sender})</span>`;
         } else {
             alertContent.textContent = "Aucune alerte météo en cours.";
         }
