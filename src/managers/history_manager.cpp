@@ -81,9 +81,10 @@ void HistoryManager::loadRecent() {
     }
     f.close();
     
-    // Limiter la taille si le fichier est trop gros
-    while (_recentHistory.size() > MAX_RECENT_RECORDS) {
-        _recentHistory.erase(_recentHistory.begin());
+    // Limiter la taille si le fichier est trop gros (suppression en un seul bloc)
+    if (_recentHistory.size() > MAX_RECENT_RECORDS) {
+        const size_t overflow = _recentHistory.size() - MAX_RECENT_RECORDS;
+        _recentHistory.erase(_recentHistory.begin(), _recentHistory.begin() + overflow);
     }
     
     LOG_INFO("History loaded: " + std::to_string(_recentHistory.size()) + " points");

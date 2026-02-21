@@ -1,13 +1,17 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.125
+Version minimale valide : 1.0.126
 
 
 
 
 
 
+
+## Version 1.0.126
+- **Correctif (Cohérence Documentation)** : Suppression des marqueurs de fusion non résolus et resynchronisation complète des documents FAQ/dépannage (`docs/*.md` et `docs/*_fr.md`).
+- **Optimisation (Chargement Historique)** : Optimisation du tronquage d'historique surdimensionné dans `HistoryManager::loadRecent()` via une suppression en plage unique au lieu de suppressions successives en tête.
 
 ## Version 1.0.125
 - **Correctif (Intégrité CSV Historique)** : Correction d'un comportement indéfini lors de l'écriture du timestamp dans le CSV SD en utilisant un format compatible 64 bits (`%lld`) avec validation stricte de la taille du buffer avant écriture. Cela évite l'insertion de fragments binaires corrompus dans les fichiers CSV.

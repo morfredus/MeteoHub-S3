@@ -1,13 +1,17 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.125
+Minimum valid version: 1.0.126
 
 
 
 
 
 
+
+## Version 1.0.126
+- **Fix (Documentation Consistency)**: Removed unresolved merge markers and fully synchronized troubleshooting/FAQ docs (`docs/*.md` and `docs/*_fr.md`).
+- **Optimization (History Load)**: Optimized oversized history trimming in `HistoryManager::loadRecent()` using single-range erase instead of repeated front erases.
 
 ## Version 1.0.125
 - **Fix (History CSV Integrity)**: Fixed undefined behavior when writing SD CSV history timestamps by using a 64-bit-safe format (`%lld`) and explicit buffer-length validation before write. This prevents corrupted binary fragments in CSV files.
