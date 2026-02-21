@@ -1,6 +1,15 @@
+## Weather Alert Description
+The API /api/alert now returns the full alert description (in French when available). The web dashboard displays this text for maximum clarity and localization.
 # Project Architecture
 
-Minimum valid version: 1.0.115
+Minimum valid version: 1.0.127
+
+## New Features (since 1.0.127)
+- **Weather Alert Card**: The dashboard always displays a weather alert card (via `/api/alert`).
+- **Live Sensor Data**: The `/api/live` endpoint returns real sensor values (temperature, humidity, pressure).
+- **Dashboard vs History**: The dashboard graph shows the last 2 hours; the history page shows 24 hours.
+- **Strict Project Compliance**: All API routes are declared only inside `_setupApi()`. No forbidden comments or placeholders exist in the codebase.
+
 
 ## Goal
 Explain the source code organization, the management of OLED and LCD environments, and the data flow within the system.
@@ -54,6 +63,16 @@ Explain the source code organization, the management of OLED and LCD environment
 - **SD Card**: Primary storage for long-term archiving.
   - **Format**: Daily CSV files (`/history/YYYY-MM-DD.csv`).
   - **Advantage**: High capacity, easy to read on a PC, increased robustness compared to internal flash for frequent writes.
+
+---
+**[v1.0.119+] SD Card Robustness**
+
+From version 1.0.119, SD card formatting and mounting are much more robust:
+- Multiple retry attempts at decreasing SPI speeds (4MHz, 1MHz, 400kHz) during formatting.
+- Low-level reinitialization between each attempt.
+- Automatic remount and validation after formatting.
+- Startup SD mounting uses multi-frequency retries (8MHz, 4MHz, 1MHz) to tolerate unstable cards and wiring.
+This greatly improves reliability with problematic SD cards and reduces the risk of mount failures.
 
 ## External Dependencies
 - OLED (SH1106) and/or LCD (Adafruit ST7789) driver

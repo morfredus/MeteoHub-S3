@@ -1,3 +1,33 @@
+/* Cartouche alerte météo */
+.alert-card {
+	margin: 0 0 30px 0;
+	padding: 18px 20px;
+	border-radius: 12px;
+	background: #232323;
+	color: #fff;
+	font-size: 1.1rem;
+	font-weight: bold;
+	text-align: center;
+	min-height: 48px;
+	max-height: 48px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+	transition: background 0.3s, color 0.3s;
+}
+.alert-yellow {
+	background: #fffbe6;
+	color: #bfa100;
+}
+.alert-orange {
+	background: #fff3e0;
+	color: #d35400;
+}
+.alert-red {
+	background: #ffeaea;
+	color: #c0392b;
+}
 :root { --bg: #1a1a1a; --card: #2d2d2d; --text: #e0e0e0; --accent: #00a8ff; }
 body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
 .container { max-width: 800px; margin: 0 auto; }

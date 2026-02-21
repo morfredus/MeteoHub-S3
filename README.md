@@ -33,6 +33,12 @@ Both environments are auto-detected at startup and the interface adapts accordin
 - `src/utils/`: reusable utility code (`logs`, `system_info`)
 - `include/`: reserved configuration headers only (`board_config.h`, `config.h`, `secrets.h`, `secrets_example.h`, `README`)
 
+## New Features (since 1.0.127)
+
+- **Weather Alert API**: The `/api/alert` endpoint exposes the current weather alert (or absence) for dashboard display.
+- **Live Sensor Data**: The `/api/live` endpoint returns real sensor values (temperature, humidity, pressure) from the last measurement.
+- **Strict Project Compliance**: All API routes are declared only inside `_setupApi()`. No forbidden comments or placeholders exist in the codebase.
+
 ## Build
 - Install PlatformIO in VS Code.
 - Select environment `esp32-s3-lcd` (TFT) or `esp32-s3-oled` (OLED) as needed.
@@ -67,6 +73,21 @@ Both environments are auto-detected at startup and the interface adapts accordin
 - **Documentation**
 	- All user-facing documentation (EN/FR) is strictly synchronized with the code and features
 	- Minimum valid version is always indicated
+
+## Web Interface
+The MeteoHub S3 features a comprehensive web interface accessible from any browser on the same Wi-Fi network.
+
+### Access
+- Address: `http://meteohub.local` (or via the IP address displayed on the screen at startup).
+
+### Web Features
+- **Dashboard**: Real-time display of Temperature, Humidity, Pressure, and Weather Alert (always visible, color-coded).
+- **Weather Alert Card**: Fixed-height card on the dashboard, dynamically colored, always present, showing alert or "no alert" (via `/api/alert`).
+- **Graphs**: Interactive visualization of the 3 curves over the last 24 hours (high resolution).
+- **Statistics**: Dedicated page showing Min/Avg/Max and trend analysis for the current period.
+- **Long-Term History**: View archived data over several months/years.
+- **File Manager**: Accessible via the floppy disk icon 4be at the bottom of the page. Allows browsing internal memory and the SD card, downloading, or deleting files.
+- **System Logs**: Accessible via the scroll icon 4dc at the bottom of the page. Displays real-time system events.
 
 ## LCD vs OLED: Key Differences
 - **Navigation**: On OLED, one detent = one page (HW-040 module, buttons + OLED integrated); on LCD, 2 detents = one page (EC11 module only).

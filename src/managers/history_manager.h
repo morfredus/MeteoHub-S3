@@ -25,11 +25,26 @@ struct StatMetric {
     float avg() const { return count > 0 ? (float)(sum / count) : 0.0f; }
 };
 
+
 struct Stats24h {
     int count = 0;
     StatMetric temp;
     StatMetric hum;
     StatMetric pres;
+};
+
+// Structures pour la tendance météo
+struct TrendMetric {
+    float delta_1h = 0;
+    float delta_24h = 0;
+    std::string direction_1h;
+    std::string direction_24h;
+};
+
+struct MeteoTrend {
+    TrendMetric temp;
+    TrendMetric hum;
+    TrendMetric pres;
 };
 
 class HistoryManager {
@@ -44,7 +59,7 @@ public:
     
     // Gestion LittleFS
     void clearHistory();
-
+    MeteoTrend getTrend() const;
 private:
     std::vector<HistoryRecord> _recentHistory;
     SdManager* _sd = nullptr;

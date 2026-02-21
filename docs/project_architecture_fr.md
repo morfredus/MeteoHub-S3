@@ -1,7 +1,16 @@
+## Description alerte météo
+L’API `/api/alert` retourne désormais le texte complet de l’alerte (en français si disponible). Le dashboard web affiche ce texte pour une clarté et une localisation maximale.
 
 # Architecture du projet
 
-Version minimale valide : 1.0.115
+Version minimale valide : 1.0.127
+
+## Nouvelles fonctionnalités (depuis 1.0.127)
+- **Cartouche alerte météo** : Le dashboard affiche en permanence une cartouche d’alerte météo (via `/api/alert`).
+- **Données capteurs en temps réel** : L’endpoint `/api/live` retourne les valeurs réelles des capteurs (température, humidité, pression).
+- **Dashboard vs Historique** : Le graphique du dashboard affiche les 2 dernières heures ; la page historique affiche 24h.
+- **Conformité stricte au projet** : Toutes les routes API sont déclarées uniquement dans `_setupApi()`. Aucun commentaire interdit ou placeholder n’existe dans le code.
+
 
 ## Objectif
 Expliquer l’organisation du code source, la gestion des environnements OLED et LCD, et le flux de données dans le système.
@@ -56,8 +65,19 @@ Expliquer l’organisation du code source, la gestion des environnements OLED et
   - **Format** : Fichiers CSV journaliers (`/history/YYYY-MM-DD.csv`).
   - **Avantage** : Capacité élevée, facilité de lecture sur PC, robustesse accrue par rapport à la flash interne pour les écritures fréquentes.
 
+---
+**[v1.0.119+] Robustesse carte SD**
+
+Depuis la version 1.0.119, le formatage et le montage SD sont beaucoup plus robustes :
+- Plusieurs tentatives de formatage à des vitesses SPI décroissantes (4MHz, 1MHz, 400kHz).
+- Réinitialisation bas niveau entre chaque essai.
+- Remontage et validation automatique après formatage.
+- Au démarrage, le montage SD utilise des retries multi-fréquences (8MHz, 4MHz, 1MHz) pour tolérer les cartes instables et les montages sensibles.
+Ceci améliore grandement la fiabilité avec les cartes SD problématiques et réduit le risque d'échec de montage.
+
 ## Dépendances externes
 - Driver OLED (SH1106) et/ou LCD (Adafruit ST7789)
 - Librairies capteurs Adafruit
 - ArduinoJson
 - WiFi / HTTPClient / LittleFS / Preferences
+Version minimale valide : 1.0.119

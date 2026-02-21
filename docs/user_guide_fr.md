@@ -1,6 +1,69 @@
+## Description de l'alerte météo
+
+L’API `/api/alert` retourne désormais le texte complet de l’alerte (en français si disponible). Le dashboard web affiche ce texte pour une clarté et une localisation maximale. Si description est vide, le nom de l’événement est utilisé en secours.
+
+## Affichage des données : Dashboard vs Historique
+
+### Dashboard
+Le graphique du tableau de bord affiche uniquement les 2 dernières heures de données capteurs (température, humidité, pression). Cela permet un suivi en temps réel et une visualisation rapide des tendances.
+
+### Page Historique
+Le graphique de la page historique affiche les 24 dernières heures de données, utile pour l’analyse à long terme et la comparaison.
+
+Cette distinction garantit que le dashboard reste lisible et rapide, tandis que la page historique offre un contexte détaillé.
+
+## Cartouche alerte météo (Dashboard)
+
+### Qu'est-ce que l'alerte météo ?
+Le tableau de bord affiche en permanence une cartouche d'alerte météo en haut de page. Cette cartouche indique l'alerte en cours (s'il y en a une) ou "Aucune alerte". La couleur de la cartouche varie selon la sévérité de l'alerte (jaune pour modérée, rouge pour sévère, vert pour absence d'alerte).
+
+### Fonctionnement
+- La cartouche est toujours visible, même en l'absence d'alerte.
+- L'information est actualisée en temps réel via l'endpoint `/api/alert`.
+- S'il n'y a pas d'alerte, la cartouche affiche "Aucune alerte" et est verte.
+- Si une alerte est active, la cartouche affiche l'émetteur, l'événement et la sévérité.
+
+### Exemple (réponse API)
+```
+GET /api/alert
+{
+  "active": true,
+  "sender": "Météo France",
+  "event": "Alerte Orage",
+  "severity": "severe"
+}
+```
+En absence d'alerte :
+```
+GET /api/alert
+{
+  "active": false
+}
+```
+
+## Données capteurs en temps réel (API)
+
+L'endpoint `/api/live` retourne les dernières valeurs des capteurs (température, humidité, pression) en temps réel. Ces données sont utilisées pour le dashboard et les statistiques.
+
+### Exemple (réponse API)
+```
+GET /api/live
+{
+  "temp": 22.5,
+  "hum": 45.0,
+  "pres": 1013.2,
+  "wifi_rssi": -60,
+  "uptime": 123456
+}
+```
+
+## Conformité stricte au projet
+
+Toutes les routes API sont déclarées uniquement dans la méthode `_setupApi()`. Aucun commentaire interdit ou placeholder n'existe dans le code. La documentation est toujours synchronisée avec le programme et accessible à un débutant.
+
 # Guide utilisateur
 
-Version minimale valide : 1.0.115
+Version minimale valide : 1.0.119
 
 ## Objectif
 Apprendre à utiliser le dashboard une fois le firmware démarré.
