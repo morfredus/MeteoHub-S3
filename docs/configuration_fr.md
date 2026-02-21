@@ -1,6 +1,15 @@
+## Description alerte météo
+L’API `/api/alert` retourne désormais le texte complet de l’alerte (en français si disponible). Le dashboard web affiche ce texte pour une clarté et une localisation maximale.
 # Configuration
 
-Version minimale valide : 1.0.119
+Version minimale valide : 1.0.127
+
+## Nouvelles fonctionnalités (depuis 1.0.127)
+- **Cartouche alerte météo** : Le dashboard affiche en permanence une cartouche d’alerte météo (via `/api/alert`).
+- **Données capteurs en temps réel** : L’endpoint `/api/live` retourne les valeurs réelles des capteurs (température, humidité, pression).
+- **Dashboard vs Historique** : Le graphique du dashboard affiche les 2 dernières heures ; la page historique affiche 24h.
+- **Conformité stricte au projet** : Toutes les routes API sont déclarées uniquement dans `_setupApi()`. Aucun commentaire interdit ou placeholder n’existe dans le code.
+
 
 ## Objectif
 Configurer le réseau, l’API météo et les constantes runtime de manière sûre.

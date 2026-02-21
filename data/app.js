@@ -1,3 +1,30 @@
+// Affichage de l'alerte météo sur le dashboard
+async function fetchAlert() {
+    const alertCard = document.getElementById('alert-card');
+    const alertContent = document.getElementById('alert-content');
+    if (!alertCard || !alertContent) return;
+    try {
+        const res = await fetch('/api/alert');
+        const data = await res.json();
+        alertCard.classList.remove('alert-yellow', 'alert-orange', 'alert-red');
+        if (data.active) {
+            let colorClass = '';
+            let label = '';
+            if (data.severity >= 3) { colorClass = 'alert-red'; label = 'Alerte rouge'; }
+            else if (data.severity === 2) { colorClass = 'alert-orange'; label = 'Alerte orange'; }
+            else { colorClass = 'alert-yellow'; label = 'Alerte jaune'; }
+            alertCard.classList.add(colorClass);
+            // Affichage du texte complet de l'alerte en français si disponible
+            let alertText = data.description && data.description.length > 0 ? data.description : data.event;
+            alertContent.innerHTML = `${label} : <b>${alertText}</b> <span style="font-weight:normal">(${data.sender})</span>`;
+        } else {
+            alertContent.textContent = "Aucune alerte météo en cours.";
+        }
+    } catch (e) {
+        alertContent.textContent = "Erreur lors de la récupération de l'alerte météo.";
+        alertCard.classList.remove('alert-yellow', 'alert-orange', 'alert-red');
+    }
+}
 let chart;
 
 const HISTORY_WINDOWS_SECONDS = {
@@ -115,6 +142,31 @@ async function fetchStats() {
             </tr>
         `;
 
+        // Ajout de la tendance météo
+        const trendBody = document.getElementById('trendBody');
+        if (trendBody && data.trend) {
+            trendBody.innerHTML = `
+                <tr>
+                    <td>Température</td>
+                    <td>${data.trend.temp.delta_1h.toFixed(1)}°C (${data.trend.temp.direction_1h})</td>
+                    <td>${data.trend.temp.delta_24h.toFixed(1)}°C (${data.trend.temp.direction_24h})</td>
+                    <td>${data.trend.temp.direction_1h === data.trend.temp.direction_24h ? data.trend.temp.direction_1h : data.trend.temp.direction_1h + '/' + data.trend.temp.direction_24h}</td>
+                </tr>
+                <tr>
+                    <td>Humidité</td>
+                    <td>${data.trend.hum.delta_1h.toFixed(0)}% (${data.trend.hum.direction_1h})</td>
+                    <td>${data.trend.hum.delta_24h.toFixed(0)}% (${data.trend.hum.direction_24h})</td>
+                    <td>${data.trend.hum.direction_1h === data.trend.hum.direction_24h ? data.trend.hum.direction_1h : data.trend.hum.direction_1h + '/' + data.trend.hum.direction_24h}</td>
+                </tr>
+                <tr>
+                    <td>Pression</td>
+                    <td>${data.trend.pres.delta_1h.toFixed(1)} hPa (${data.trend.pres.direction_1h})</td>
+                    <td>${data.trend.pres.delta_24h.toFixed(1)} hPa (${data.trend.pres.direction_24h})</td>
+                    <td>${data.trend.pres.direction_1h === data.trend.pres.direction_24h ? data.trend.pres.direction_1h : data.trend.pres.direction_1h + '/' + data.trend.pres.direction_24h}</td>
+                </tr>
+            `;
+        }
+
         const status = document.getElementById('status');
         if (status) {
             status.textContent = 'En ligne';
@@ -216,6 +268,10 @@ function initChart() {
 }
 
 window.onload = () => {
+    if (getPageName() === 'dashboard') {
+        fetchAlert();
+        setInterval(fetchAlert, 15000);
+    }
     fetchSystem();
     fetchLive();
 

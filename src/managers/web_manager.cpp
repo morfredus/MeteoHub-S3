@@ -1,4 +1,6 @@
+    // ...existing code...
 #include "managers/web_manager.h"
+#include "managers/forecast_manager.h"
 #include <ESPmDNS.h>
 #include <LittleFS.h>
 #include "utils/logs.h"
@@ -106,18 +108,52 @@ void WebManager::_setupRoutes() {
 
 void WebManager::_setupApi() {
     // API : État actuel (Live)
-    _server.on("/api/live", HTTP_GET, [](AsyncWebServerRequest *request) {
-        // TODO: Récupérer les vraies valeurs via SensorManager
-        // Exemple de structure JSON
+    _server.on("/api/live", HTTP_GET, [this](AsyncWebServerRequest *request) {
         AsyncResponseStream *response = request->beginResponseStream("application/json");
         DynamicJsonDocument doc(512);
-        
-        doc["temp"] = 22.5; // Placeholder
-        doc["hum"] = 45.0;  // Placeholder
-        doc["pres"] = 1013.2; // Placeholder
+
+        // Récupération des valeurs réelles via SensorManager
+        float temp = 0.0;
+        float hum = 0.0;
+        float pres = 0.0;
+        bool sensor_ok = false;
+
+        if (_history) {
+            const auto& history = _history->getRecentHistory();
+            if (!history.empty()) {
+                const auto& last = history.back();
+                temp = last.t;
+                hum = last.h;
+                pres = last.p;
+                sensor_ok = true;
+            }
+        }
+
+        doc["temp"] = sensor_ok ? temp : 0.0;
+        doc["hum"] = sensor_ok ? hum : 0.0;
+        doc["pres"] = sensor_ok ? pres : 0.0;
         doc["wifi_rssi"] = WiFi.RSSI();
         doc["uptime"] = millis() / 1000;
-        
+
+        serializeJson(doc, *response);
+        request->send(response);
+    });
+
+    // API : Alerte météo
+    _server.on("/api/alert", HTTP_GET, [](AsyncWebServerRequest *request) {
+        AsyncResponseStream *response = request->beginResponseStream("application/json");
+        DynamicJsonDocument doc(1024);
+        extern ForecastManager forecast;
+        if (forecast.alert_active) {
+            doc["active"] = true;
+            doc["sender"] = forecast.alert.sender.c_str();
+            doc["event"] = forecast.alert.event.c_str();
+            doc["severity"] = forecast.alert.severity;
+            // Ajout du texte complet de l'alerte
+            doc["description"] = forecast.alert.description.c_str();
+        } else {
+            doc["active"] = false;
+        }
         serializeJson(doc, *response);
         request->send(response);
     });
@@ -251,8 +287,8 @@ void WebManager::_setupApi() {
     // API : Statistiques
     _server.on("/api/stats", HTTP_GET, [this](AsyncWebServerRequest *request) {
         AsyncResponseStream *response = request->beginResponseStream("application/json");
-        DynamicJsonDocument doc(1024);
-        
+        DynamicJsonDocument doc(2048);
+
         Stats24h stats = _history->getRecentStats();
         int count = stats.count;
 
@@ -260,21 +296,33 @@ void WebManager::_setupApi() {
             doc["temp"]["min"] = stats.temp.min;
             doc["temp"]["max"] = stats.temp.max;
             doc["temp"]["avg"] = stats.temp.avg();
-            
             doc["hum"]["min"] = stats.hum.min;
             doc["hum"]["max"] = stats.hum.max;
             doc["hum"]["avg"] = stats.hum.avg();
-            
             doc["pres"]["min"] = stats.pres.min;
             doc["pres"]["max"] = stats.pres.max;
             doc["pres"]["avg"] = stats.pres.avg();
         } else {
-            // Valeurs par défaut si vide
             doc["temp"]["min"] = 0; doc["temp"]["max"] = 0; doc["temp"]["avg"] = 0;
             doc["hum"]["min"] = 0; doc["hum"]["max"] = 0; doc["hum"]["avg"] = 0;
             doc["pres"]["min"] = 0; doc["pres"]["max"] = 0; doc["pres"]["avg"] = 0;
         }
         doc["count"] = count;
+
+        // Ajout de la tendance météo
+        MeteoTrend trend = _history->getTrend();
+        doc["trend"]["temp"]["delta_1h"] = trend.temp.delta_1h;
+        doc["trend"]["temp"]["delta_24h"] = trend.temp.delta_24h;
+        doc["trend"]["temp"]["direction_1h"] = trend.temp.direction_1h.c_str();
+        doc["trend"]["temp"]["direction_24h"] = trend.temp.direction_24h.c_str();
+        doc["trend"]["hum"]["delta_1h"] = trend.hum.delta_1h;
+        doc["trend"]["hum"]["delta_24h"] = trend.hum.delta_24h;
+        doc["trend"]["hum"]["direction_1h"] = trend.hum.direction_1h.c_str();
+        doc["trend"]["hum"]["direction_24h"] = trend.hum.direction_24h.c_str();
+        doc["trend"]["pres"]["delta_1h"] = trend.pres.delta_1h;
+        doc["trend"]["pres"]["delta_24h"] = trend.pres.delta_24h;
+        doc["trend"]["pres"]["direction_1h"] = trend.pres.direction_1h.c_str();
+        doc["trend"]["pres"]["direction_24h"] = trend.pres.direction_24h.c_str();
 
         serializeJson(doc, *response);
         request->send(response);

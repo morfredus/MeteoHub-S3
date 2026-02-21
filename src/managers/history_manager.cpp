@@ -1,3 +1,59 @@
+// Inclure le header pour la visibilité des structures
+#include "history_manager.h"
+
+MeteoTrend HistoryManager::getTrend() const {
+    MeteoTrend trend;
+    if (_recentHistory.empty()) return trend;
+
+    const time_t now = _recentHistory.back().timestamp;
+    float t_now = _recentHistory.back().t;
+    float h_now = _recentHistory.back().h;
+    float p_now = _recentHistory.back().p;
+
+    // Recherche des valeurs il y a 1h et 24h
+    float t_1h = t_now, h_1h = h_now, p_1h = p_now;
+    float t_24h = t_now, h_24h = h_now, p_24h = p_now;
+    bool found_1h = false, found_24h = false;
+    for (auto it = _recentHistory.rbegin(); it != _recentHistory.rend(); ++it) {
+        time_t dt = now - it->timestamp;
+        if (!found_1h && dt >= 3600) {
+            t_1h = it->t;
+            h_1h = it->h;
+            p_1h = it->p;
+            found_1h = true;
+        }
+        if (!found_24h && dt >= 86400) {
+            t_24h = it->t;
+            h_24h = it->h;
+            p_24h = it->p;
+            found_24h = true;
+            break;
+        }
+    }
+
+    // Calcul des deltas
+    trend.temp.delta_1h = t_now - t_1h;
+    trend.temp.delta_24h = t_now - t_24h;
+    trend.hum.delta_1h = h_now - h_1h;
+    trend.hum.delta_24h = h_now - h_24h;
+    trend.pres.delta_1h = p_now - p_1h;
+    trend.pres.delta_24h = p_now - p_24h;
+
+    // Direction
+    auto dir = [](float d) {
+        if (d > 0.2) return std::string("hausse");
+        if (d < -0.2) return std::string("baisse");
+        return std::string("stable");
+    };
+    trend.temp.direction_1h = dir(trend.temp.delta_1h);
+    trend.temp.direction_24h = dir(trend.temp.delta_24h);
+    trend.hum.direction_1h = dir(trend.hum.delta_1h);
+    trend.hum.direction_24h = dir(trend.hum.delta_24h);
+    trend.pres.direction_1h = dir(trend.pres.delta_1h);
+    trend.pres.direction_24h = dir(trend.pres.delta_24h);
+
+    return trend;
+}
 #include "history_manager.h"
 #include <LittleFS.h>
 #include "../utils/logs.h"
