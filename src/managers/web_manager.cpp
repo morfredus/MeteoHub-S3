@@ -22,6 +22,19 @@ static std::string toLowerCopy(const std::string& text) {
     return lower;
 }
 
+static const char* getAlertLevelLabelFr(int severity) {
+    if (severity >= 3) {
+        return "Rouge";
+    }
+    if (severity == 2) {
+        return "Orange";
+    }
+    if (severity == 1) {
+        return "Jaune";
+    }
+    return "Aucune";
+}
+
 static std::string translateAlertToFrench(const std::string& event) {
     const std::string lower = toLowerCopy(event);
 
@@ -169,12 +182,48 @@ void WebManager::_setupApi() {
             doc["alert_sender"] = _forecast->alert.sender.c_str();
             doc["alert_event"] = _forecast->alert.event.c_str();
             doc["alert_event_fr"] = translateAlertToFrench(_forecast->alert.event).c_str();
+            doc["alert_level_label_fr"] = getAlertLevelLabelFr(_forecast->alert.severity);
+            doc["alert_start_unix"] = _forecast->alert.start_unix;
+            doc["alert_end_unix"] = _forecast->alert.end_unix;
         } else {
             doc["alert_active"] = false;
             doc["alert_severity"] = 0;
             doc["alert_sender"] = "";
             doc["alert_event"] = "";
             doc["alert_event_fr"] = "";
+            doc["alert_level_label_fr"] = "Aucune";
+            doc["alert_start_unix"] = 0;
+            doc["alert_end_unix"] = 0;
+        }
+
+        serializeJson(doc, *response);
+        request->send(response);
+    });
+
+    _server.on("/api/alert", HTTP_GET, [this](AsyncWebServerRequest *request) {
+        AsyncResponseStream *response = request->beginResponseStream("application/json");
+        DynamicJsonDocument doc(1024);
+
+        if (_forecast) {
+            doc["active"] = _forecast->alert_active;
+            doc["severity"] = _forecast->alert.severity;
+            doc["sender"] = _forecast->alert.sender.c_str();
+            doc["event"] = _forecast->alert.event.c_str();
+            doc["event_fr"] = translateAlertToFrench(_forecast->alert.event).c_str();
+            doc["description"] = _forecast->alert.description.c_str();
+            doc["alert_level_label_fr"] = getAlertLevelLabelFr(_forecast->alert.severity);
+            doc["start_unix"] = _forecast->alert.start_unix;
+            doc["end_unix"] = _forecast->alert.end_unix;
+        } else {
+            doc["active"] = false;
+            doc["severity"] = 0;
+            doc["sender"] = "";
+            doc["event"] = "";
+            doc["event_fr"] = "";
+            doc["description"] = "";
+            doc["alert_level_label_fr"] = "Aucune";
+            doc["start_unix"] = 0;
+            doc["end_unix"] = 0;
         }
 
         serializeJson(doc, *response);

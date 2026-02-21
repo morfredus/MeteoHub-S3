@@ -1,9 +1,21 @@
 // Affichage de l'alerte météo sur le dashboard
+let current_alert_payload = null;
+
 function getAlertThemeClass(level) {
     if (level >= 3) return 'alert-level-red';
     if (level === 2) return 'alert-level-orange';
     if (level === 1) return 'alert-level-yellow';
     return 'alert-level-none';
+}
+
+function formatAlertValidity(startUnix, endUnix) {
+    if (!Number.isFinite(startUnix) || !Number.isFinite(endUnix) || startUnix <= 0 || endUnix <= 0) {
+        return 'Validité : non précisée';
+    }
+
+    const startText = new Date(startUnix * 1000).toLocaleString('fr-FR');
+    const endText = new Date(endUnix * 1000).toLocaleString('fr-FR');
+    return `Validité : du ${startText} au ${endText}`;
 }
 
 function applyAlertCardTheme(level) {
@@ -14,46 +26,130 @@ function applyAlertCardTheme(level) {
     alertCard.classList.add(getAlertThemeClass(level));
 }
 
-function renderAlertFromLiveData(data) {
-    const alertText = document.getElementById('alertText');
-    if (!alertText) return;
+function renderSensorValidityBadge(isValid) {
+    const badge = document.getElementById('sensorInvalidBadge');
+    if (!badge) return;
 
-    if (data.alert_active) {
-        const level = Number.isFinite(data.alert_severity) ? data.alert_severity : 0;
-        const event = data.alert_event_fr || data.alert_event || 'Alerte météo';
-        const sender = data.alert_sender ? ` • Source: ${data.alert_sender}` : '';
-        alertText.textContent = `Niveau ${level} - ${event}${sender}`;
+    if (isValid === false) {
+        badge.hidden = false;
+    } else {
+        badge.hidden = true;
+    }
+}
+
+function updateAlertDetailsButton(enabled) {
+    const detailsBtn = document.getElementById('alertDetailsBtn');
+    if (!detailsBtn) return;
+
+    detailsBtn.disabled = !enabled;
+}
+
+function renderAlertCard(data, isDetailed) {
+    const alertText = document.getElementById('alertText');
+    const alertValidity = document.getElementById('alertValidity');
+    if (!alertText || !alertValidity) return;
+
+    if (data.alert_active || data.active) {
+        const level = Number.isFinite(data.alert_severity) ? data.alert_severity : (Number.isFinite(data.severity) ? data.severity : 0);
+        const levelLabel = data.alert_level_label_fr || 'Alerte';
+        const event = data.alert_event_fr || data.event_fr || data.alert_event || data.event || 'Alerte météo';
+        const senderValue = data.alert_sender || data.sender || '';
+        const sender = senderValue ? ` • Source: ${senderValue}` : '';
+        const details = isDetailed && data.description ? ` — ${data.description}` : '';
+
+        alertText.textContent = `${levelLabel} (${level}) - ${event}${sender}${details}`;
         alertText.style.fontWeight = '700';
+        alertValidity.textContent = formatAlertValidity(data.alert_start_unix || data.start_unix, data.alert_end_unix || data.end_unix);
         applyAlertCardTheme(level);
+        updateAlertDetailsButton(true);
     } else {
         alertText.textContent = 'Aucune alerte météo en cours.';
         alertText.style.fontWeight = '500';
+        alertValidity.textContent = 'Validité : --';
         applyAlertCardTheme(0);
+        updateAlertDetailsButton(false);
     }
+}
+
+function openAlertModal() {
+    const modal = document.getElementById('alertModal');
+    const body = document.getElementById('alertModalBody');
+    if (!modal || !body) return;
+
+    if (!current_alert_payload || !(current_alert_payload.active || current_alert_payload.alert_active)) {
+        body.textContent = 'Aucune alerte active.';
+    } else {
+        const level = Number.isFinite(current_alert_payload.severity) ? current_alert_payload.severity : current_alert_payload.alert_severity;
+        const levelLabel = current_alert_payload.alert_level_label_fr || 'Alerte';
+        const event = current_alert_payload.event_fr || current_alert_payload.alert_event_fr || current_alert_payload.event || current_alert_payload.alert_event || 'Alerte météo';
+        const senderValue = current_alert_payload.sender || current_alert_payload.alert_sender || 'Inconnu';
+        const description = current_alert_payload.description || 'Aucune description détaillée fournie.';
+        const validity = formatAlertValidity(current_alert_payload.start_unix || current_alert_payload.alert_start_unix, current_alert_payload.end_unix || current_alert_payload.alert_end_unix);
+
+        body.innerHTML = `<p><strong>${levelLabel} (${level})</strong> — ${event}</p><p><strong>Source :</strong> ${senderValue}</p><p><strong>${validity}</strong></p><p>${description}</p><p><strong>Consigne :</strong> Surveillez l’évolution locale et limitez les déplacements non essentiels.</p>`;
+    }
+
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+}
+
+function closeAlertModal() {
+    const modal = document.getElementById('alertModal');
+    if (!modal) return;
+
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+}
+
+function initAlertModal() {
+    const detailsBtn = document.getElementById('alertDetailsBtn');
+    const closeBtn = document.getElementById('alertModalClose');
+    const modal = document.getElementById('alertModal');
+
+    if (detailsBtn) detailsBtn.addEventListener('click', openAlertModal);
+    if (closeBtn) closeBtn.addEventListener('click', closeAlertModal);
+    if (modal) {
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                closeAlertModal();
+            }
+        });
+    }
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeAlertModal();
+        }
+    });
+}
+
+function renderAlertFromLiveData(data) {
+    const minimalPayload = {
+        alert_active: data.alert_active,
+        alert_severity: data.alert_severity,
+        alert_level_label_fr: data.alert_level_label_fr,
+        alert_event_fr: data.alert_event_fr,
+        alert_event: data.alert_event,
+        alert_sender: data.alert_sender,
+        alert_start_unix: data.alert_start_unix,
+        alert_end_unix: data.alert_end_unix
+    };
+
+    renderAlertCard(minimalPayload, false);
 }
 
 async function fetchAlert() {
     const alertText = document.getElementById('alertText');
     if (!alertText) return;
+
     try {
         const res = await fetch('/api/alert');
         const data = await res.json();
-
-        if (data.active) {
-            const level = Number.isFinite(data.severity) ? data.severity : 0;
-            const event = data.event_fr || data.event || 'Alerte météo';
-            const sender = data.sender ? ` • Source: ${data.sender}` : '';
-            const details = data.description ? ` — ${data.description}` : '';
-            alertText.textContent = `Niveau ${level} - ${event}${sender}${details}`;
-            alertText.style.fontWeight = '700';
-            applyAlertCardTheme(level);
-        } else {
-            alertText.textContent = 'Aucune alerte météo en cours.';
-            alertText.style.fontWeight = '500';
-            applyAlertCardTheme(0);
-        }
+        current_alert_payload = data;
+        renderAlertCard(data, true);
     } catch (e) {
         alertText.textContent = "Erreur lors de la récupération de l'alerte météo.";
+        updateAlertDetailsButton(false);
         applyAlertCardTheme(0);
     }
 }
@@ -108,6 +204,8 @@ async function fetchLive() {
         if (temp) temp.textContent = data.temp.toFixed(1);
         if (hum) hum.textContent = data.hum.toFixed(0);
         if (pres) pres.textContent = data.pres.toFixed(1);
+
+        renderSensorValidityBadge(data.sensor_valid);
 
         const status = document.getElementById('status');
         if (status) {
@@ -277,6 +375,7 @@ function initChart() {
 }
 
 window.onload = () => {
+    initAlertModal();
     fetchSystem();
     fetchLive();
     fetchAlert();

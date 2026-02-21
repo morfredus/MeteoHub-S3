@@ -1,13 +1,18 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.128
+Minimum valid version: 1.0.129
 
 
 
 
 
 
+
+## Version 1.0.129
+- **Feature (Web Alert Context)**: Added alert validity window fields (`start_unix`, `end_unix`) and `alert_level_label_fr` in web APIs to provide direct French severity labels and timing context.
+- **Feature (Web Alert UX)**: Dashboard alert card now shows validity period and includes a "Voir détails complets" button opening a modal with long description and safety guidance.
+- **Feature (Live Data Trust)**: Added a visible "Capteur invalide" badge on dashboard when `sensor_valid=false` to prevent misleading interpretation of live cards.
 
 ## Version 1.0.128
 - **Fix (Web Alerts)**: Added dedicated `/api/alert` endpoint and ensured web alert title uses French translation (`event_fr`) to match OLED language.

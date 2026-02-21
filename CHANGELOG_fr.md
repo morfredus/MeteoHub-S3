@@ -1,13 +1,18 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.128
+Version minimale valide : 1.0.129
 
 
 
 
 
 
+
+## Version 1.0.129
+- **Fonctionnalité (Contexte Alerte Web)** : Ajout des champs de validité (`start_unix`, `end_unix`) et du champ prêt à l’emploi `alert_level_label_fr` dans les APIs Web pour exposer directement le niveau en français.
+- **Fonctionnalité (UX Alerte Web)** : Le cartouche d’alerte affiche maintenant la période de validité et un bouton "Voir détails complets" ouvrant une modal lisible (description longue + consigne de sécurité).
+- **Fonctionnalité (Fiabilité Live)** : Ajout d’un badge visuel "Capteur invalide" sur le dashboard quand `sensor_valid=false` pour éviter les mauvaises interprétations des cartouches live.
 
 ## Version 1.0.128
 - **Correctif (Alertes Web)** : Ajout d'un endpoint dédié `/api/alert` et utilisation systématique de la traduction française (`event_fr`) pour aligner l'UI Web avec l'OLED.
