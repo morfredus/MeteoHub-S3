@@ -1,13 +1,24 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.127
+Minimum valid version: 1.0.129
 
 
 
 
 
 
+
+## Version 1.0.129
+- **Feature (Web Alert Context)**: Added alert validity window fields (`start_unix`, `end_unix`) and `alert_level_label_fr` in web APIs to provide direct French severity labels and timing context.
+- **Feature (Web Alert UX)**: Dashboard alert card now shows validity period and includes a "Voir détails complets" button opening a modal with long description and safety guidance.
+- **Feature (Live Data Trust)**: Added a visible "Capteur invalide" badge on dashboard when `sensor_valid=false` to prevent misleading interpretation of live cards.
+
+## Version 1.0.128
+- **Fix (Web Alerts)**: Added dedicated `/api/alert` endpoint and ensured web alert title uses French translation (`event_fr`) to match OLED language.
+- **Improvement (Web Alert UX)**: Dashboard alert card now changes background/text colors by severity with accessible contrast, and shows richer alert details (source + description).
+- **Fix (Live Sensor Values)**: `/api/live` now returns real values from `SensorManager` (`temp`, `hum`, `pres`) instead of placeholders, so dashboard cards display actual sensor readings.
+- **Integration**: `WebManager` now receives `SensorManager` at startup to provide live sensor data to web APIs.
 
 ## Version 1.0.127
 - **Fix (Web Alert Language)**: Web API `/api/live` now exposes weather alert fields from `ForecastManager`, including a French-translated alert label (`alert_event_fr`) for UI consistency with OLED.
