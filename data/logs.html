@@ -25,17 +25,14 @@
         .log-D { color: #6272a4; } /* Debug */
     </style>
 </head>
-<body>
+<body data-page="logs">
     <div class="container">
         <header>
             <h1>Logs Système</h1>
             <div id="status">Connexion...</div>
         </header>
 
-        <nav>
-            <a href="/">Tableau de bord</a>
-            <a href="/files.html">Fichiers</a>
-        </nav>
+        <nav data-shared-menu="true" data-active="/logs"></nav>
 
         <div class="card">
             <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
@@ -49,6 +46,7 @@
         </footer>
     </div>
 
+    <script src="menu.js"></script>
     <script src="footer.js"></script>
     <script>
         function fetchLogs() {
