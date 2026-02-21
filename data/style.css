@@ -59,6 +59,29 @@ th { color: #aaa; }
     transition: background-color 0.3s, color 0.3s;
 }
 
+
+#alertCard {
+    height: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    overflow: hidden;
+}
+
+#alertText {
+    min-height: 72px;
+    max-height: 72px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#alertValidity {
+    min-height: 22px;
+    max-height: 22px;
+    overflow: hidden;
+}
+
 #alertCard.alert-level-none {
     background: #1f3a2a;
     color: #d7ffe4;

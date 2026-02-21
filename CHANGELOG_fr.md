@@ -1,13 +1,17 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.130
+Version minimale valide : 1.0.131
 
 
 
 
 
 
+
+## Version 1.0.131
+- **Correctif (Langue Détails Alerte)** : Les détails d’alerte Web utilisent désormais uniquement les champs français et appliquent un résumé de secours en français quand le texte fournisseur n’est pas traduisible de façon fiable.
+- **Correctif (Stabilité Dashboard)** : Le cartouche d’alerte a une hauteur fixe et des zones de texte contraintes pour supprimer l’effet d’ascenseur de la page lors des rafraîchissements.
 
 ## Version 1.0.130
 - **Correctif (Langue Alerte Web)** : Ajout d'un champ de description d'alerte en français (`description_fr`) dans `/api/alert` et `alert_description_fr` dans `/api/live`.

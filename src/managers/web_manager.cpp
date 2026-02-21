@@ -75,6 +75,22 @@ static void replaceAllInPlace(std::string& text, const std::string& from, const 
     }
 }
 
+static std::string buildAlertDescriptionSummaryFr(const std::string& event_fr, int severity) {
+    std::string level = "jaune";
+    if (severity >= 3) {
+        level = "rouge";
+    } else if (severity == 2) {
+        level = "orange";
+    }
+
+    std::string summary = "Alerte ";
+    summary += level;
+    summary += " : ";
+    summary += event_fr.empty() ? "événement météo" : event_fr;
+    summary += ". Restez informé via les canaux officiels et limitez les déplacements non essentiels.";
+    return summary;
+}
+
 static std::string translateAlertDescriptionToFrench(const std::string& description) {
     if (description.empty()) {
         return description;
@@ -104,6 +120,23 @@ static std::string translateAlertDescriptionToFrench(const std::string& descript
     replaceAllInPlace(translated, "possible", "possible");
     replaceAllInPlace(translated, "until", "jusqu'à");
     replaceAllInPlace(translated, "from", "de");
+
+    return translated;
+}
+
+static std::string getAlertDescriptionFr(const ForecastManager* forecast) {
+    if (!forecast) {
+        return "";
+    }
+
+    std::string translated = translateAlertDescriptionToFrench(forecast->alert.description);
+    if (!forecast->alert.description.empty() && translated == forecast->alert.description) {
+        return buildAlertDescriptionSummaryFr(translateAlertToFrench(forecast->alert.event), forecast->alert.severity);
+    }
+
+    if (translated.empty() && forecast->alert_active) {
+        return buildAlertDescriptionSummaryFr(translateAlertToFrench(forecast->alert.event), forecast->alert.severity);
+    }
 
     return translated;
 }
@@ -227,7 +260,7 @@ void WebManager::_setupApi() {
             doc["alert_sender"] = _forecast->alert.sender.c_str();
             doc["alert_event"] = _forecast->alert.event.c_str();
             doc["alert_event_fr"] = translateAlertToFrench(_forecast->alert.event).c_str();
-            doc["alert_description_fr"] = translateAlertDescriptionToFrench(_forecast->alert.description).c_str();
+            doc["alert_description_fr"] = getAlertDescriptionFr(_forecast).c_str();
             doc["alert_level_label_fr"] = getAlertLevelLabelFr(_forecast->alert.severity);
             doc["alert_start_unix"] = _forecast->alert.start_unix;
             doc["alert_end_unix"] = _forecast->alert.end_unix;
@@ -258,7 +291,7 @@ void WebManager::_setupApi() {
             doc["event"] = _forecast->alert.event.c_str();
             doc["event_fr"] = translateAlertToFrench(_forecast->alert.event).c_str();
             doc["description"] = _forecast->alert.description.c_str();
-            doc["description_fr"] = translateAlertDescriptionToFrench(_forecast->alert.description).c_str();
+            doc["description_fr"] = getAlertDescriptionFr(_forecast).c_str();
             doc["alert_level_label_fr"] = getAlertLevelLabelFr(_forecast->alert.severity);
             doc["start_unix"] = _forecast->alert.start_unix;
             doc["end_unix"] = _forecast->alert.end_unix;

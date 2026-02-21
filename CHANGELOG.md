@@ -1,13 +1,17 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.130
+Minimum valid version: 1.0.131
 
 
 
 
 
 
+
+## Version 1.0.131
+- **Fix (Alert Details Language)**: Web alert details now prioritize French-only description fields and use a French fallback summary when raw provider text cannot be translated reliably.
+- **Fix (Dashboard Stability)**: Alert card now uses a fixed height with constrained text blocks to prevent page layout jumps during refreshes.
 
 ## Version 1.0.130
 - **Fix (Web Alert Language)**: Added a French-translated alert description field (`description_fr`) in `/api/alert` and `alert_description_fr` in `/api/live`.
