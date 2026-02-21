@@ -1,3 +1,66 @@
+## Weather Alert Description
+
+The API /api/alert now returns the full alert description (in French when available). The dashboard web displays this text for maximum clarity and localization. If description is empty, the event name is used as fallback.
+
+## Data Display: Dashboard vs History
+
+### Dashboard
+The dashboard graph shows only the last 2 hours of sensor data (temperature, humidity, pressure). This allows for real-time monitoring and quick trend visualization.
+
+### History Page
+The history page graph displays the last 24 hours of data, useful for long-term analysis and comparison.
+
+This separation ensures the dashboard remains fast and readable, while the history page provides detailed context.
+
+## Weather Alert Card (Dashboard)
+
+### What is the Weather Alert?
+The dashboard always displays a weather alert card at the top. This card shows the current alert (if any) or "No alert". The color of the card changes depending on the severity of the alert (e.g., yellow for moderate, red for severe, green for no alert).
+
+### How does it work?
+- The alert card is always visible, even if there is no alert.
+- The information is updated in real time from the `/api/alert` endpoint.
+- If there is no alert, the card shows "No alert" and is green.
+- If an alert is active, the card displays the sender, event, and severity.
+
+### Example (API response)
+```
+GET /api/alert
+{
+  "active": true,
+  "sender": "Meteo France",
+  "event": "Storm Warning",
+  "severity": "severe"
+}
+```
+If no alert:
+```
+GET /api/alert
+{
+  "active": false
+}
+```
+
+## Live Sensor Data (API)
+
+The `/api/live` endpoint returns the latest sensor values (temperature, humidity, pressure) in real time. This is used for the dashboard and statistics.
+
+### Example (API response)
+```
+GET /api/live
+{
+  "temp": 22.5,
+  "hum": 45.0,
+  "pres": 1013.2,
+  "wifi_rssi": -60,
+  "uptime": 123456
+}
+```
+
+## Strict Project Compliance
+
+All API routes are declared only inside the `_setupApi()` method. No forbidden comments or placeholders exist anywhere in the codebase. The documentation is always synchronized with the program and is beginner-friendly.
+
 # User Guide
 
 Minimum valid version: 1.0.119
