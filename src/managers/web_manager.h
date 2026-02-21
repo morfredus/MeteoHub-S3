@@ -6,11 +6,12 @@
 #include <ArduinoJson.h>
 #include "config.h"
 #include "managers/history_manager.h"
+#include "managers/forecast_manager.h"
 
 class WebManager {
 public:
     WebManager();
-    void begin(HistoryManager& history, SdManager& sd);
+    void begin(HistoryManager& history, SdManager& sd, ForecastManager& forecast);
     void handle();
 
 private:
@@ -20,6 +21,7 @@ private:
     void _setupApi();
     HistoryManager* _history = nullptr;
     SdManager* _sd = nullptr;
+    ForecastManager* _forecast = nullptr;
 };
 
 #endif // WEB_MANAGER_H
