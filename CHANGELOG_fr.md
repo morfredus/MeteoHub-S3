@@ -1,13 +1,17 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.129
+Version minimale valide : 1.0.130
 
 
 
 
 
 
+
+## Version 1.0.130
+- **Correctif (Langue Alerte Web)** : Ajout d'un champ de description d'alerte en français (`description_fr`) dans `/api/alert` et `alert_description_fr` dans `/api/live`.
+- **Correctif (Modal Détails Alerte)** : Le dashboard priorise désormais la description française pour le cartouche et la modal de détails.
 
 ## Version 1.0.129
 - **Fonctionnalité (Contexte Alerte Web)** : Ajout des champs de validité (`start_unix`, `end_unix`) et du champ prêt à l’emploi `alert_level_label_fr` dans les APIs Web pour exposer directement le niveau en français.
