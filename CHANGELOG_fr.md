@@ -1,7 +1,51 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.93
+Version minimale valide : 1.0.125
+
+
+
+
+
+
+
+## Version 1.0.125
+- **Correctif (Intégrité CSV Historique)** : Correction d'un comportement indéfini lors de l'écriture du timestamp dans le CSV SD en utilisant un format compatible 64 bits (`%lld`) avec validation stricte de la taille du buffer avant écriture. Cela évite l'insertion de fragments binaires corrompus dans les fichiers CSV.
+- **Amélioration (Écriture SD Historique)** : Utilisation de `File.write()` avec un nombre exact d'octets pour chaque ligne formatée afin de fiabiliser l'écriture.
+
+## Version 1.0.124
+- **Correctif (Footer Web)** : Suppression du nom/version codés en dur dans `data/footer.js` ; le footer lit désormais `project_name` et `project_version` depuis `/api/system` (valeurs issues des flags PlatformIO).
+- **Correctif (Web UI)** : Mise à jour de `data/app.js` pour lire `project_version` depuis `/api/system` avec compatibilité descendante.
+
+## Version 1.0.123
+- **Correctif (Build)** : Correction des littéraux JSON échappés dans `/api/history` (`web_manager.cpp`) après la mise à jour d'agrégation par intervalle, rétablissant la compilation C++.
+
+## Version 1.0.122
+- **Correctif (Graphiques Web)** : `/api/history` prend désormais en charge une agrégation explicite par `interval` avec moyenne côté serveur, afin de réduire la taille des réponses et la charge CPU tout en conservant des courbes fluides.
+- **Fonctionnalité (Graphe Dashboard)** : Le tableau de bord demande exactement les 2 dernières heures avec un pas de 5 minutes (`window=7200`, `interval=300`).
+- **Fonctionnalité (Graphe Historique 24H)** : La page historique demande exactement les 24 dernières heures avec un pas de 30 minutes (`window=86400`, `interval=1800`) pour réduire l'usage mémoire et le temps de rendu.
+- **Rendu UI** : Les datasets Chart.js utilisent explicitement des courbes monotones non "stepped" pour relier les points sans angles droits artificiels.
+
+## Version 1.0.121
+- **Fix (Build)** : Corrected JSON string escaping in `web_manager.cpp` for `/api/history` response generation, fixing C++ compilation errors in `esp32-s3-oled` and restoring firmware build.
+
+## Version 1.0.120
+- **Correctif (Web Performance)** : Refactor de `data/app.js` pour charger uniquement les données nécessaires selon la page (historique seulement sur Dashboard/Long-term, statistiques seulement sur la page Stats), ce qui supprime les appels API lourds inutiles et réduit les blocages UI.
+- **Correctif (API History)** : Optimisation de `/api/history` avec paramètres `window` et `points` pour limiter côté serveur la fenêtre temporelle et le nombre de points renvoyés, réduisant fortement le temps de réponse et la charge CPU.
+- **Amélioration (Web UX)** : Réduction de la fréquence de rafraîchissement des gros endpoints (`history`, `stats`) pour fluidifier l'interface et éviter les pics de charge.
+
+## Version 1.0.119
+- **Correctif (SD)** : Renforcement du formatage SD avec plusieurs tentatives à vitesses SPI décroissantes (4MHz, 1MHz, 400kHz), réinitialisation bas niveau entre chaque essai, et remount/validation automatique après formatage.
+- **Amélioration (SD)** : Renforcement du montage SD au démarrage avec retries multi-fréquences (8MHz, 4MHz, 1MHz) pour mieux tolérer les cartes instables et les montages sensibles.
+
+## Version 1.0.118
+- **Correctif (Web UI)** : Ajout de la route serveur `/menu.js` dans `web_manager.cpp` pour servir le nouveau menu partagé intégré au firmware. Le menu apparaît désormais correctement après compilation et rechargement navigateur.
+
+## Version 1.0.117
+- 1) **Web UI (Menu partagé)** : Ajout d'un menu de navigation commun injecté par `data/menu.js` et utilisé sur toutes les pages web pour garantir une navigation identique et facile à maintenir.
+- 2) **Web UI (Page principale)** : Le graphique du tableau de bord affiche désormais uniquement les 2 dernières heures, avec mise à jour automatique continue et rendu plus fluide (courbes monotones sans angles marqués).
+- 3) **Web UI (Historique long terme)** : La page d'historique long terme affiche désormais uniquement les 24 dernières heures.
+- 4) **Web UI (Démarrage & rechargement)** : À l'ouverture de l'interface, les données historiques sont immédiatement rechargées depuis l'API, puis rafraîchies périodiquement afin d'afficher l'historique restauré après démarrage selon les nouvelles fenêtres temporelles (2h / 24h).
 
 ## Version 1.0.116
 - **Correctif (Serveur Web)** : Implémentation du sous-échantillonnage (downsampling) côté serveur pour l'API de l'historique (`/api/history`). Cela réduit drastiquement la quantité de données envoyées pour les graphiques, corrigeant de manière définitive les redémarrages (watchdog) avec de grands volumes de données et améliorant la scalabilité.
