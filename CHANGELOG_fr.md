@@ -1,13 +1,17 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.124
+Version minimale valide : 1.0.125
 
 
 
 
 
 
+
+## Version 1.0.125
+- **Correctif (Intégrité CSV Historique)** : Correction d'un comportement indéfini lors de l'écriture du timestamp dans le CSV SD en utilisant un format compatible 64 bits (`%lld`) avec validation stricte de la taille du buffer avant écriture. Cela évite l'insertion de fragments binaires corrompus dans les fichiers CSV.
+- **Amélioration (Écriture SD Historique)** : Utilisation de `File.write()` avec un nombre exact d'octets pour chaque ligne formatée afin de fiabiliser l'écriture.
 
 ## Version 1.0.124
 - **Correctif (Footer Web)** : Suppression du nom/version codés en dur dans `data/footer.js` ; le footer lit désormais `project_name` et `project_version` depuis `/api/system` (valeurs issues des flags PlatformIO).
