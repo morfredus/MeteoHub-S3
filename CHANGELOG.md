@@ -1,7 +1,16 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.145
+Minimum valid version: 1.0.147
+
+## Version 1.0.147
+- **Cleanup (OLED Migration)**: Archived obsolete OLED library evaluation guidance and aligned project docs with the current U8g2-based display baseline.
+- **Documentation (Roadmap)**: Added dedicated bilingual TODO roadmap files for code and user-experience improvements (`docs/todo.md`, `docs/todo_fr.md`).
+
+
+## Version 1.0.146
+- **Fix (SD SPI Mapping)**: `SdManager` now uses SD-specific pin macros (`SD_SCK_PIN`, `SD_MISO_PIN`, `SD_MOSI_PIN`) from `board_config.h` for mount and low-level format init, avoiding silent SPI pin mismatches.
+- **Diagnostics (SD Runtime)**: Added explicit SD pin mapping log (CS/SCK/MISO/MOSI) before mount retries to speed up wiring/runtime troubleshooting.
 
 
 
