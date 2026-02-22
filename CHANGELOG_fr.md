@@ -1,13 +1,17 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.141
+Version minimale valide : 1.0.142
 
 
 
 
 
 
+
+## Version 1.0.142
+- **Correctif (Neige SH1106 en Hot-Plug)** : Durcissement de la séquence de réinitialisation/nettoyage SH1106 et ajout d'une récupération runtime pour éviter les pixels bruités après débranchement/rebranchement.
+- **Stabilité (OLED Runtime)** : Ajout de vérifications de présence I2C lors du flush d'affichage et réinitialisation automatique du driver quand le module OLED revient.
 
 ## Version 1.0.141
 - **Correctif (Bascule OLED AUTO)** : Le mode AUTO privilégie désormais l’initialisation SSD1306 puis fallback SH1106 pour améliorer la compatibilité lors du remplacement d’un SH1106 par un SSD1306.

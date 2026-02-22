@@ -1,13 +1,17 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.141
+Minimum valid version: 1.0.142
 
 
 
 
 
 
+
+## Version 1.0.142
+- **Fix (SH1106 Hot-Plug Noise)**: Hardened SH1106 reinitialization/clear sequence and added runtime hot-plug recovery to avoid noisy/garbled pixels after unplug/replug.
+- **Stability (OLED Runtime)**: Added I2C presence checks in display flush path and automatic driver reinit when an OLED module reconnects.
 
 ## Version 1.0.141
 - **Fix (OLED Auto Switch)**: AUTO mode now prefers SSD1306 initialization first, with SH1106 fallback, to improve hot-swap compatibility when replacing SH1106 by SSD1306.

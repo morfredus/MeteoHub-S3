@@ -10,12 +10,17 @@
 #include "config.h"
 #include "utils/logs.h"
 
+bool Sh1106Display::isDevicePresent(uint8_t address) const {
+    if (address == 0) return false;
+    Wire.beginTransmission(address);
+    return Wire.endTransmission() == 0;
+}
+
 uint8_t Sh1106Display::detectOledAddress() const {
     const uint8_t candidates[] = {0x3C, 0x3D};
 
     for (uint8_t addr : candidates) {
-        Wire.beginTransmission(addr);
-        if (Wire.endTransmission() == 0) {
+        if (isDevicePresent(addr)) {
             return addr;
         }
     }
@@ -28,6 +33,8 @@ bool Sh1106Display::beginWithDriver(uint8_t address, int driver_mode) {
         delete d;
         d = nullptr;
     }
+
+    active_address = address;
 
     if (driver_mode == OLED_DRIVER_SH1106) {
         d = new SH1106Wire(address, I2C_SDA_PIN, I2C_SCL_PIN);
@@ -42,15 +49,15 @@ bool Sh1106Display::beginWithDriver(uint8_t address, int driver_mode) {
     d->init();
     d->flipScreenVertically();
     d->setContrast(OLED_CONTRAST);
+    d->resetDisplay();
+    delay(8);
+    d->clear();
+    d->display();
+    delay(8);
     d->clear();
     d->display();
 
-    if (active_driver == OLED_DRIVER_ACTIVE_SSD1306) {
-        d->resetDisplay();
-        d->clear();
-        d->display();
-    }
-
+    device_was_missing = false;
     return true;
 }
 
@@ -85,7 +92,22 @@ bool Sh1106Display::begin() {
 }
 
 void Sh1106Display::clear() { if (d) d->clear(); }
-void Sh1106Display::show() { if (d) d->display(); }
+void Sh1106Display::show() {
+    if (!d) return;
+
+    const bool present = isDevicePresent(active_address);
+    if (!present) {
+        device_was_missing = true;
+        return;
+    }
+
+    if (device_was_missing) {
+        LOG_WARNING("OLED hot-plug detected, reinitializing display driver");
+        beginWithDriver(active_address, active_driver == OLED_DRIVER_ACTIVE_SSD1306 ? OLED_DRIVER_SSD1306 : OLED_DRIVER_SH1106);
+    }
+
+    d->display();
+}
 
 void Sh1106Display::text(int x, int y, const std::string& s) {
     if (!d) return;
