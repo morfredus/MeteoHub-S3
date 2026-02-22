@@ -3,7 +3,7 @@ L’API `/api/alert` retourne désormais le texte complet de l’alerte (en fran
 
 # Architecture du projet
 
-Version minimale valide : 1.0.127
+Version minimale valide : 1.0.145
 
 ## Nouvelles fonctionnalités (depuis 1.0.127)
 - **Cartouche alerte météo** : Le dashboard affiche en permanence une cartouche d’alerte météo (via `/api/alert`).
@@ -16,14 +16,14 @@ Version minimale valide : 1.0.127
 Expliquer l’organisation du code source, la gestion des environnements OLED et LCD, et le flux de données dans le système.
 
 ## Structure des dossiers
-- `src/main.cpp` : boot et orchestration principale, auto-détection du type d’afficheur (OLED/LCD)
+- `src/main.cpp` : boot et orchestration principale pour l’environnement d’affichage sélectionné (OLED/LCD)
 - `src/modules/` : modules matériel/affichage/pages (voir ci-dessous)
 - `src/managers/` : gestionnaires d’état et d’orchestration
 - `src/utils/` : utilitaires réutilisables
 - `include/` : en-têtes de configuration réservés
 
 ## Gestion des environnements d’affichage
-- Le firmware détecte automatiquement au démarrage si un OLED SH1106 ou un LCD TFT ST7789 est connecté.
+- Le type d’afficheur est choisi à la compilation (`esp32-s3-oled` ou `esp32-s3-lcd`).
 - Toute la logique d’affichage/pages est abstraite via `DisplayInterface`.
 - Modules dédiés pour chaque afficheur : `sh1106_display` (OLED), `st7789_display` (LCD).
 - Logique de rendu des pages séparée : `pages_sh1106.cpp` (OLED), `pages_st7789.cpp` (LCD).
@@ -50,10 +50,10 @@ Expliquer l’organisation du code source, la gestion des environnements OLED et
 - `system_info` : métriques mémoire/système runtime
 
 ## Flux de données runtime
-1. `main.cpp` initialise l’affichage (auto-détection), les capteurs, le Wi-Fi, l’heure.
+1. `main.cpp` initialise le backend d’affichage sélectionné, les capteurs, le Wi-Fi et l’heure.
 2. `ui_manager.update()` pilote la boucle périodique et adapte la navigation selon l’afficheur.
 3. Les managers rafraîchissent les données (Wi-Fi, capteurs, prévisions, historique).
-4. Les pages affichent l’état courant sur l’afficheur détecté (OLED ou LCD).
+4. Les pages affichent l’état courant selon l’environnement d’affichage sélectionné (OLED ou LCD).
 5. NeoPixel (OLED) ou alerte à l’écran (LCD) reflète l’état connexion/alertes.
 
 ## Modèle de persistance
@@ -80,4 +80,3 @@ Ceci améliore grandement la fiabilité avec les cartes SD problématiques et r�
 - Librairies capteurs Adafruit
 - ArduinoJson
 - WiFi / HTTPClient / LittleFS / Preferences
-Version minimale valide : 1.0.119

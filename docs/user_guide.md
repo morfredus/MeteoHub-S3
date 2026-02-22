@@ -63,7 +63,7 @@ All API routes are declared only inside the `_setupApi()` method. No forbidden c
 
 # User Guide
 
-Minimum valid version: 1.0.119
+Minimum valid version: 1.0.145
 
 ## Goal
 Learn how to use the dashboard once the firmware has started.
@@ -71,7 +71,7 @@ Learn how to use the dashboard once the firmware has started.
 ## OLED vs. LCD: Navigation and Display
 - **OLED (SH1106)**: Monochrome, 128x64, 2 buttons + rotary encoder. Navigation: 2 detents = 1 page.
 - **LCD (TFT ST7789)**: Color, 240x240 or 240x320, 3 buttons + rotary encoder. Navigation: 1 detent = 1 page.
-- The interface and page layout automatically adapt to the detected display.
+- The interface and page layout adapt to the selected display environment (OLED or LCD).
 
 ## User Controls
 - **Encoder Rotation**: Navigate between pages.

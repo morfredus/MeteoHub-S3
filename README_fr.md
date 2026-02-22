@@ -2,13 +2,13 @@
 
 # MeteoHub S3
 
-Version minimale valide : 1.0.127
+Version minimale valide : 1.0.145
 
 ## Documentation complète
 - [Index de la documentation](docs/index_fr.md)
 
 ## Présentation
-MeteoHub S3 est un projet PlatformIO pour ESP32-S3 qui affiche les données des capteurs locaux, les prévisions météo, les logs et l’état système sur un écran couleur LCD (TFT ST7789) ou un tableau de bord OLED SH1106. Le firmware détecte automatiquement le type d’afficheur et adapte l’interface et la navigation.
+MeteoHub S3 est un projet PlatformIO pour ESP32-S3 qui affiche les données des capteurs locaux, les prévisions météo, les logs et l’état système sur un écran couleur LCD (TFT ST7789) ou un tableau de bord OLED SH1106. L’environnement d’affichage est choisi à la compilation (`esp32-s3-oled` ou `esp32-s3-lcd`) et l’interface/navigation s’adaptent en conséquence.
 
 
 ## Matériel nécessaire et différences
@@ -25,7 +25,7 @@ MeteoHub S3 est un projet PlatformIO pour ESP32-S3 qui affiche les données des 
 	- Navigation : 2 crans = 1 page.
 	- Capteurs AHT20/BMP280.
 
-Les deux environnements sont détectés automatiquement au démarrage et l'interface s'adapte.
+L’environnement choisi à la compilation (`esp32-s3-oled` ou `esp32-s3-lcd`) détermine la pile d’affichage et l’interface s’adapte.
 
 ## Architecture du projet
 - `src/modules/` : modules matériel/affichage/pages (`encoder`, `neopixel_status`, `sensors`, `sh1106_display`, `st7789_display`, `pages`)
@@ -68,6 +68,10 @@ Les deux environnements sont détectés automatiquement au démarrage et l'inter
 	- Toute la documentation utilisateur (EN/FR) est strictement synchronisée avec le code et les fonctionnalités
 	- La version minimale requise est toujours indiquée
 
+
+## Choix de bibliothèque OLED
+- Une évaluation documentée du passage éventuel à **U8g2** est disponible ici : `docs/decisions/oled-library-evaluation.md`.
+- Recommandation actuelle : conserver la pile SH1106/SSD1306Wire pour les patchs courts, et envisager U8g2 via une branche de benchmark dédiée.
 
 ## LCD vs OLED : Différences clés
 - **Navigation** : Sur OLED, 1 cran = 1 page (module HW-040 complet, boutons + OLED intégré) ; sur LCD, 2 crans = 1 page (module EC11 seul).

@@ -8,7 +8,8 @@ class SdManager {
 public:
     bool begin();
     bool format();
-    bool isAvailable() const;
+    bool isAvailable();
+    bool ensureMounted();
     
     // Méthodes futures pour logs/historique
     // bool appendLog(const std::string& message);
@@ -16,4 +17,6 @@ public:
 
 private:
     bool _available = false;
+    unsigned long _last_reconnect_attempt_ms = 0;
+    bool mountWithRetries();
 };
