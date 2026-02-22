@@ -1,6 +1,6 @@
 # Maintenance and Troubleshooting
 
-Minimum valid version: 1.0.126
+Minimum valid version: 1.0.145
 
 ## Goal
 Provide practical recovery steps when the dashboard does not behave as expected.

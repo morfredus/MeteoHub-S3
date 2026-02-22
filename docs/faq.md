@@ -2,7 +2,7 @@
 The API /api/alert now returns the full alert description (in French when available). The web dashboard displays this text for maximum clarity and localization.
 # FAQ
 
-Minimum valid version: 1.0.126
+Minimum valid version: 1.0.145
 
 ## Is internet access required?
 Yes, for weather forecast and alert updates. Local sensor pages still work without internet.
@@ -42,7 +42,7 @@ Filesystem corruption is rare but can happen after abrupt power loss.
 3. **Maximum robustness (advanced):** store history on SD card and/or forward data to cloud services (MQTT, ThingSpeak, etc.).
 
 ## Does the project support both OLED and LCD displays?
-Yes. It auto-detects SH1106 OLED and ST7789 LCD at startup without code changes.
+No runtime auto-detection is required: choose `esp32-s3-oled` or `esp32-s3-lcd` at build time, then flash the firmware.
 
 ## What are the key differences between OLED and LCD environments?
 - **OLED (SH1106):** monochrome, 128x64, rotary/button navigation specific to OLED layout.
