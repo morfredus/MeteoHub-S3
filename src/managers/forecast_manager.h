@@ -15,6 +15,8 @@ struct Alert {
     std::string event;
     std::string description;
     int severity; // 1=Yellow, 2=Orange, 3=Red
+    long start_unix = 0;
+    long end_unix = 0;
 };
 
 class ForecastManager {

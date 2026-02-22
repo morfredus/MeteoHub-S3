@@ -1,13 +1,56 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.127
+Version minimale valide : 1.0.137
 
 
 
 
 
 
+
+## Version 1.0.137
+- **Correctif (Robustesse SD)** : Renforcement des contrôles de disponibilité SD avec tentative automatique de remontage et logique de reconnexion temporisée quand la carte devient indisponible.
+- **Correctif (Montage SD)** : Unification des retries de montage dans `SdManager` et création systématique du dossier `/history` après remontage pour réduire les erreurs "SD absente/erreur".
+
+## Version 1.0.136
+- **UI (Taille Cartouche Alerte)** : Réduction de 25% de la hauteur du cartouche alerte pour compacter le dashboard tout en conservant l’accès au détail.
+- **UI (Gestion Dépassement)** : Ajout d’un défilement vertical pour les textes d’alerte/modale trop longs et garantie de visibilité de l’icône parchemin en bas à droite.
+
+## Version 1.0.135
+- **Correctif (UI Tendance Statistiques)** : La page Statistiques affiche désormais les lignes de tendance depuis `/api/stats` et ne reste plus sur "Chargement...".
+- **Fonctionnalité (Tendance Météo Globale)** : Ajout de `trend.global_label_fr` dans `/api/stats` avec un libellé synthétique (ex. "Vers beau temps", "Vers pluie").
+
+## Version 1.0.134
+- **Correctif (Langue Alerte Courte)** : Ajout d’un fallback pour les intitulés d’événements anglais non reconnus afin que l’alerte courte Web reste en français.
+- **UI (Déclencheur Détails Alerte)** : Remplacement du gros bouton "Voir détails complets" par une petite icône parchemin ancrée en bas à droite du cartouche.
+
+## Version 1.0.133
+- **Correctif (Langue Détail Alerte)** : Le texte détaillé d’alerte renvoyé par les APIs Web est désormais un résumé déterministe en français, sans reprise de texte brut anglais du fournisseur.
+- **Clarification (Comportement API)** : `/api/alert` et `/api/live` continuent d’exposer les champs FR, tout en conservant le paramètre `lang` côté requête prévision.
+
+## Version 1.0.132
+- **Optimisation (Rafraîchissement Alerte)** : Le polling d’alerte Web passe à 15 minutes (`ALERT_REFRESH_MS`) au lieu de 5 secondes pour réduire les requêtes inutiles.
+- **Mise à jour de comportement (Dashboard)** : Le cartouche d’alerte n’est plus rafraîchi via `/api/live` ; il est mis à jour uniquement via la planification dédiée de `/api/alert`.
+
+## Version 1.0.131
+- **Correctif (Langue Détails Alerte)** : Les détails d’alerte Web utilisent désormais uniquement les champs français et appliquent un résumé de secours en français quand le texte fournisseur n’est pas traduisible de façon fiable.
+- **Correctif (Stabilité Dashboard)** : Le cartouche d’alerte a une hauteur fixe et des zones de texte contraintes pour supprimer l’effet d’ascenseur de la page lors des rafraîchissements.
+
+## Version 1.0.130
+- **Correctif (Langue Alerte Web)** : Ajout d'un champ de description d'alerte en français (`description_fr`) dans `/api/alert` et `alert_description_fr` dans `/api/live`.
+- **Correctif (Modal Détails Alerte)** : Le dashboard priorise désormais la description française pour le cartouche et la modal de détails.
+
+## Version 1.0.129
+- **Fonctionnalité (Contexte Alerte Web)** : Ajout des champs de validité (`start_unix`, `end_unix`) et du champ prêt à l’emploi `alert_level_label_fr` dans les APIs Web pour exposer directement le niveau en français.
+- **Fonctionnalité (UX Alerte Web)** : Le cartouche d’alerte affiche maintenant la période de validité et un bouton "Voir détails complets" ouvrant une modal lisible (description longue + consigne de sécurité).
+- **Fonctionnalité (Fiabilité Live)** : Ajout d’un badge visuel "Capteur invalide" sur le dashboard quand `sensor_valid=false` pour éviter les mauvaises interprétations des cartouches live.
+
+## Version 1.0.128
+- **Correctif (Alertes Web)** : Ajout d'un endpoint dédié `/api/alert` et utilisation systématique de la traduction française (`event_fr`) pour aligner l'UI Web avec l'OLED.
+- **Amélioration (UX Alerte Web)** : Le cartouche d'alerte du dashboard adapte maintenant sa couleur de fond et de texte selon la sévérité, avec contraste lisible, et affiche des détails plus complets (source + description).
+- **Correctif (Valeurs capteurs live)** : `/api/live` renvoie désormais les vraies mesures issues de `SensorManager` (`temp`, `hum`, `pres`) au lieu de valeurs fictives, pour afficher les données réelles dans les cartouches.
+- **Intégration** : `WebManager` reçoit maintenant `SensorManager` au démarrage pour alimenter les APIs live.
 
 ## Version 1.0.127
 - **Correctif (Langue Alerte Web)** : L'API Web `/api/live` expose désormais les champs d'alerte météo depuis `ForecastManager`, avec un libellé traduit en français (`alert_event_fr`) pour aligner le rendu Web avec l'OLED.
