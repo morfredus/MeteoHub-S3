@@ -2,7 +2,7 @@
 L’API `/api/alert` retourne désormais le texte complet de l’alerte (en français si disponible). Le dashboard web affiche ce texte pour une clarté et une localisation maximale.
 # Configuration
 
-Version minimale valide : 1.0.139
+Version minimale valide : 1.0.145
 
 ## Nouvelles fonctionnalités (depuis 1.0.127)
 - **Cartouche alerte météo** : Le dashboard affiche en permanence une cartouche d’alerte météo (via `/api/alert`).
@@ -34,7 +34,7 @@ Utiliser ce fichier pour les réglages fonctionnels :
 
 
 ## Environnements OLED/LCD
-Le firmware prend en charge à la fois l’OLED SH1106 et le LCD ST7789. Le type d’afficheur, le mapping des broches et la navigation sont auto-détectés au démarrage. Voir guide utilisateur et câblage matériel pour le détail.
+Le firmware prend en charge l’OLED SH1106/SSD1306 et le LCD ST7789. Le type d’afficheur est choisi à la compilation (`esp32-s3-oled` / `esp32-s3-lcd`), et le contrôleur/adresse I2C OLED se configurent dans `include/config.h`. Voir guide utilisateur et câblage matériel pour le détail.
 
 ## Fichier à ne pas modifier à la légère
 ### `include/board_config.h`

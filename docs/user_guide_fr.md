@@ -64,10 +64,7 @@ Toutes les routes API sont déclarées uniquement dans la méthode `_setupApi()`
 
 # Guide utilisateur
 
-Version minimale valide : 1.0.139
-
-## Notes de version récentes (>=1.0.139)
-- **Amélioration OLED** : Depuis la version 1.0.139, le rendu OLED est plus fluide : disparition du clignotement lors des transitions de page grâce à la suppression du `show()` intermédiaire et à une gestion optimisée du buffer. Cela améliore la stabilité et la qualité d’affichage sur les écrans SH1106.
+Version minimale valide : 1.0.145
 
 ## Objectif
 Apprendre à utiliser le dashboard une fois le firmware démarré.
@@ -76,7 +73,7 @@ Apprendre à utiliser le dashboard une fois le firmware démarré.
 ## OLED vs LCD : Navigation et affichage
 - **OLED (SH1106)** : Monochrome, 128x64, 2 boutons + encodeur rotatif. Navigation : 2 crans = 1 page.
 - **LCD (TFT ST7789)** : Couleur, 240x240 ou 240x320, 3 boutons + encodeur rotatif. Navigation : 1 cran = 1 page.
-- L’interface et la disposition des pages s’adaptent automatiquement à l’afficheur détecté.
+- L’interface et la disposition des pages s’adaptent à l’environnement d’affichage sélectionné (OLED ou LCD).
 
 ## Commandes utilisateur
 - **Rotation encodeur** : navigation entre les pages

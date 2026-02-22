@@ -1,6 +1,6 @@
 # Getting Started
 
-Minimum valid version: 1.0.119
+Minimum valid version: 1.0.145
 
 ## Goal
 This guide helps a beginner start MeteoHub S3 from scratch up to the first successful upload.
@@ -9,7 +9,7 @@ This guide helps a beginner start MeteoHub S3 from scratch up to the first succe
 - **OLED (SH1106, I2C)**: Monochrome, 128x64, rotary encoder + 2 buttons, NeoPixel, AHT20/BMP280 sensors.
 - **LCD (TFT ST7789, SPI)**: Color, 240x240 or 240x320, rotary encoder (HW-040) + 3 buttons, AHT20/BMP280 sensors.
 
-The firmware automatically detects the display type at startup and adapts the interface and navigation. See Hardware Wiring for pin details.
+Choose the display type at build time by selecting `esp32-s3-oled` or `esp32-s3-lcd`; the firmware then applies the matching interface and navigation. See Hardware Wiring for pin details.
 
 
 ## Required Hardware
