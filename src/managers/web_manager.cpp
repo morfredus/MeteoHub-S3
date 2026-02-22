@@ -35,6 +35,15 @@ static const char* getAlertLevelLabelFr(int severity) {
     return "Aucune";
 }
 
+
+static bool isLikelyEnglishAlertText(const std::string& lower_text) {
+    return lower_text.find("warning") != std::string::npos ||
+        lower_text.find("watch") != std::string::npos ||
+        lower_text.find("advisory") != std::string::npos ||
+        lower_text.find("statement") != std::string::npos ||
+        lower_text.find("storm") != std::string::npos;
+}
+
 static std::string translateAlertToFrench(const std::string& event) {
     const std::string lower = toLowerCopy(event);
 
@@ -58,6 +67,10 @@ static std::string translateAlertToFrench(const std::string& event) {
     }
     if (lower.find("cold") != std::string::npos || lower.find("froid") != std::string::npos || lower.find("gel") != std::string::npos) {
         return "Grand froid";
+    }
+
+    if (isLikelyEnglishAlertText(lower)) {
+        return "Alerte météo";
     }
 
     return event;

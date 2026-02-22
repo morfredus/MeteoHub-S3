@@ -1,13 +1,17 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.133
+Version minimale valide : 1.0.134
 
 
 
 
 
 
+
+## Version 1.0.134
+- **Correctif (Langue Alerte Courte)** : Ajout d’un fallback pour les intitulés d’événements anglais non reconnus afin que l’alerte courte Web reste en français.
+- **UI (Déclencheur Détails Alerte)** : Remplacement du gros bouton "Voir détails complets" par une petite icône parchemin ancrée en bas à droite du cartouche.
 
 ## Version 1.0.133
 - **Correctif (Langue Détail Alerte)** : Le texte détaillé d’alerte renvoyé par les APIs Web est désormais un résumé déterministe en français, sans reprise de texte brut anglais du fournisseur.

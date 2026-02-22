@@ -1,13 +1,17 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.133
+Minimum valid version: 1.0.134
 
 
 
 
 
 
+
+## Version 1.0.134
+- **Fix (Short Alert Language)**: Added a fallback for unmatched English alert event names so web short alert titles remain in French.
+- **UI (Alert Details Trigger)**: Replaced the large "Voir détails complets" button with a compact parchment icon anchored at the bottom-right of the alert card.
 
 ## Version 1.0.133
 - **Fix (Alert Detail Language)**: Alert detail text returned by web APIs is now a deterministic French summary, avoiding any raw English provider wording.

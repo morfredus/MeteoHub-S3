@@ -61,6 +61,7 @@ th { color: #aaa; }
 
 
 #alertCard {
+    position: relative;
     height: 220px;
     display: flex;
     flex-direction: column;
@@ -130,15 +131,6 @@ th { color: #aaa; }
     opacity: 0.95;
 }
 
-#alertDetailsBtn {
-    margin-top: 12px;
-}
-
-#alertDetailsBtn:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
-}
-
 .modal {
     position: fixed;
     inset: 0;
@@ -176,4 +168,32 @@ th { color: #aaa; }
 
 .modal-close:hover {
     color: #fff;
+}
+
+
+.alert-details-icon {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(0, 0, 0, 0.18);
+    color: inherit;
+    font-size: 1rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.alert-details-icon:hover {
+    transform: scale(1.05);
+}
+
+.alert-details-icon:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
