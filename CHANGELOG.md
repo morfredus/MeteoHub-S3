@@ -1,7 +1,12 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.145
+Minimum valid version: 1.0.146
+
+
+## Version 1.0.146
+- **Fix (SD SPI Mapping)**: `SdManager` now uses SD-specific pin macros (`SD_SCK_PIN`, `SD_MISO_PIN`, `SD_MOSI_PIN`) from `board_config.h` for mount and low-level format init, avoiding silent SPI pin mismatches.
+- **Diagnostics (SD Runtime)**: Added explicit SD pin mapping log (CS/SCK/MISO/MOSI) before mount retries to speed up wiring/runtime troubleshooting.
 
 
 
