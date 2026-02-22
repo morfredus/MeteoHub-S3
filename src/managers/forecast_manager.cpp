@@ -138,12 +138,16 @@ void ForecastManager::parseResponse(const std::string& payload) {
         std::string bestEvent;
         std::string bestDescription;
         int bestSeverity = 1;
+        long bestStartUnix = 0;
+        long bestEndUnix = 0;
 
         int index = 0;
         for (JsonObject item : alerts) {
             std::string sender = item["sender_name"] | "";
             std::string event = item["event"] | "";
             std::string description = item["description"] | "";
+            long start_unix = item["start"] | 0;
+            long end_unix = item["end"] | 0;
 
             std::string combined = event + " " + description;
             int severity = detectSeverityFromText(combined);
@@ -156,6 +160,8 @@ void ForecastManager::parseResponse(const std::string& payload) {
                 bestEvent = event;
                 bestDescription = description;
                 bestSeverity = severity;
+                bestStartUnix = start_unix;
+                bestEndUnix = end_unix;
             }
             index++;
         }
@@ -164,8 +170,12 @@ void ForecastManager::parseResponse(const std::string& payload) {
         alert.event = bestEvent;
         alert.description = bestDescription;
         alert.severity = bestSeverity;
+        alert.start_unix = bestStartUnix;
+        alert.end_unix = bestEndUnix;
     } else {
         alert_active = false;
         alert.severity = 0;
+        alert.start_unix = 0;
+        alert.end_unix = 0;
     }
 }
