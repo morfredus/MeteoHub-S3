@@ -265,7 +265,6 @@ void UiManager::drawPage() {
 
     if (screen_context_changed) {
         d->clear();
-        d->show();
     }
 
     last_rendered_page = page;

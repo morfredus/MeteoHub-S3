@@ -1,13 +1,17 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.138
+Minimum valid version: 1.0.139
 
 
 
 
 
 
+
+## Version 1.0.139
+- **Fix (OLED Rendering Regression)**: Removed forced intermediate `show()` during UI context transitions to avoid visible blank-frame flicker and degraded OLED rendering.
+- **Stability (OLED Cleanup)**: Kept context-change buffer clear while deferring frame flush to normal page render path.
 
 ## Version 1.0.138
 - **Fix (OLED Page Artifacts)**: Added a forced clear+flush when UI screen context changes (page/menu/confirmation) to prevent leftover pixels from previous screens.
