@@ -1,7 +1,12 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.145
+Version minimale valide : 1.0.146
+
+
+## Version 1.0.146
+- **Correctif (Mapping SPI SD)** : `SdManager` utilise désormais les macros SD dédiées (`SD_SCK_PIN`, `SD_MISO_PIN`, `SD_MOSI_PIN`) de `board_config.h` pour le montage et l'initialisation bas niveau du formatage, afin d'éviter les décalages silencieux de pins SPI.
+- **Diagnostic (Runtime SD)** : Ajout d'un log explicite du mapping des pins SD (CS/SCK/MISO/MOSI) avant les tentatives de montage, pour accélérer le dépannage câblage/runtime.
 
 
 
