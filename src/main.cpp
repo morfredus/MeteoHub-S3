@@ -35,7 +35,7 @@ void setup() {
     Serial.begin(115200);
 
 #if defined(ESP32_S3_OLED)
-    static Sh1106Display oled;
+    static OledDisplay oled;
     display = &oled;
 #elif defined(ESP32_S3_LCD)
     static St7789Display lcd;
