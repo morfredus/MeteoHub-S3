@@ -1,7 +1,7 @@
 #pragma once
 #if defined(ESP32_S3_OLED)
 #include <Arduino.h>
-#include <SH1106Wire.h>
+#include <OLEDDisplay.h>
 #include <string>
 #include "display_interface.h"
 
@@ -16,6 +16,6 @@ public:
     void drawLine(int x0, int y0, int x1, int y1) override;
 
 private:
-    SH1106Wire* d = nullptr;
+    OLEDDisplay* d = nullptr;
 };
 #endif

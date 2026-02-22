@@ -1,13 +1,38 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.139
+Minimum valid version: 1.0.145
 
 
 
 
 
 
+
+## Version 1.0.145
+- **Documentation**: Updated all user documents (EN/FR) to version `1.0.145`, synchronized display-selection wording (build-time environment + OLED controller/address config), and aligned bilingual README links/sections.
+- **Improvement (Manual OLED Config)**: Added explicit `OLED_I2C_ADDRESS` setting in `config.h` to support SH1106/SSD1306 modules using `0x3C` or `0x3D` without code edits.
+- **OLED Init Logging**: Driver init logs now include configured I2C address for easier wiring/compatibility diagnostics.
+
+## Version 1.0.144
+- **Change (OLED Strategy)**: Removed OLED AUTO detection/hot-plug switching logic and switched to explicit manual controller selection in `config.h` (`OLED_CONTROLLER`).
+- **Simplification (OLED Driver)**: OLED wrapper now initializes only the configured controller (SH1106 or SSD1306), reducing runtime ambiguity.
+
+## Version 1.0.143
+- **Fix (OLED Auto Switch Runtime)**: On OLED reconnect, AUTO mode now retries initialization with the opposite driver first, then fallback, to support real SH1106/SSD1306 hot-swaps.
+- **Stability (Hot-Plug Recovery)**: Added dedicated reconnect reinit strategy instead of always reusing the previous driver.
+
+## Version 1.0.142
+- **Fix (SH1106 Hot-Plug Noise)**: Hardened SH1106 reinitialization/clear sequence and added runtime hot-plug recovery to avoid noisy/garbled pixels after unplug/replug.
+- **Stability (OLED Runtime)**: Added I2C presence checks in display flush path and automatic driver reinit when an OLED module reconnects.
+
+## Version 1.0.141
+- **Fix (OLED Auto Switch)**: AUTO mode now prefers SSD1306 initialization first, with SH1106 fallback, to improve hot-swap compatibility when replacing SH1106 by SSD1306.
+- **Fix (SSD1306 Ghosting)**: Hardened SSD1306 init/clear sequence (`resetDisplay` + extra clear/display) to reduce residual ghost pixels after module switch.
+
+## Version 1.0.140
+- **Feature (OLED Compatibility)**: Added dual OLED driver support (SH1106/SSD1306) in OLED environment with automatic I2C address detection and configurable driver mode.
+- **Improvement (Display Abstraction)**: OLED display wrapper now uses a generic `OLEDDisplay` backend and runtime initialization path to improve compatibility across different OLED modules.
 
 ## Version 1.0.139
 - **Fix (OLED Rendering Regression)**: Removed forced intermediate `show()` during UI context transitions to avoid visible blank-frame flicker and degraded OLED rendering.
