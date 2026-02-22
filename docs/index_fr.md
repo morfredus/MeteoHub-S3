@@ -1,6 +1,6 @@
 # Index de la documentation
 
-Version minimale valide : 1.0.139
+Version minimale valide : 1.0.145
 
 
 ## Environnements OLED/LCD
