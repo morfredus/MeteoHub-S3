@@ -14,7 +14,7 @@
 #include "modules/sensors.h"
 #if defined(ESP32_S3_OLED)
 #include "modules/sh1106_display.h"
-#include "modules/pages_sh1106.h"
+#include "modules/pages_oled.h"
 #endif
 #if defined(ESP32_S3_LCD)
 #include "modules/st7789_display.h"
@@ -97,7 +97,7 @@ void setup() {
 #if defined(ESP32_S3_LCD)
     drawSplashScreen_st7789(*display);
 #elif defined(ESP32_S3_OLED)
-    drawSplashScreen_sh1106(*display);
+    drawSplashScreen_oled(*display);
 #endif
 
     LOG_INFO("System Boot");
@@ -106,7 +106,7 @@ void setup() {
 #if defined(ESP32_S3_LCD)
     drawBootProgress_st7789(*display, 1, 5, "Init Capteurs...");
 #elif defined(ESP32_S3_OLED)
-    drawBootProgress_sh1106(*display, 1, 5, "Init Capteurs...");
+    drawBootProgress_oled(*display, 1, 5, "Init Capteurs...");
 #endif
     sensors.begin();
     delay(200); // Petit delai visuel
@@ -115,7 +115,7 @@ void setup() {
 #if defined(ESP32_S3_LCD)
     drawBootProgress_st7789(*display, 2, 5, "Connexion WiFi...");
 #elif defined(ESP32_S3_OLED)
-    drawBootProgress_sh1106(*display, 2, 5, "Connexion WiFi...");
+    drawBootProgress_oled(*display, 2, 5, "Connexion WiFi...");
 #endif
     wifi.begin();
 
@@ -131,7 +131,7 @@ void setup() {
 #if defined(ESP32_S3_LCD)
     drawBootProgress_st7789(*display, 3, 5, "Sync Heure...");
 #elif defined(ESP32_S3_OLED)
-    drawBootProgress_sh1106(*display, 3, 5, "Sync Heure...");
+    drawBootProgress_oled(*display, 3, 5, "Sync Heure...");
 #endif
     configTime(3600, 3600, "pool.ntp.org");
 
@@ -153,14 +153,14 @@ void setup() {
 #if defined(ESP32_S3_LCD)
     drawBootProgress_st7789(*display, 4, 5, "Chargement Historique...");
 #elif defined(ESP32_S3_OLED)
-    drawBootProgress_sh1106(*display, 4, 5, "Chargement Historique...");
+    drawBootProgress_oled(*display, 4, 5, "Chargement Historique...");
 #endif
     
     // Etape 6 : Lancement
 #if defined(ESP32_S3_LCD)
     drawBootProgress_st7789(*display, 5, 5, "Systeme Pret");
 #elif defined(ESP32_S3_OLED)
-    drawBootProgress_sh1106(*display, 5, 5, "Systeme Pret");
+    drawBootProgress_oled(*display, 5, 5, "Systeme Pret");
 #endif
     delay(800);
     

@@ -11,7 +11,7 @@
 #include "config.h"
 #include "utils/logs.h"
 
-bool Sh1106Display::begin() {
+bool OledDisplay::begin() {
     d.reset();
 
 #if OLED_CONTROLLER == OLED_CTRL_SH1106
@@ -39,21 +39,21 @@ bool Sh1106Display::begin() {
     return true;
 }
 
-void Sh1106Display::clear() {
+void OledDisplay::clear() {
     if (d) d->clearBuffer();
 }
 
-void Sh1106Display::show() {
+void OledDisplay::show() {
     if (d) d->sendBuffer();
 }
 
-void Sh1106Display::text(int x, int y, const std::string& s) {
+void OledDisplay::text(int x, int y, const std::string& s) {
     if (!d) return;
     d->setFont(u8g2_font_6x10_tf);
     d->drawStr(x, y + 10, s.c_str());
 }
 
-void Sh1106Display::center(int y, const std::string& s) {
+void OledDisplay::center(int y, const std::string& s) {
     if (!d) return;
     d->setFont(u8g2_font_6x10_tf);
     int w = d->getStrWidth(s.c_str());
@@ -62,7 +62,7 @@ void Sh1106Display::center(int y, const std::string& s) {
     d->drawStr(x, y + 10, s.c_str());
 }
 
-void Sh1106Display::bar(int x, int y, int w, int h, int value, int max) {
+void OledDisplay::bar(int x, int y, int w, int h, int value, int max) {
     if (!d || max <= 0 || w <= 0 || h <= 0) return;
 
     int filled = map(value, 0, max, 0, w);
@@ -74,7 +74,7 @@ void Sh1106Display::bar(int x, int y, int w, int h, int value, int max) {
     }
 }
 
-void Sh1106Display::drawLine(int x0, int y0, int x1, int y1) {
+void OledDisplay::drawLine(int x0, int y0, int x1, int y1) {
     if (!d) return;
     d->drawLine(x0, y0, x1, y1);
 }

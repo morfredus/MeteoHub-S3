@@ -1,7 +1,12 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.148
+Version minimale valide : 1.0.149
+
+## Version 1.0.149
+- **Refactorisation (Nommage OLED)** : Renommage du module de pages OLED en `pages_oled.*` et mise à jour des fonctions de pages/splash OLED vers des suffixes neutres `_oled`.
+- **Refactorisation (Classe Affichage)** : Renommage de la classe d’affichage en `OledDisplay` (avec alias de compatibilité) pour refléter le backend U8g2 compatible SH1106 et SSD1306.
+- **Nettoyage (Layout OLED)** : Centralisation des principales constantes de géométrie OLED dans le renderer de pages pour réduire les valeurs magiques et faciliter la maintenance.
 
 ## Version 1.0.148
 - **Correctif (Récupération écriture SD)** : Durcissement du chemin d’écriture de l’historique SD avec diagnostics explicites (`mkdir` en échec, `open` en échec) et détection stricte des écritures partielles.
@@ -10,7 +15,6 @@ Version minimale valide : 1.0.148
 ## Version 1.0.147
 - **Nettoyage (Migration OLED)** : Archivage des recommandations obsolètes sur l’ancienne bibliothèque OLED et alignement de la documentation sur la baseline actuelle U8g2.
 - **Documentation (Feuille de route)** : Ajout de fichiers TODO bilingues dédiés aux améliorations code et expérience utilisateur (`docs/todo.md`, `docs/todo_fr.md`).
-
 
 ## Version 1.0.146
 - **Correctif (Mapping SPI SD)** : `SdManager` utilise désormais les macros SD dédiées (`SD_SCK_PIN`, `SD_MISO_PIN`, `SD_MOSI_PIN`) de `board_config.h` pour le montage et l'initialisation bas niveau du formatage, afin d'éviter les décalages silencieux de pins SPI.

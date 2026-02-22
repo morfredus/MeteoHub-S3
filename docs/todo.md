@@ -3,11 +3,11 @@
 Minimum valid version: 1.0.147
 
 ## Code TODO
-- [ ] Rename `Sh1106Display` to a neutral name (`OledDisplay`) to better reflect the current U8g2 backend that supports both SH1106 and SSD1306.
-- [ ] Centralize OLED geometry constants (`width`, `height`, margins) to remove magic numbers in `pages_sh1106.cpp`.
+- [x] Rename `Sh1106Display` to a neutral name (`OledDisplay`) to better reflect the current U8g2 backend that supports both SH1106 and SSD1306.
+- [x] Centralize OLED geometry constants (`width`, `height`, margins) to remove magic numbers in `pages_oled.cpp`.
 - [ ] Add a small display diagnostics API (current FPS, last render duration, I2C error counter) exposed in `/api/system`.
 - [ ] Add an optional build flag to compile only one OLED controller backend (`SH1106` or `SSD1306`) to reduce binary size.
-- [ ] Add host-side unit tests for pure helper functions in `pages_sh1106.cpp` (formatting, title generation, alert translation).
+- [ ] Add host-side unit tests for pure helper functions in `pages_oled.cpp` (formatting, title generation, alert translation).
 
 ## User experience TODO
 - [ ] Add a quick OLED settings page (contrast + I2C address preview) directly on-device.
