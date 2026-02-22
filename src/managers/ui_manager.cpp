@@ -4,7 +4,7 @@
 #include "board_config.h"
 #include "config.h"
 #if defined(ESP32_S3_OLED)
-#include "modules/pages_sh1106.h"
+#include "modules/pages_oled.h"
 #endif
 #if defined(ESP32_S3_LCD)
 #include "modules/pages_st7789.h"
@@ -338,14 +338,14 @@ void UiManager::drawPage() {
     int pCount = PAGE_COUNT;
 #if defined(ESP32_S3_OLED)
     switch(page) {
-        case PAGE_WEATHER: pageWeather_sh1106(*d, *sensors, page + 1, pCount); break;
-        case PAGE_FORECAST: pageForecast_sh1106(*d, *forecast, forecastViewIndex, page + 1, pCount); break;
-        case PAGE_GRAPH_TEMP: pageGraph_sh1106(*d, *history, 0, page + 1, pCount); break;
-        case PAGE_GRAPH_HUM: pageGraph_sh1106(*d, *history, 1, page + 1, pCount); break;
-        case PAGE_GRAPH_PRES: pageGraph_sh1106(*d, *history, 2, page + 1, pCount); break;
-        case PAGE_NETWORK: pageNetwork_sh1106(*d, *wifi, page + 1, pCount); break;
-        case PAGE_LOGS: pageLogs_sh1106(*d, page + 1, pCount, logScrollLine); break;
-        case PAGE_SYSTEM: pageSystem_sh1106(*d, page + 1, pCount); break;
+        case PAGE_WEATHER: pageWeather_oled(*d, *sensors, page + 1, pCount); break;
+        case PAGE_FORECAST: pageForecast_oled(*d, *forecast, forecastViewIndex, page + 1, pCount); break;
+        case PAGE_GRAPH_TEMP: pageGraph_oled(*d, *history, 0, page + 1, pCount); break;
+        case PAGE_GRAPH_HUM: pageGraph_oled(*d, *history, 1, page + 1, pCount); break;
+        case PAGE_GRAPH_PRES: pageGraph_oled(*d, *history, 2, page + 1, pCount); break;
+        case PAGE_NETWORK: pageNetwork_oled(*d, *wifi, page + 1, pCount); break;
+        case PAGE_LOGS: pageLogs_oled(*d, page + 1, pCount, logScrollLine); break;
+        case PAGE_SYSTEM: pageSystem_oled(*d, page + 1, pCount); break;
     }
 #elif defined(ESP32_S3_LCD)
     switch(page) {
