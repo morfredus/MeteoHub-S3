@@ -1,13 +1,17 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.139
+Minimum valid version: 1.0.140
 
 
 
 
 
 
+
+## Version 1.0.140
+- **Feature (OLED Compatibility)**: Added dual OLED driver support (SH1106/SSD1306) in OLED environment with automatic I2C address detection and configurable driver mode.
+- **Improvement (Display Abstraction)**: OLED display wrapper now uses a generic `OLEDDisplay` backend and runtime initialization path to improve compatibility across different OLED modules.
 
 ## Version 1.0.139
 - **Fix (OLED Rendering Regression)**: Removed forced intermediate `show()` during UI context transitions to avoid visible blank-frame flicker and degraded OLED rendering.

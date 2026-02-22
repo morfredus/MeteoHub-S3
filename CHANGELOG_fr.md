@@ -1,13 +1,17 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.139
+Version minimale valide : 1.0.140
 
 
 
 
 
 
+
+## Version 1.0.140
+- **Fonctionnalité (Compatibilité OLED)** : Ajout de la prise en charge double driver OLED (SH1106/SSD1306) dans l’environnement OLED avec détection automatique d’adresse I2C et mode driver configurable.
+- **Amélioration (Abstraction Affichage)** : Le wrapper OLED utilise désormais un backend générique `OLEDDisplay` et une initialisation runtime pour améliorer la compatibilité entre modules OLED.
 
 ## Version 1.0.139
 - **Correctif (Régression Rendu OLED)** : Suppression du `show()` intermédiaire forcé lors des transitions de contexte UI pour éviter le clignotement d’image vide et la dégradation d’affichage OLED.
