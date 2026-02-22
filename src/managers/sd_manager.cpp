@@ -28,6 +28,7 @@ constexpr int SD_INIT_RETRY_COUNT = 3;
 constexpr int SD_FORMAT_RETRY_COUNT = 3;
 constexpr int SD_INIT_FREQUENCIES[] = {8000000, 4000000, 1000000};
 constexpr int SD_FORMAT_FREQUENCIES[] = {4000000, 1000000, 400000};
+constexpr unsigned long SD_RECONNECT_COOLDOWN_MS = 15000;
 
 bool mountSdAtFrequency(int frequency_hz) {
     return SD.begin(SD_CS_PIN, SPI, frequency_hz);
@@ -76,54 +77,85 @@ bool formatSdOnce(int frequency_hz) {
 }
 }
 
-bool SdManager::begin() {
-    LOG_INFO("Init SD Card...");
 
-    if (_available) {
-        SD.end();
-        _available = false;
-    }
-
+bool SdManager::mountWithRetries() {
     pinMode(SD_CS_PIN, OUTPUT);
     digitalWrite(SD_CS_PIN, HIGH);
     delay(10);
 
     SPI.begin(SPI_SCK_PIN, SPI_MISO_PIN, SPI_MOSI_PIN, SD_CS_PIN);
 
-    bool mounted = false;
     for (int i = 0; i < SD_INIT_RETRY_COUNT; i++) {
         int frequency_hz = SD_INIT_FREQUENCIES[i];
         if (mountSdAtFrequency(frequency_hz)) {
             LOG_INFO("SD mount OK at " + std::to_string(frequency_hz) + "Hz");
-            mounted = true;
-            break;
+            uint8_t card_type = SD.cardType();
+            if (card_type != CARD_NONE) {
+                if (!SD.exists("/history")) {
+                    SD.mkdir("/history");
+                }
+                _available = true;
+                return true;
+            }
+
+            LOG_WARNING("SD mount reported OK but card type is NONE");
+            SD.end();
+        } else {
+            LOG_WARNING("SD mount failed at " + std::to_string(frequency_hz) + "Hz");
         }
 
-        LOG_WARNING("SD mount failed at " + std::to_string(frequency_hz) + "Hz");
-        SD.end();
         delay(60);
     }
 
-    if (!mounted) {
-        LOG_ERROR("SD mount failed on all retries. Check wiring/card integrity or run SD format.");
-        _available = false;
-        return false;
-    }
+    _available = false;
+    return false;
+}
 
-    uint8_t card_type = SD.cardType();
-    if (card_type == CARD_NONE) {
-        LOG_WARNING("No SD card attached");
-        _available = false;
+bool SdManager::begin() {
+    LOG_INFO("Init SD Card...");
+
+    SD.end();
+    _available = false;
+
+    bool ok = mountWithRetries();
+    if (!ok) {
+        LOG_ERROR("SD mount failed on all retries. Check wiring/card integrity or run SD format.");
         return false;
     }
 
     LOG_INFO("SD Card OK. Size: " + std::to_string(SD.cardSize() / (1024 * 1024)) + "MB");
-    _available = true;
+    _last_reconnect_attempt_ms = millis();
     return true;
 }
 
-bool SdManager::isAvailable() const {
-    return _available;
+bool SdManager::isAvailable() {
+    if (!_available) {
+        return ensureMounted();
+    }
+
+    if (SD.cardType() == CARD_NONE) {
+        LOG_WARNING("SD became unavailable");
+        _available = false;
+        SD.end();
+        return ensureMounted();
+    }
+
+    return true;
+}
+
+bool SdManager::ensureMounted() {
+    if (_available) {
+        return true;
+    }
+
+    unsigned long now = millis();
+    if (now - _last_reconnect_attempt_ms < SD_RECONNECT_COOLDOWN_MS) {
+        return false;
+    }
+
+    _last_reconnect_attempt_ms = now;
+    LOG_INFO("SD reconnect attempt...");
+    return mountWithRetries();
 }
 
 bool SdManager::format() {
@@ -154,6 +186,7 @@ bool SdManager::format() {
     }
 
     delay(100);
+    _last_reconnect_attempt_ms = millis();
     if (!begin()) {
         LOG_ERROR("SD formatted but remount failed");
         return false;
