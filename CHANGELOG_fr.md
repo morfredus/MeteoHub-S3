@@ -1,13 +1,17 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.132
+Version minimale valide : 1.0.133
 
 
 
 
 
 
+
+## Version 1.0.133
+- **Correctif (Langue Détail Alerte)** : Le texte détaillé d’alerte renvoyé par les APIs Web est désormais un résumé déterministe en français, sans reprise de texte brut anglais du fournisseur.
+- **Clarification (Comportement API)** : `/api/alert` et `/api/live` continuent d’exposer les champs FR, tout en conservant le paramètre `lang` côté requête prévision.
 
 ## Version 1.0.132
 - **Optimisation (Rafraîchissement Alerte)** : Le polling d’alerte Web passe à 15 minutes (`ALERT_REFRESH_MS`) au lieu de 5 secondes pour réduire les requêtes inutiles.

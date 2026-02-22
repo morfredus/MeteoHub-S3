@@ -1,13 +1,17 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.132
+Minimum valid version: 1.0.133
 
 
 
 
 
 
+
+## Version 1.0.133
+- **Fix (Alert Detail Language)**: Alert detail text returned by web APIs is now a deterministic French summary, avoiding any raw English provider wording.
+- **Clarification (API Behavior)**: `/api/alert` and `/api/live` continue exposing French alert fields while using provider `lang` parameter for forecast requests.
 
 ## Version 1.0.132
 - **Optimization (Alert Refresh)**: Web UI alert polling now runs every 15 minutes (`ALERT_REFRESH_MS`) instead of every 5 seconds to reduce unnecessary requests.
