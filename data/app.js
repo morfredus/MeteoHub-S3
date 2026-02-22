@@ -260,6 +260,40 @@ async function fetchStats() {
             </tr>
         `;
 
+        const trendBody = document.getElementById('trendBody');
+        if (trendBody) {
+            const trend = data.trend || {};
+            const t = trend.temp || {};
+            const h = trend.hum || {};
+            const p = trend.pres || {};
+            const globalLabel = trend.global_label_fr || 'Tendance stable';
+
+            trendBody.innerHTML = `
+                <tr>
+                    <td>Température</td>
+                    <td>${(t.delta_1h ?? 0).toFixed(1)} °C</td>
+                    <td>${(t.delta_24h ?? 0).toFixed(1)} °C</td>
+                    <td>${t.direction_1h || 'stable'} / ${t.direction_24h || 'stable'}</td>
+                </tr>
+                <tr>
+                    <td>Humidité</td>
+                    <td>${(h.delta_1h ?? 0).toFixed(1)} %</td>
+                    <td>${(h.delta_24h ?? 0).toFixed(1)} %</td>
+                    <td>${h.direction_1h || 'stable'} / ${h.direction_24h || 'stable'}</td>
+                </tr>
+                <tr>
+                    <td>Pression</td>
+                    <td>${(p.delta_1h ?? 0).toFixed(1)} hPa</td>
+                    <td>${(p.delta_24h ?? 0).toFixed(1)} hPa</td>
+                    <td>${p.direction_1h || 'stable'} / ${p.direction_24h || 'stable'}</td>
+                </tr>
+                <tr>
+                    <td><strong>Tendance globale</strong></td>
+                    <td colspan="3"><strong>${globalLabel}</strong></td>
+                </tr>
+            `;
+        }
+
         const status = document.getElementById('status');
         if (status) {
             status.textContent = 'En ligne';
