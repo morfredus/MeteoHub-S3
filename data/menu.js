@@ -7,7 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { href: '/stats.html', label: 'Statistiques' },
         { href: '/longterm.html', label: 'Historique 24h' },
         { href: '/files.html', label: 'Fichiers' },
-        { href: '/logs', label: 'Logs' }
+        { href: '/logs', label: 'Logs' },
+        { href: '/ota.html', label: 'Mise à jour OTA' }
     ];
 
     const active_href = nav.dataset.active || '/';
