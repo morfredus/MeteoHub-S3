@@ -1,28 +1,20 @@
-# OLED library evaluation: SH1106/SSD1306Wire vs U8g2
+# OLED library decision: migration completed to U8g2
 
-## Short answer
-For **MeteoHub-S3 today**, a full migration to U8g2 is **not mandatory** and should be treated as an optimization/feature project, not an urgent fix.
+Minimum valid version: 1.0.154
 
-## Why staying on the current stack is reasonable now
-- The current code already supports both SH1106 and SSD1306 controllers with explicit compile-time selection.
-- OLED initialization is deterministic with configurable I2C address (`0x3C` / `0x3D`), which solves the reliability issue this project recently addressed.
-- Existing UI rendering code is built around the current API; switching libraries would touch drawing, text layout, and potentially startup/init flows.
+## Status
+This decision is now **closed**: OLED rendering uses **U8g2** as the active backend.
 
-## What U8g2 would improve
-- Broader controller support and long-term portability.
-- Better typography options (fonts) and mature text rendering tools.
-- A very common ecosystem choice for monochrome displays.
+## Why this note changed
+The previous evaluation compared SH1106/SSD1306Wire vs U8g2 and recommended postponing migration.
+Runtime feedback and stability observations validated U8g2 for this project (fewer artifacts during page transitions and fewer random ghost pixels).
 
-## Costs/risks of migration
-- Non-trivial refactor of display wrapper and UI code.
-- Flash/RAM impact can change depending on selected fonts and drawing mode.
-- Regression risk on rendering timing/flicker and on constrained targets.
+## Current baseline
+- OLED backend: U8g2.
+- Supported controllers through configuration: SH1106 and SSD1306.
+- I2C address remains configurable (`0x3C` / `0x3D`) from `include/config.h`.
 
-## Recommendation
-1. Keep the current display backend for the upcoming patch releases.
-2. If needed, plan a dedicated migration branch to benchmark U8g2 with:
-   - identical screens,
-   - same update frequency,
-   - memory footprint measurements,
-   - boot-to-first-frame timing.
-3. Migrate only if measurements show clear wins (fonts, compatibility, maintainability) without harming performance.
+## Follow-up
+Future work is tracked in:
+- `docs/todo.md`
+- `docs/todo_fr.md`
