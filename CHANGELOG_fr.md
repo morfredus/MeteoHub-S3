@@ -1,7 +1,11 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.146
+Version minimale valide : 1.0.147
+
+## Version 1.0.147
+- **Nettoyage (Migration OLED)** : Archivage des recommandations obsolètes sur l’ancienne bibliothèque OLED et alignement de la documentation sur la baseline actuelle U8g2.
+- **Documentation (Feuille de route)** : Ajout de fichiers TODO bilingues dédiés aux améliorations code et expérience utilisateur (`docs/todo.md`, `docs/todo_fr.md`).
 
 
 ## Version 1.0.146

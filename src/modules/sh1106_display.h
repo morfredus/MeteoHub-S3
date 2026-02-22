@@ -19,4 +19,7 @@ public:
 private:
     std::unique_ptr<U8G2> d;
 };
+
+// Alias explicite pour refléter le backend OLED U8g2 actuel
+using OledDisplay = Sh1106Display;
 #endif

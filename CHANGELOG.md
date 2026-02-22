@@ -1,7 +1,11 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.146
+Minimum valid version: 1.0.147
+
+## Version 1.0.147
+- **Cleanup (OLED Migration)**: Archived obsolete OLED library evaluation guidance and aligned project docs with the current U8g2-based display baseline.
+- **Documentation (Roadmap)**: Added dedicated bilingual TODO roadmap files for code and user-experience improvements (`docs/todo.md`, `docs/todo_fr.md`).
 
 
 ## Version 1.0.146
