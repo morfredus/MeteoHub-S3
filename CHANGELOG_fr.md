@@ -1,7 +1,11 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.147
+Version minimale valide : 1.0.148
+
+## Version 1.0.148
+- **Correctif (Récupération écriture SD)** : Durcissement du chemin d’écriture de l’historique SD avec diagnostics explicites (`mkdir` en échec, `open` en échec) et détection stricte des écritures partielles.
+- **Résilience (SD Runtime)** : En cas d’échec d’ouverture en `FILE_APPEND`, le firmware tente désormais un remount SD immédiat puis une unique tentative de réécriture.
 
 ## Version 1.0.147
 - **Nettoyage (Migration OLED)** : Archivage des recommandations obsolètes sur l’ancienne bibliothèque OLED et alignement de la documentation sur la baseline actuelle U8g2.
