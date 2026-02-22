@@ -72,6 +72,10 @@ Les deux environnements sont détectés automatiquement au démarrage et l'inter
 	- La version minimale requise est toujours indiquée
 
 
+## Choix de bibliothèque OLED
+- Une évaluation documentée du passage éventuel à **U8g2** est disponible ici : `docs/decisions/oled-library-evaluation.md`.
+- Recommandation actuelle : conserver la pile SH1106/SSD1306Wire pour les patchs courts, et envisager U8g2 via une branche de benchmark dédiée.
+
 ## LCD vs OLED : Différences clés
 - **Navigation** : Sur OLED, 1 cran = 1 page (module HW-040 complet, boutons + OLED intégré) ; sur LCD, 2 crans = 1 page (module EC11 seul).
 - **Affichage** : LCD en couleur, haute résolution, supporte des graphismes avancés (axes, courbes, etc.).
