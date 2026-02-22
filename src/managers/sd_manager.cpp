@@ -8,14 +8,14 @@
 #ifndef SD_CS_PIN
 #define SD_CS_PIN 10
 #endif
-#ifndef SPI_SCK_PIN
-#define SPI_SCK_PIN 12
+#ifndef SD_SCK_PIN
+#define SD_SCK_PIN 12
 #endif
-#ifndef SPI_MISO_PIN
-#define SPI_MISO_PIN 13
+#ifndef SD_MISO_PIN
+#define SD_MISO_PIN 13
 #endif
-#ifndef SPI_MOSI_PIN
-#define SPI_MOSI_PIN 11
+#ifndef SD_MOSI_PIN
+#define SD_MOSI_PIN 11
 #endif
 
 // Déclarations des fonctions internes de la librairie SD (sd_diskio.cpp)
@@ -35,9 +35,18 @@ bool mountSdAtFrequency(int frequency_hz) {
 }
 
 bool lowLevelInit(uint8_t& pdrv, int frequency_hz) {
-    SPI.begin(SPI_SCK_PIN, SPI_MISO_PIN, SPI_MOSI_PIN, -1);
+    SPI.begin(SD_SCK_PIN, SD_MISO_PIN, SD_MOSI_PIN, -1);
     pdrv = sdcard_init(SD_CS_PIN, &SPI, frequency_hz);
     return pdrv != 0xFF;
+}
+
+void logSdPinMapping() {
+    LOG_INFO(
+        "SD pin mapping: CS=" + std::to_string(SD_CS_PIN) +
+        " SCK=" + std::to_string(SD_SCK_PIN) +
+        " MISO=" + std::to_string(SD_MISO_PIN) +
+        " MOSI=" + std::to_string(SD_MOSI_PIN)
+    );
 }
 
 bool formatSdOnce(int frequency_hz) {
@@ -83,7 +92,8 @@ bool SdManager::mountWithRetries() {
     digitalWrite(SD_CS_PIN, HIGH);
     delay(10);
 
-    SPI.begin(SPI_SCK_PIN, SPI_MISO_PIN, SPI_MOSI_PIN, SD_CS_PIN);
+    logSdPinMapping();
+    SPI.begin(SD_SCK_PIN, SD_MISO_PIN, SD_MOSI_PIN, SD_CS_PIN);
 
     for (int i = 0; i < SD_INIT_RETRY_COUNT; i++) {
         int frequency_hz = SD_INIT_FREQUENCIES[i];
