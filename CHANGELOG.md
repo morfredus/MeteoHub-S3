@@ -1,7 +1,12 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.148
+Minimum valid version: 1.0.149
+
+## Version 1.0.149
+- **Refactor (OLED Naming)**: Renamed the OLED page module to `pages_oled.*` and updated OLED page/splash function names to neutral `_oled` suffixes.
+- **Refactor (Display Class)**: Renamed display class to `OledDisplay` (with compatibility alias) to reflect U8g2 backend support for both SH1106 and SSD1306.
+- **Cleanup (OLED Layout)**: Centralized key OLED geometry constants in the page renderer to reduce magic numbers and simplify maintenance.
 
 ## Version 1.0.148
 - **Fix (SD Write Recovery)**: Improved SD history write path with explicit failure diagnostics (`mkdir` failure, `open` failure) and strict partial-write detection.

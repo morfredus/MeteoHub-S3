@@ -8,10 +8,22 @@
 #include <sstream>
 #include <string>
 #include <time.h>
-#include "pages_sh1106.h"
+#include "pages_oled.h"
 #include "../utils/logs.h"
 #include "../utils/system.h"
 #include <Arduino.h>
+
+namespace {
+constexpr int OLED_WIDTH = 128;
+constexpr int OLED_GRAPH_X = 0;
+constexpr int OLED_GRAPH_Y = 14;
+constexpr int OLED_GRAPH_W = 90;
+constexpr int OLED_GRAPH_H = 38;
+constexpr int OLED_VALUE_COL_X = 92;
+constexpr int OLED_TIME_BOTTOM_Y = 54;
+constexpr int OLED_BOOT_BAR_W = 100;
+constexpr int OLED_BOOT_BAR_H = 10;
+}
 
 // 1. Formate un float avec précision donnée
 std::string formatFloat(float value, int precision) {
@@ -52,7 +64,7 @@ std::string translateAlert(const std::string& event) {
 }
 
 // 4. Page réseau : affiche SSID, IP, RSSI
-void pageNetwork_sh1106(DisplayInterface& d, WifiManager& wifi, int pageIndex, int pageCount) {
+void pageNetwork_oled(DisplayInterface& d, WifiManager& wifi, int pageIndex, int pageCount) {
 	d.clear();
 	d.text(0, 0, getHeader("Net.", pageIndex, pageCount));
 
@@ -64,7 +76,7 @@ void pageNetwork_sh1106(DisplayInterface& d, WifiManager& wifi, int pageIndex, i
 }
 
 // 5. Page système : affiche infos mémoire et version
-void pageSystem_sh1106(DisplayInterface& d, int pageIndex, int pageCount) {
+void pageSystem_oled(DisplayInterface& d, int pageIndex, int pageCount) {
 	SystemInfo s = getSystemInfo();
 
 	d.clear();
@@ -79,7 +91,7 @@ void pageSystem_sh1106(DisplayInterface& d, int pageIndex, int pageCount) {
 }
 
 // 6. Page logs : affiche les derniers logs
-void pageLogs_sh1106(DisplayInterface& d, int pageIndex, int pageCount, int scrollOffset) {
+void pageLogs_oled(DisplayInterface& d, int pageIndex, int pageCount, int scrollOffset) {
 	d.clear();
 	d.text(0, 0, getHeader("Logs", pageIndex, pageCount));
 
@@ -98,7 +110,7 @@ void pageLogs_sh1106(DisplayInterface& d, int pageIndex, int pageCount, int scro
 }
 
 // 7. Page météo : affiche température, humidité, pression
-void pageWeather_sh1106(DisplayInterface& d, SensorManager& sensors, int pageIndex, int pageCount) {
+void pageWeather_oled(DisplayInterface& d, SensorManager& sensors, int pageIndex, int pageCount) {
 	SensorData data = sensors.read();
 	d.clear();
 	d.text(0, 0, getHeader("Meteo", pageIndex, pageCount));
@@ -115,7 +127,7 @@ void pageWeather_sh1106(DisplayInterface& d, SensorManager& sensors, int pageInd
 }
 
 // 8. Page graphique : affiche l'historique sous forme de graphe
-void pageGraph_sh1106(DisplayInterface& d, HistoryManager& history, int type, int pageIndex, int pageCount) {
+void pageGraph_oled(DisplayInterface& d, HistoryManager& history, int type, int pageIndex, int pageCount) {
 	   d.clear();
     
     std::string title;
@@ -134,10 +146,10 @@ void pageGraph_sh1106(DisplayInterface& d, HistoryManager& history, int type, in
     }
 
     // Layout : Graphique a gauche, Valeurs a droite, Temps en bas
-    int graphX = 0;
-    int graphY = 14;
-    int graphW = 90; // Largeur reduite pour laisser place au texte a droite
-    int graphH = 38; // Hauteur reduite pour laisser place au temps en bas
+    int graphX = OLED_GRAPH_X;
+    int graphY = OLED_GRAPH_Y;
+    int graphW = OLED_GRAPH_W; // Largeur reduite pour laisser place au texte a droite
+    int graphH = OLED_GRAPH_H; // Hauteur reduite pour laisser place au temps en bas
     int bottomY = graphY + graphH;
 
     // N'utiliser que la fenetre affichee (points les plus recents)
@@ -180,12 +192,12 @@ void pageGraph_sh1106(DisplayInterface& d, HistoryManager& history, int type, in
     }
 
     // Affichage Echelle Valeurs (Droite)
-    d.text(92, graphY, maxLabel);
-    d.text(92, bottomY - 8, minLabel);
+    d.text(OLED_VALUE_COL_X, graphY, maxLabel);
+    d.text(OLED_VALUE_COL_X, bottomY - 8, minLabel);
 
     // Affichage Echelle Temps (Bas)
-    d.text(0, 54, "-2h");
-    d.text(70, 54, "now");
+    d.text(OLED_GRAPH_X, OLED_TIME_BOTTOM_Y, "-2h");
+    d.text(70, OLED_TIME_BOTTOM_Y, "now");
     
     // Drawing loop with gap detection
     for (int i = startIndex + 1; i < count; i++) {
@@ -211,7 +223,7 @@ void pageGraph_sh1106(DisplayInterface& d, HistoryManager& history, int type, in
 }
 
 // 9. Page prévisions : affiche prévisions aujourd'hui, demain, alertes
-void pageForecast_sh1106(DisplayInterface& d, ForecastManager& forecast, int view, int pageIndex, int pageCount) {
+void pageForecast_oled(DisplayInterface& d, ForecastManager& forecast, int view, int pageIndex, int pageCount) {
     d.clear();
     d.text(0, 0, getHeader("Prev.", pageIndex, pageCount));
 
@@ -251,7 +263,7 @@ void pageForecast_sh1106(DisplayInterface& d, ForecastManager& forecast, int vie
 
 // --- Ecrans de démarrage (Splash & Boot) ---
 
-void drawSplashScreen_sh1106(DisplayInterface& d) {
+void drawSplashScreen_oled(DisplayInterface& d) {
     OledDisplay& disp = static_cast<OledDisplay&>(d);
     disp.clear();
     
@@ -270,16 +282,16 @@ void drawSplashScreen_sh1106(DisplayInterface& d) {
     delay(1500);
 }
 
-void drawBootProgress_sh1106(DisplayInterface& d, int step, int total, const std::string& msg) {
+void drawBootProgress_oled(DisplayInterface& d, int step, int total, const std::string& msg) {
     OledDisplay& disp = static_cast<OledDisplay&>(d);
     disp.clear();
     
     disp.center(10, PROJECT_NAME);
     
     // Barre de progression
-    int barW = 100;
-    int barH = 10;
-    int barX = (128 - barW) / 2;
+    int barW = OLED_BOOT_BAR_W;
+    int barH = OLED_BOOT_BAR_H;
+    int barX = (OLED_WIDTH - barW) / 2;
     int barY = 30;
     
     disp.bar(barX, barY, barW, barH, step, total);
