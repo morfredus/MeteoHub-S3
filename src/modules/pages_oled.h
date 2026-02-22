@@ -8,7 +8,7 @@
 void pageNetwork_oled(DisplayInterface& d, WifiManager& wifi, int pageIndex, int pageCount);
 void pageSystem_oled(DisplayInterface& d, int pageIndex, int pageCount);
 void pageLogs_oled(DisplayInterface& d, int pageIndex, int pageCount, int scrollOffset = 0);
-void pageWeather_oled(DisplayInterface& d, SensorManager& sensors, int pageIndex, int pageCount);
+void pageWeather_oled(DisplayInterface& d, SensorManager& sensors, ForecastManager& forecast, int pageIndex, int pageCount);
 void pageGraph_oled(DisplayInterface& d, HistoryManager& history, int type, int pageIndex, int pageCount);
 void pageForecast_oled(DisplayInterface& d, ForecastManager& forecast, int view, int pageIndex, int pageCount);
 void drawSplashScreen_oled(DisplayInterface& d);

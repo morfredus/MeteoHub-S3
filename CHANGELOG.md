@@ -1,7 +1,11 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.149
+Minimum valid version: 1.0.150
+
+## Version 1.0.150
+- **Feature (OLED Weather Page)**: Added current weather text (from OpenWeatherMap, localized by configured `lang`) on the first OLED weather page, displayed under atmospheric pressure.
+- **UI (OLED Readability)**: Added safe fallback and truncation for the current weather line to keep layout stable on 128x64 screens.
 
 ## Version 1.0.149
 - **Refactor (OLED Naming)**: Renamed the OLED page module to `pages_oled.*` and updated OLED page/splash function names to neutral `_oled` suffixes.
@@ -20,12 +24,6 @@ Minimum valid version: 1.0.149
 ## Version 1.0.146
 - **Fix (SD SPI Mapping)**: `SdManager` now uses SD-specific pin macros (`SD_SCK_PIN`, `SD_MISO_PIN`, `SD_MOSI_PIN`) from `board_config.h` for mount and low-level format init, avoiding silent SPI pin mismatches.
 - **Diagnostics (SD Runtime)**: Added explicit SD pin mapping log (CS/SCK/MISO/MOSI) before mount retries to speed up wiring/runtime troubleshooting.
-
-
-
-
-
-
 
 ## Version 1.0.145
 - **Documentation**: Updated all user documents (EN/FR) to version `1.0.145`, synchronized display-selection wording (build-time environment + OLED controller/address config), and aligned bilingual README links/sections.

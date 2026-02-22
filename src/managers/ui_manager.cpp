@@ -338,7 +338,7 @@ void UiManager::drawPage() {
     int pCount = PAGE_COUNT;
 #if defined(ESP32_S3_OLED)
     switch(page) {
-        case PAGE_WEATHER: pageWeather_oled(*d, *sensors, page + 1, pCount); break;
+        case PAGE_WEATHER: pageWeather_oled(*d, *sensors, *forecast, page + 1, pCount); break;
         case PAGE_FORECAST: pageForecast_oled(*d, *forecast, forecastViewIndex, page + 1, pCount); break;
         case PAGE_GRAPH_TEMP: pageGraph_oled(*d, *history, 0, page + 1, pCount); break;
         case PAGE_GRAPH_HUM: pageGraph_oled(*d, *history, 1, page + 1, pCount); break;
