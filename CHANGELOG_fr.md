@@ -1,13 +1,17 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.138
+Version minimale valide : 1.0.139
 
 
 
 
 
 
+
+## Version 1.0.139
+- **Correctif (Régression Rendu OLED)** : Suppression du `show()` intermédiaire forcé lors des transitions de contexte UI pour éviter le clignotement d’image vide et la dégradation d’affichage OLED.
+- **Stabilité (Nettoyage OLED)** : Conservation du clear de buffer au changement de contexte, avec flush uniquement via le chemin normal de rendu de page.
 
 ## Version 1.0.138
 - **Correctif (Artefacts Changement de Page OLED)** : Ajout d’un clear+flush forcé lors des changements de contexte d’écran (page/menu/confirmation) pour éviter les pixels résiduels de la page précédente.
