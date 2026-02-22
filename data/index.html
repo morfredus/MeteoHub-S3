@@ -12,11 +12,13 @@
     <div class="container">
         <header>
             <h1>MeteoHub S3</h1>
-            <div id="status">Connexion...</div>
+            <div class="header-right">
+                <span id="sensorInvalidBadge" class="sensor-badge" hidden>Capteur invalide</span>
+                <div id="status">Connexion...</div>
+            </div>
         </header>
 
         <nav data-shared-menu="true" data-active="/"></nav>
-
 
         <div class="grid">
             <div class="card">
@@ -33,8 +35,19 @@
             </div>
         </div>
 
-        <div id="alert-card" class="alert-card">
-            <span id="alert-content">Chargement de l'alerte météo...</span>
+        <div class="card" id="alertCard" style="margin-bottom: 20px;">
+            <h2>Alerte météo</h2>
+            <div id="alertText">Aucune alerte</div>
+            <div id="alertValidity" class="alert-validity">Validité : --</div>
+            <button id="alertDetailsBtn" class="alert-details-icon" type="button" disabled aria-label="Voir détails complets" title="Voir détails complets">📜</button>
+        </div>
+
+        <div id="alertModal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="alertModalTitle">
+            <div class="modal-content">
+                <button id="alertModalClose" class="modal-close" type="button" aria-label="Fermer">×</button>
+                <h3 id="alertModalTitle">Détails de l'alerte</h3>
+                <div id="alertModalBody">Aucune alerte active.</div>
+            </div>
         </div>
 
         <div class="chart-container">
