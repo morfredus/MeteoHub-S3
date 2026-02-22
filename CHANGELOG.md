@@ -25,12 +25,6 @@ Minimum valid version: 1.0.150
 - **Fix (SD SPI Mapping)**: `SdManager` now uses SD-specific pin macros (`SD_SCK_PIN`, `SD_MISO_PIN`, `SD_MOSI_PIN`) from `board_config.h` for mount and low-level format init, avoiding silent SPI pin mismatches.
 - **Diagnostics (SD Runtime)**: Added explicit SD pin mapping log (CS/SCK/MISO/MOSI) before mount retries to speed up wiring/runtime troubleshooting.
 
-
-
-
-
-
-
 ## Version 1.0.145
 - **Documentation**: Updated all user documents (EN/FR) to version `1.0.145`, synchronized display-selection wording (build-time environment + OLED controller/address config), and aligned bilingual README links/sections.
 - **Improvement (Manual OLED Config)**: Added explicit `OLED_I2C_ADDRESS` setting in `config.h` to support SH1106/SSD1306 modules using `0x3C` or `0x3D` without code edits.
