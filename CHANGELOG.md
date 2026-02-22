@@ -1,13 +1,17 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.134
+Minimum valid version: 1.0.135
 
 
 
 
 
 
+
+## Version 1.0.135
+- **Fix (Stats Trend UI)**: Stats page now renders trend rows from `/api/stats` so the trend section no longer stays on "Chargement...".
+- **Feature (Global Weather Trend)**: Added `trend.global_label_fr` in `/api/stats` with a synthetic global tendency label (e.g., "Vers beau temps", "Vers pluie").
 
 ## Version 1.0.134
 - **Fix (Short Alert Language)**: Added a fallback for unmatched English alert event names so web short alert titles remain in French.
