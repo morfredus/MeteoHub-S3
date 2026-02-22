@@ -64,7 +64,7 @@ All API routes are declared only inside the `_setupApi()` method. No forbidden c
 
 # User Guide
 
-Minimum valid version: 1.0.145
+Minimum valid version: 1.0.154
 
 ## Goal
 Learn how to use the dashboard once the firmware has started.
