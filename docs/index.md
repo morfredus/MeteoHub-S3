@@ -1,6 +1,6 @@
 # Documentation Index
 
-Minimum valid version: 1.0.119
+Minimum valid version: 1.0.145
 
 ## OLED/LCD Environments
 All documentation covers both OLED (SH1106) and LCD (ST7789) environments. Differences in navigation, wiring, and interface are explained in each section.

@@ -1,28 +1,142 @@
 // Affichage de l'alerte météo sur le dashboard
+let current_alert_payload = null;
+
+function getAlertThemeClass(level) {
+    if (level >= 3) return 'alert-level-red';
+    if (level === 2) return 'alert-level-orange';
+    if (level === 1) return 'alert-level-yellow';
+    return 'alert-level-none';
+}
+
+function formatAlertValidity(startUnix, endUnix) {
+    if (!Number.isFinite(startUnix) || !Number.isFinite(endUnix) || startUnix <= 0 || endUnix <= 0) {
+        return 'Validité : non précisée';
+    }
+
+    const startText = new Date(startUnix * 1000).toLocaleString('fr-FR');
+    const endText = new Date(endUnix * 1000).toLocaleString('fr-FR');
+    return `Validité : du ${startText} au ${endText}`;
+}
+
+function applyAlertCardTheme(level) {
+    const alertCard = document.getElementById('alertCard');
+    if (!alertCard) return;
+
+    alertCard.classList.remove('alert-level-none', 'alert-level-yellow', 'alert-level-orange', 'alert-level-red');
+    alertCard.classList.add(getAlertThemeClass(level));
+}
+
+function renderSensorValidityBadge(isValid) {
+    const badge = document.getElementById('sensorInvalidBadge');
+    if (!badge) return;
+
+    if (isValid === false) {
+        badge.hidden = false;
+    } else {
+        badge.hidden = true;
+    }
+}
+
+function updateAlertDetailsButton(enabled) {
+    const detailsBtn = document.getElementById('alertDetailsBtn');
+    if (!detailsBtn) return;
+
+    detailsBtn.disabled = !enabled;
+}
+
+function renderAlertCard(data, isDetailed) {
+    const alertText = document.getElementById('alertText');
+    const alertValidity = document.getElementById('alertValidity');
+    if (!alertText || !alertValidity) return;
+
+    if (data.alert_active || data.active) {
+        const level = Number.isFinite(data.alert_severity) ? data.alert_severity : (Number.isFinite(data.severity) ? data.severity : 0);
+        const levelLabel = data.alert_level_label_fr || 'Alerte';
+        const event = data.alert_event_fr || data.event_fr || data.alert_event || data.event || 'Alerte météo';
+        const senderValue = data.alert_sender || data.sender || '';
+        const sender = senderValue ? ` • Source: ${senderValue}` : '';
+        const detailsText = data.description_fr || data.alert_description_fr || "";
+        const details = isDetailed && detailsText ? ` — ${detailsText}` : "";
+
+        alertText.textContent = `${levelLabel} (${level}) - ${event}${sender}${details}`;
+        alertText.style.fontWeight = '700';
+        alertValidity.textContent = formatAlertValidity(data.alert_start_unix || data.start_unix, data.alert_end_unix || data.end_unix);
+        applyAlertCardTheme(level);
+        updateAlertDetailsButton(true);
+    } else {
+        alertText.textContent = 'Aucune alerte météo en cours.';
+        alertText.style.fontWeight = '500';
+        alertValidity.textContent = 'Validité : --';
+        applyAlertCardTheme(0);
+        updateAlertDetailsButton(false);
+    }
+}
+
+function openAlertModal() {
+    const modal = document.getElementById('alertModal');
+    const body = document.getElementById('alertModalBody');
+    if (!modal || !body) return;
+
+    if (!current_alert_payload || !(current_alert_payload.active || current_alert_payload.alert_active)) {
+        body.textContent = 'Aucune alerte active.';
+    } else {
+        const level = Number.isFinite(current_alert_payload.severity) ? current_alert_payload.severity : current_alert_payload.alert_severity;
+        const levelLabel = current_alert_payload.alert_level_label_fr || 'Alerte';
+        const event = current_alert_payload.event_fr || current_alert_payload.alert_event_fr || current_alert_payload.event || current_alert_payload.alert_event || 'Alerte météo';
+        const senderValue = current_alert_payload.sender || current_alert_payload.alert_sender || 'Inconnu';
+        const description = current_alert_payload.description_fr || current_alert_payload.alert_description_fr || 'Aucune description détaillée fournie.';
+        const validity = formatAlertValidity(current_alert_payload.start_unix || current_alert_payload.alert_start_unix, current_alert_payload.end_unix || current_alert_payload.alert_end_unix);
+
+        body.innerHTML = `<p><strong>${levelLabel} (${level})</strong> — ${event}</p><p><strong>Source :</strong> ${senderValue}</p><p><strong>${validity}</strong></p><p>${description}</p><p><strong>Consigne :</strong> Surveillez l’évolution locale et limitez les déplacements non essentiels.</p>`;
+    }
+
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+}
+
+function closeAlertModal() {
+    const modal = document.getElementById('alertModal');
+    if (!modal) return;
+
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+}
+
+function initAlertModal() {
+    const detailsBtn = document.getElementById('alertDetailsBtn');
+    const closeBtn = document.getElementById('alertModalClose');
+    const modal = document.getElementById('alertModal');
+
+    if (detailsBtn) detailsBtn.addEventListener('click', openAlertModal);
+    if (closeBtn) closeBtn.addEventListener('click', closeAlertModal);
+    if (modal) {
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                closeAlertModal();
+            }
+        });
+    }
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeAlertModal();
+        }
+    });
+}
+
 async function fetchAlert() {
-    const alertCard = document.getElementById('alert-card');
-    const alertContent = document.getElementById('alert-content');
-    if (!alertCard || !alertContent) return;
+    const alertText = document.getElementById('alertText');
+    if (!alertText) return;
+
     try {
         const res = await fetch('/api/alert');
         const data = await res.json();
-        alertCard.classList.remove('alert-yellow', 'alert-orange', 'alert-red');
-        if (data.active) {
-            let colorClass = '';
-            let label = '';
-            if (data.severity >= 3) { colorClass = 'alert-red'; label = 'Alerte rouge'; }
-            else if (data.severity === 2) { colorClass = 'alert-orange'; label = 'Alerte orange'; }
-            else { colorClass = 'alert-yellow'; label = 'Alerte jaune'; }
-            alertCard.classList.add(colorClass);
-            // Affichage du texte complet de l'alerte en français si disponible
-            let alertText = data.description && data.description.length > 0 ? data.description : data.event;
-            alertContent.innerHTML = `${label} : <b>${alertText}</b> <span style="font-weight:normal">(${data.sender})</span>`;
-        } else {
-            alertContent.textContent = "Aucune alerte météo en cours.";
-        }
+        current_alert_payload = data;
+        renderAlertCard(data, true);
     } catch (e) {
-        alertContent.textContent = "Erreur lors de la récupération de l'alerte météo.";
-        alertCard.classList.remove('alert-yellow', 'alert-orange', 'alert-red');
+        alertText.textContent = "Erreur lors de la récupération de l'alerte météo.";
+        updateAlertDetailsButton(false);
+        applyAlertCardTheme(0);
     }
 }
 let chart;
@@ -34,6 +148,7 @@ const HISTORY_WINDOWS_SECONDS = {
 
 const HISTORY_REFRESH_MS = 15000;
 const LIVE_REFRESH_MS = 5000;
+const ALERT_REFRESH_MS = 15 * 60 * 1000;
 const STATS_REFRESH_MS = 15000;
 
 function getPageName() {
@@ -77,27 +192,14 @@ async function fetchLive() {
         if (hum) hum.textContent = data.hum.toFixed(0);
         if (pres) pres.textContent = data.pres.toFixed(1);
 
+        renderSensorValidityBadge(data.sensor_valid);
+
         const status = document.getElementById('status');
         if (status) {
             status.textContent = 'En ligne';
             status.style.color = '#0f0';
         }
 
-        const alertText = document.getElementById('alertText');
-        if (alertText) {
-            if (data.alert_active) {
-                const level = Number.isFinite(data.alert_severity) ? data.alert_severity : 0;
-                const event = data.alert_event_fr || data.alert_event || 'Alerte météo';
-                const sender = data.alert_sender ? ` (${data.alert_sender})` : '';
-                alertText.textContent = `${event}${sender} - Niveau ${level}`;
-                alertText.style.color = '#ff6b6b';
-                alertText.style.fontWeight = 'bold';
-            } else {
-                alertText.textContent = 'Aucune alerte';
-                alertText.style.color = '#7CFC00';
-                alertText.style.fontWeight = 'normal';
-            }
-        }
     } catch (e) {
         const status = document.getElementById('status');
         if (status) {
@@ -157,6 +259,40 @@ async function fetchStats() {
                 <td>${data.pres.max.toFixed(0)}</td>
             </tr>
         `;
+
+        const trendBody = document.getElementById('trendBody');
+        if (trendBody) {
+            const trend = data.trend || {};
+            const t = trend.temp || {};
+            const h = trend.hum || {};
+            const p = trend.pres || {};
+            const globalLabel = trend.global_label_fr || 'Tendance stable';
+
+            trendBody.innerHTML = `
+                <tr>
+                    <td>Température</td>
+                    <td>${(t.delta_1h ?? 0).toFixed(1)} °C</td>
+                    <td>${(t.delta_24h ?? 0).toFixed(1)} °C</td>
+                    <td>${t.direction_1h || 'stable'} / ${t.direction_24h || 'stable'}</td>
+                </tr>
+                <tr>
+                    <td>Humidité</td>
+                    <td>${(h.delta_1h ?? 0).toFixed(1)} %</td>
+                    <td>${(h.delta_24h ?? 0).toFixed(1)} %</td>
+                    <td>${h.direction_1h || 'stable'} / ${h.direction_24h || 'stable'}</td>
+                </tr>
+                <tr>
+                    <td>Pression</td>
+                    <td>${(p.delta_1h ?? 0).toFixed(1)} hPa</td>
+                    <td>${(p.delta_24h ?? 0).toFixed(1)} hPa</td>
+                    <td>${p.direction_1h || 'stable'} / ${p.direction_24h || 'stable'}</td>
+                </tr>
+                <tr>
+                    <td><strong>Tendance globale</strong></td>
+                    <td colspan="3"><strong>${globalLabel}</strong></td>
+                </tr>
+            `;
+        }
 
         const status = document.getElementById('status');
         if (status) {
@@ -259,8 +395,10 @@ function initChart() {
 }
 
 window.onload = () => {
+    initAlertModal();
     fetchSystem();
     fetchLive();
+    fetchAlert();
 
     if (isHistoryPage()) {
         initChart();
@@ -274,4 +412,5 @@ window.onload = () => {
     }
 
     setInterval(fetchLive, LIVE_REFRESH_MS);
+    setInterval(fetchAlert, ALERT_REFRESH_MS);
 };

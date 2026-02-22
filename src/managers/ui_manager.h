@@ -54,6 +54,9 @@ private:
     bool confirmFormatMode = false;
     bool confirmClearLogsMode = false;
     bool confirmClearHistMode = false;
+    int last_rendered_page = -1;
+    bool last_rendered_menu_mode = false;
+    bool last_rendered_confirm_mode = false;
 
     void handleButtons();
     void drawPage();
