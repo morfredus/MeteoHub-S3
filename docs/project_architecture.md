@@ -2,7 +2,7 @@
 The API /api/alert now returns the full alert description (in French when available). The web dashboard displays this text for maximum clarity and localization.
 # Project Architecture
 
-Minimum valid version: 1.0.145
+Minimum valid version: 1.0.154
 
 ## New Features (since 1.0.127)
 - **Weather Alert Card**: The dashboard always displays a weather alert card (via `/api/alert`).
@@ -26,7 +26,7 @@ Explain the source code organization, the management of OLED and LCD environment
 - Display type is chosen at build time (`esp32-s3-oled` or `esp32-s3-lcd`).
 - All display/page logic is abstracted through `DisplayInterface`.
 - Dedicated modules for each display: `sh1106_display` (OLED), `st7789_display` (LCD).
-- Separate page rendering logic: `pages_sh1106.cpp` (OLED), `pages_st7789.cpp` (LCD).
+- Separate page rendering logic: `pages_oled.cpp` (OLED), `pages_st7789.cpp` (LCD).
 - Adapted navigation: On LCD, 1 detent = 1 page; on OLED, 2 detents = 1 page.
 
 ## Module Responsibilities
@@ -36,7 +36,7 @@ Explain the source code organization, the management of OLED and LCD environment
 - `sensors`: AHT20 + BMP280 data acquisition.
 - `sh1106_display`: OLED rendering abstraction.
 - `st7789_display`: LCD rendering abstraction.
-- `pages_sh1106`: Renders pages for OLED.
+- `pages_oled`: Renders pages for OLED.
 - `pages_st7789`: Renders pages for LCD.
 
 ### `src/managers/`

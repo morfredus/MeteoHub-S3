@@ -3,7 +3,7 @@ L’API `/api/alert` retourne désormais le texte complet de l’alerte (en fran
 
 # Architecture du projet
 
-Version minimale valide : 1.0.145
+Version minimale valide : 1.0.154
 
 ## Nouvelles fonctionnalités (depuis 1.0.127)
 - **Cartouche alerte météo** : Le dashboard affiche en permanence une cartouche d’alerte météo (via `/api/alert`).
@@ -27,7 +27,7 @@ Expliquer l’organisation du code source, la gestion des environnements OLED et
 - Le type d’afficheur est choisi à la compilation (`esp32-s3-oled` ou `esp32-s3-lcd`).
 - Toute la logique d’affichage/pages est abstraite via `DisplayInterface`.
 - Modules dédiés pour chaque afficheur : `sh1106_display` (OLED), `st7789_display` (LCD).
-- Logique de rendu des pages séparée : `pages_sh1106.cpp` (OLED), `pages_st7789.cpp` (LCD).
+- Logique de rendu des pages séparée : `pages_oled.cpp` (OLED), `pages_st7789.cpp` (LCD).
 - Navigation adaptée : sur LCD, 1 cran = 1 page ; sur OLED, 2 crans = 1 page.
 
 ## Responsabilités des modules
@@ -37,7 +37,7 @@ Expliquer l’organisation du code source, la gestion des environnements OLED et
 - `sensors` : acquisition AHT20 + BMP280
 - `sh1106_display` : abstraction de rendu OLED
 - `st7789_display` : abstraction de rendu LCD
-- `pages_sh1106` : rendu des pages pour OLED
+- `pages_oled` : rendu des pages pour OLED
 - `pages_st7789` : rendu des pages pour LCD
 
 ### `src/managers/`

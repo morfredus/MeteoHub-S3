@@ -2,6 +2,7 @@
 #include "managers/forecast_manager.h"
 #include <ESPmDNS.h>
 #include <LittleFS.h>
+#include <Update.h>
 #include <cctype>
 #include <string>
 #include "utils/logs.h"
@@ -130,6 +131,8 @@ void WebManager::begin(HistoryManager& history, SdManager& sd, ForecastManager& 
     _sd = &sd;
     _forecast = &forecast;
     _sensors = &sensors;
+    _ota_upload_error = false;
+    _ota_restart_at_ms = 0;
     // LittleFS n'est plus requis ici pour les pages web (géré par HistoryManager pour les données)
     // Configuration mDNS
     if (MDNS.begin(WEB_MDNS_HOSTNAME)) {
@@ -149,8 +152,11 @@ void WebManager::begin(HistoryManager& history, SdManager& sd, ForecastManager& 
 }
 
 void WebManager::handle() {
-    // AsyncWebServer gère les clients en background
-    // Cette méthode est réservée pour des tâches de maintenance futures
+    if (_ota_restart_at_ms != 0 && millis() >= _ota_restart_at_ms) {
+        _ota_restart_at_ms = 0;
+        LOG_WARNING("OTA reboot now");
+        ESP.restart();
+    }
 }
 
 void WebManager::_setupRoutes() {
@@ -185,6 +191,9 @@ void WebManager::_setupRoutes() {
     });
     _server.on("/logs.html", HTTP_GET, [](AsyncWebServerRequest *request) {
         request->send(200, "text/html", web_logs_html);
+    });
+    _server.on("/ota.html", HTTP_GET, [](AsyncWebServerRequest *request) {
+        request->send(200, "text/html", web_ota_html);
     });
     // Raccourci pour l'accès manuel
     _server.on("/files", HTTP_GET, [](AsyncWebServerRequest *request) {
@@ -580,6 +589,54 @@ void WebManager::_setupApi() {
     });
 
     // API : Upload de fichier
+
+    _server.on("/api/ota/update", HTTP_POST, [this](AsyncWebServerRequest *request) {
+        if (_ota_upload_error || Update.hasError()) {
+            _ota_upload_error = false;
+            request->send(500, "application/json", "{\"ok\":false,\"message\":\"OTA update failed\"}");
+            LOG_ERROR("OTA update failed");
+            return;
+        }
+
+        request->send(200, "application/json", "{\"ok\":true,\"message\":\"OTA update uploaded. Rebooting...\"}");
+        _ota_restart_at_ms = millis() + 2500;
+        LOG_INFO("OTA update successful. Reboot scheduled.");
+    }, [this](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
+        (void)request;
+        (void)filename;
+
+        if (index == 0) {
+            _ota_upload_error = false;
+            LOG_INFO("OTA upload start");
+            if (!Update.begin(UPDATE_SIZE_UNKNOWN)) {
+                _ota_upload_error = true;
+                Update.printError(Serial);
+                LOG_ERROR("OTA begin failed");
+                return;
+            }
+        }
+
+        if (!_ota_upload_error) {
+            if (Update.write(data, len) != len) {
+                _ota_upload_error = true;
+                Update.printError(Serial);
+                LOG_ERROR("OTA write failed");
+                return;
+            }
+        }
+
+        if (final) {
+            if (!_ota_upload_error) {
+                if (!Update.end(true)) {
+                    _ota_upload_error = true;
+                    Update.printError(Serial);
+                    LOG_ERROR("OTA end failed");
+                }
+            }
+            LOG_INFO(std::string("OTA upload end (bytes=") + std::to_string(index + len) + ")");
+        }
+    });
+
     _server.on("/api/files/upload", HTTP_POST, [](AsyncWebServerRequest *request){
         request->send(200);
     }, [this](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){
