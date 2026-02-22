@@ -1,13 +1,17 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.134
+Version minimale valide : 1.0.135
 
 
 
 
 
 
+
+## Version 1.0.135
+- **Correctif (UI Tendance Statistiques)** : La page Statistiques affiche désormais les lignes de tendance depuis `/api/stats` et ne reste plus sur "Chargement...".
+- **Fonctionnalité (Tendance Météo Globale)** : Ajout de `trend.global_label_fr` dans `/api/stats` avec un libellé synthétique (ex. "Vers beau temps", "Vers pluie").
 
 ## Version 1.0.134
 - **Correctif (Langue Alerte Courte)** : Ajout d’un fallback pour les intitulés d’événements anglais non reconnus afin que l’alerte courte Web reste en français.

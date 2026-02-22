@@ -99,6 +99,27 @@ static std::string getAlertDescriptionFr(const ForecastManager* forecast) {
     return buildAlertDescriptionSummaryFr(forecast);
 }
 
+static std::string computeGlobalTrendLabelFr(const MeteoTrend& trend) {
+    const float pressure_1h = trend.pres.delta_1h;
+    const float humidity_1h = trend.hum.delta_1h;
+    const float temp_1h = trend.temp.delta_1h;
+
+    if (pressure_1h >= 1.0f && humidity_1h <= -2.0f) {
+        return "Vers beau temps";
+    }
+    if (pressure_1h <= -1.0f && humidity_1h >= 2.0f) {
+        return "Vers pluie";
+    }
+    if (pressure_1h <= -1.0f && temp_1h <= -0.3f) {
+        return "Vers refroidissement / perturbation";
+    }
+    if (pressure_1h >= 1.0f && temp_1h >= 0.3f) {
+        return "Vers amélioration";
+    }
+
+    return "Tendance stable";
+}
+
 WebManager::WebManager() : _server(80) {
 }
 
@@ -435,6 +456,7 @@ void WebManager::_setupApi() {
         doc["trend"]["pres"]["delta_24h"] = trend.pres.delta_24h;
         doc["trend"]["pres"]["direction_1h"] = trend.pres.direction_1h.c_str();
         doc["trend"]["pres"]["direction_24h"] = trend.pres.direction_24h.c_str();
+        doc["trend"]["global_label_fr"] = computeGlobalTrendLabelFr(trend).c_str();
 
         serializeJson(doc, *response);
         request->send(response);
