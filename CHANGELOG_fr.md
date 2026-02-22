@@ -30,10 +30,26 @@ Version minimale valide : 1.0.151
 - **Diagnostic (Runtime SD)** : Ajout d'un log explicite du mapping des pins SD (CS/SCK/MISO/MOSI) avant les tentatives de montage, pour accélérer le dépannage câblage/runtime.
 
 
+## Version 1.0.150
+- **Fonctionnalité (Page météo OLED)** : Ajout du texte météo actuel (issu d’OpenWeatherMap, localisé selon `lang`) sur la première page OLED, affiché sous la pression atmosphérique.
+- **UI (Lisibilité OLED)** : Ajout d’un fallback et d’une troncature sûre pour la ligne météo actuelle afin de conserver une mise en page stable sur écran 128x64.
 
+## Version 1.0.149
+- **Refactorisation (Nommage OLED)** : Renommage du module de pages OLED en `pages_oled.*` et mise à jour des fonctions de pages/splash OLED vers des suffixes neutres `_oled`.
+- **Refactorisation (Classe Affichage)** : Renommage de la classe d’affichage en `OledDisplay` (avec alias de compatibilité) pour refléter le backend U8g2 compatible SH1106 et SSD1306.
+- **Nettoyage (Layout OLED)** : Centralisation des principales constantes de géométrie OLED dans le renderer de pages pour réduire les valeurs magiques et faciliter la maintenance.
 
+## Version 1.0.148
+- **Correctif (Récupération écriture SD)** : Durcissement du chemin d’écriture de l’historique SD avec diagnostics explicites (`mkdir` en échec, `open` en échec) et détection stricte des écritures partielles.
+- **Résilience (SD Runtime)** : En cas d’échec d’ouverture en `FILE_APPEND`, le firmware tente désormais un remount SD immédiat puis une unique tentative de réécriture.
 
+## Version 1.0.147
+- **Nettoyage (Migration OLED)** : Archivage des recommandations obsolètes sur l’ancienne bibliothèque OLED et alignement de la documentation sur la baseline actuelle U8g2.
+- **Documentation (Feuille de route)** : Ajout de fichiers TODO bilingues dédiés aux améliorations code et expérience utilisateur (`docs/todo.md`, `docs/todo_fr.md`).
 
+## Version 1.0.146
+- **Correctif (Mapping SPI SD)** : `SdManager` utilise désormais les macros SD dédiées (`SD_SCK_PIN`, `SD_MISO_PIN`, `SD_MOSI_PIN`) de `board_config.h` pour le montage et l'initialisation bas niveau du formatage, afin d'éviter les décalages silencieux de pins SPI.
+- **Diagnostic (Runtime SD)** : Ajout d'un log explicite du mapping des pins SD (CS/SCK/MISO/MOSI) avant les tentatives de montage, pour accélérer le dépannage câblage/runtime.
 
 ## Version 1.0.145
 - **Documentation** : Mise à jour de toute la documentation utilisateur (EN/FR) vers la version `1.0.145`, harmonisation du wording sur la sélection d’affichage (environnement de build + config contrôleur/adresse OLED), et alignement des sections/liens bilingues des README.
