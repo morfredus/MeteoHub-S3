@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <FS.h>
 #include <LittleFS.h>
+#include <ArduinoOTA.h>
 
 #include "managers/forecast_manager.h"
 #include "managers/ui_manager.h"
@@ -12,6 +13,7 @@
 #include "managers/sd_manager.h"
 #include "modules/neopixel_status.h"
 #include "modules/sensors.h"
+#include "config.h"
 #if defined(ESP32_S3_OLED)
 #include "modules/sh1106_display.h"
 #include "modules/pages_oled.h"
@@ -30,6 +32,7 @@ ForecastManager forecast;
 WebManager webManager;
 HistoryManager history;
 SdManager sdCard;
+bool ota_started = false;
 
 void setup() {
     Serial.begin(115200);
@@ -43,6 +46,24 @@ void setup() {
 #endif
     display->begin();
     neoInit();
+
+    ArduinoOTA.setHostname(WEB_MDNS_HOSTNAME);
+    ArduinoOTA.onStart([]() {
+        LOG_INFO("OTA update start");
+    });
+    ArduinoOTA.onEnd([]() {
+        LOG_INFO("OTA update end");
+    });
+    ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+        if (total == 0) {
+            return;
+        }
+        int percent = static_cast<int>((progress * 100U) / total);
+        LOG_DEBUG("OTA progress: " + std::to_string(percent) + "%");
+    });
+    ArduinoOTA.onError([](ota_error_t error) {
+        LOG_ERROR("OTA error code: " + std::to_string(static_cast<int>(error)));
+    });
 
     // --- Maintenance : Formatage LittleFS si BOOT maintenu ---
     pinMode(0, INPUT_PULLUP);
@@ -127,6 +148,14 @@ void setup() {
         w++;
     }
 
+    if (wifi.ip() != "0.0.0.0") {
+        ArduinoOTA.begin();
+        ota_started = true;
+        LOG_INFO(std::string("OTA ready: ") + WEB_MDNS_HOSTNAME + ".local");
+    } else {
+        LOG_WARNING("OTA not started (WiFi unavailable at boot)");
+    }
+
     // Etape 4 : Heure
 #if defined(ESP32_S3_LCD)
     drawBootProgress_st7789(*display, 3, 5, "Sync Heure...");
@@ -178,6 +207,16 @@ void loop() {
     static unsigned long lastLedUpdate = 0;
 
     wifi.update();
+
+    if (!ota_started && wifi.ip() != "0.0.0.0") {
+        ArduinoOTA.begin();
+        ota_started = true;
+        LOG_INFO(std::string("OTA ready (late): ") + WEB_MDNS_HOSTNAME + ".local");
+    }
+    if (ota_started) {
+        ArduinoOTA.handle();
+    }
+
     forecast.update();
     history.update(); 
     ui.update();
