@@ -44,6 +44,13 @@ bool Sh1106Display::beginWithDriver(uint8_t address, int driver_mode) {
     d->setContrast(OLED_CONTRAST);
     d->clear();
     d->display();
+
+    if (active_driver == OLED_DRIVER_ACTIVE_SSD1306) {
+        d->resetDisplay();
+        d->clear();
+        d->display();
+    }
+
     return true;
 }
 
@@ -63,10 +70,17 @@ bool Sh1106Display::begin() {
 #elif OLED_DRIVER_MODE == OLED_DRIVER_SSD1306
     return beginWithDriver(oled_address, OLED_DRIVER_SSD1306);
 #else
+#if OLED_AUTO_PREFER_SSD1306
+    if (beginWithDriver(oled_address, OLED_DRIVER_SSD1306)) {
+        return true;
+    }
+    return beginWithDriver(oled_address, OLED_DRIVER_SH1106);
+#else
     if (beginWithDriver(oled_address, OLED_DRIVER_SH1106)) {
         return true;
     }
     return beginWithDriver(oled_address, OLED_DRIVER_SSD1306);
+#endif
 #endif
 }
 

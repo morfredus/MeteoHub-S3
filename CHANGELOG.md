@@ -1,13 +1,17 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.140
+Minimum valid version: 1.0.141
 
 
 
 
 
 
+
+## Version 1.0.141
+- **Fix (OLED Auto Switch)**: AUTO mode now prefers SSD1306 initialization first, with SH1106 fallback, to improve hot-swap compatibility when replacing SH1106 by SSD1306.
+- **Fix (SSD1306 Ghosting)**: Hardened SSD1306 init/clear sequence (`resetDisplay` + extra clear/display) to reduce residual ghost pixels after module switch.
 
 ## Version 1.0.140
 - **Feature (OLED Compatibility)**: Added dual OLED driver support (SH1106/SSD1306) in OLED environment with automatic I2C address detection and configurable driver mode.

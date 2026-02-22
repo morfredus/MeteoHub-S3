@@ -1,13 +1,17 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.140
+Version minimale valide : 1.0.141
 
 
 
 
 
 
+
+## Version 1.0.141
+- **Correctif (Bascule OLED AUTO)** : Le mode AUTO privilégie désormais l’initialisation SSD1306 puis fallback SH1106 pour améliorer la compatibilité lors du remplacement d’un SH1106 par un SSD1306.
+- **Correctif (Pixels fantômes SSD1306)** : Durcissement de la séquence d’initialisation/nettoyage SSD1306 (`resetDisplay` + clear/display supplémentaire) pour réduire les pixels résiduels après changement de module.
 
 ## Version 1.0.140
 - **Fonctionnalité (Compatibilité OLED)** : Ajout de la prise en charge double driver OLED (SH1106/SSD1306) dans l’environnement OLED avec détection automatique d’adresse I2C et mode driver configurable.
