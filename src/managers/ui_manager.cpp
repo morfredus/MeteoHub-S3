@@ -35,6 +35,9 @@ void UiManager::begin(DisplayInterface& display, WifiManager& wifiMgr, SensorMan
     pinMode(BUTTON_CONFIRM_PIN, INPUT_PULLUP);
 
     page = 0; 
+    last_rendered_page = -1;
+    last_rendered_menu_mode = false;
+    last_rendered_confirm_mode = false;
 }
 
 void UiManager::update() {
@@ -255,6 +258,19 @@ void UiManager::handleButtons() {
 }
 
 void UiManager::drawPage() {
+    const bool current_confirm_mode = confirmClearLogsMode || confirmClearHistMode || confirmFormatMode;
+    const bool screen_context_changed = (page != last_rendered_page) ||
+        (menuMode != last_rendered_menu_mode) ||
+        (current_confirm_mode != last_rendered_confirm_mode);
+
+    if (screen_context_changed) {
+        d->clear();
+        d->show();
+    }
+
+    last_rendered_page = page;
+    last_rendered_menu_mode = menuMode;
+    last_rendered_confirm_mode = current_confirm_mode;
     // Ecrans de confirmation
     if (confirmClearLogsMode || confirmClearHistMode || confirmFormatMode) {
         d->clear();
