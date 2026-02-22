@@ -1,6 +1,6 @@
 # Feuille de route TODO OLED et UX
 
-Version minimale valide : 1.0.147
+Version minimale valide : 1.0.154
 
 ## TODO code
 - [x] Renommer `Sh1106Display` vers un nom neutre (`OledDisplay`) pour refléter correctement le backend U8g2 actuel qui prend en charge SH1106 et SSD1306.

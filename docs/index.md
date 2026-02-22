@@ -1,6 +1,6 @@
 # Documentation Index
 
-Minimum valid version: 1.0.147
+Minimum valid version: 1.0.154
 
 ## OLED/LCD Environments
 All documentation covers both OLED (SH1106) and LCD (ST7789) environments. Differences in navigation, wiring, and interface are explained in each section.
@@ -14,6 +14,7 @@ All documentation covers both OLED (SH1106) and LCD (ST7789) environments. Diffe
 - [User Guide](user_guide.md)
 - [Maintenance and Troubleshooting](maintenance_and_troubleshooting.md)
 - [FAQ](faq.md)
+- OTA Update page (`/ota.html`)
 
 ## Technical Understanding
 - [Project Architecture](project_architecture.md)

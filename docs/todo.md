@@ -1,6 +1,6 @@
 # OLED and UX TODO roadmap
 
-Minimum valid version: 1.0.147
+Minimum valid version: 1.0.154
 
 ## Code TODO
 - [x] Rename `Sh1106Display` to a neutral name (`OledDisplay`) to better reflect the current U8g2 backend that supports both SH1106 and SSD1306.

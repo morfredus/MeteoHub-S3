@@ -2,7 +2,7 @@
 
 # MeteoHub S3
 
-Version minimale valide : 1.0.145
+Version minimale valide : 1.0.154
 
 ## Documentation complète
 - [Index de la documentation](docs/index_fr.md)
@@ -58,6 +58,7 @@ L’environnement choisi à la compilation (`esp32-s3-oled` ou `esp32-s3-lcd`) d
 	- Page logs système avec rafraîchissement automatique et coloration (Info/Warn/Error)
 	- Footer et menu partagés pour une navigation cohérente sur toutes les pages
 	- Gestionnaire de fichiers multi-support (LittleFS/SD)
+	- Page de mise à jour OTA (`/ota.html`) avec envoi firmware, statut inline de validation, barre de progression et retour automatique au tableau de bord en cas de succès
 
 - **Expérience utilisateur & sécurité**
 	- Navigation et gestion des boutons unifiées entre OLED et LCD
@@ -71,7 +72,7 @@ L’environnement choisi à la compilation (`esp32-s3-oled` ou `esp32-s3-lcd`) d
 
 ## Choix de bibliothèque OLED
 - Une évaluation documentée du passage éventuel à **U8g2** est disponible ici : `docs/decisions/oled-library-evaluation.md`.
-- Recommandation actuelle : conserver la pile SH1106/SSD1306Wire pour les patchs courts, et envisager U8g2 via une branche de benchmark dédiée.
+- État actuel : le rendu OLED est maintenant basé sur U8g2 (SH1106/SSD1306 configurables).
 
 ## LCD vs OLED : Différences clés
 - **Navigation** : Sur OLED, 1 cran = 1 page (module HW-040 complet, boutons + OLED intégré) ; sur LCD, 2 crans = 1 page (module EC11 seul).
