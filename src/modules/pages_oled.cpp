@@ -110,7 +110,7 @@ void pageLogs_oled(DisplayInterface& d, int pageIndex, int pageCount, int scroll
 }
 
 // 7. Page météo : affiche température, humidité, pression
-void pageWeather_oled(DisplayInterface& d, SensorManager& sensors, int pageIndex, int pageCount) {
+void pageWeather_oled(DisplayInterface& d, SensorManager& sensors, ForecastManager& forecast, int pageIndex, int pageCount) {
 	SensorData data = sensors.read();
 	d.clear();
 	d.text(0, 0, getHeader("Meteo", pageIndex, pageCount));
@@ -119,6 +119,16 @@ void pageWeather_oled(DisplayInterface& d, SensorManager& sensors, int pageIndex
 		d.text(0, 16, std::string("Temp: ") + formatFloat(data.temperature, 1) + " C");
 		d.text(0, 28, std::string("Hum:  ") + formatFloat(data.humidity, 0) + " %");
 		d.text(0, 40, std::string("Pres: ") + formatFloat(data.pressure, 0) + " hPa");
+
+		std::string weather_now = forecast.today.description;
+		if (weather_now.empty()) {
+			weather_now = "N/A";
+		}
+		constexpr size_t OLED_WEATHER_MAX_CHARS = 18;
+		if (weather_now.size() > OLED_WEATHER_MAX_CHARS) {
+			weather_now = weather_now.substr(0, OLED_WEATHER_MAX_CHARS - 1) + "~";
+		}
+		d.text(0, 52, std::string("Ciel: ") + weather_now);
 	} else {
 		d.center(30, "AHT20 / BMP280");
 		d.center(42, "Non detecte");
