@@ -61,6 +61,7 @@ GET /api/live
 
 All API routes are declared only inside the `_setupApi()` method. No forbidden comments or placeholders exist anywhere in the codebase. The documentation is always synchronized with the program and is beginner-friendly.
 
+
 # User Guide
 
 Minimum valid version: 1.0.145
