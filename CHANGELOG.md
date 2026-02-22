@@ -1,13 +1,17 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.137
+Minimum valid version: 1.0.138
 
 
 
 
 
 
+
+## Version 1.0.138
+- **Fix (OLED Page Artifacts)**: Added a forced clear+flush when UI screen context changes (page/menu/confirmation) to prevent leftover pixels from previous screens.
+- **UI Stability**: Added render-state tracking in `UiManager` to detect context transitions and trigger deterministic full-screen cleanup.
 
 ## Version 1.0.137
 - **Fix (SD Robustness)**: Hardened SD availability checks with automatic remount attempts and cooldown-based reconnect logic when the card becomes unavailable.

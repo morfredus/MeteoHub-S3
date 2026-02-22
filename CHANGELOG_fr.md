@@ -1,13 +1,17 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.137
+Version minimale valide : 1.0.138
 
 
 
 
 
 
+
+## Version 1.0.138
+- **Correctif (Artefacts Changement de Page OLED)** : Ajout d’un clear+flush forcé lors des changements de contexte d’écran (page/menu/confirmation) pour éviter les pixels résiduels de la page précédente.
+- **Stabilité UI** : Ajout d’un suivi d’état de rendu dans `UiManager` pour détecter les transitions et déclencher un nettoyage plein écran déterministe.
 
 ## Version 1.0.137
 - **Correctif (Robustesse SD)** : Renforcement des contrôles de disponibilité SD avec tentative automatique de remontage et logique de reconnexion temporisée quand la carte devient indisponible.
