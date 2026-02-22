@@ -1,13 +1,17 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.136
+Version minimale valide : 1.0.137
 
 
 
 
 
 
+
+## Version 1.0.137
+- **Correctif (Robustesse SD)** : Renforcement des contrôles de disponibilité SD avec tentative automatique de remontage et logique de reconnexion temporisée quand la carte devient indisponible.
+- **Correctif (Montage SD)** : Unification des retries de montage dans `SdManager` et création systématique du dossier `/history` après remontage pour réduire les erreurs "SD absente/erreur".
 
 ## Version 1.0.136
 - **UI (Taille Cartouche Alerte)** : Réduction de 25% de la hauteur du cartouche alerte pour compacter le dashboard tout en conservant l’accès au détail.

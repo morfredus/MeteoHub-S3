@@ -1,13 +1,17 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.136
+Minimum valid version: 1.0.137
 
 
 
 
 
 
+
+## Version 1.0.137
+- **Fix (SD Robustness)**: Hardened SD availability checks with automatic remount attempts and cooldown-based reconnect logic when the card becomes unavailable.
+- **Fix (SD Mounting)**: Unified mount retries in `SdManager` and ensured `/history` directory creation on successful remount to reduce "SD absent/error" failures.
 
 ## Version 1.0.136
 - **UI (Alert Card Size)**: Reduced alert card height by 25% to compact dashboard layout while keeping details access.
