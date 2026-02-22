@@ -20,16 +20,9 @@ Version minimale valide : 1.0.150
 - **Nettoyage (Migration OLED)** : Archivage des recommandations obsolètes sur l’ancienne bibliothèque OLED et alignement de la documentation sur la baseline actuelle U8g2.
 - **Documentation (Feuille de route)** : Ajout de fichiers TODO bilingues dédiés aux améliorations code et expérience utilisateur (`docs/todo.md`, `docs/todo_fr.md`).
 
-
 ## Version 1.0.146
 - **Correctif (Mapping SPI SD)** : `SdManager` utilise désormais les macros SD dédiées (`SD_SCK_PIN`, `SD_MISO_PIN`, `SD_MOSI_PIN`) de `board_config.h` pour le montage et l'initialisation bas niveau du formatage, afin d'éviter les décalages silencieux de pins SPI.
 - **Diagnostic (Runtime SD)** : Ajout d'un log explicite du mapping des pins SD (CS/SCK/MISO/MOSI) avant les tentatives de montage, pour accélérer le dépannage câblage/runtime.
-
-
-
-
-
-
 
 ## Version 1.0.145
 - **Documentation** : Mise à jour de toute la documentation utilisateur (EN/FR) vers la version `1.0.145`, harmonisation du wording sur la sélection d’affichage (environnement de build + config contrôleur/adresse OLED), et alignement des sections/liens bilingues des README.
