@@ -1,22 +1,23 @@
 # Documentation Index
 
-Minimum valid version: 1.0.145
+Minimum valid version: 1.0.147
 
 ## OLED/LCD Environments
 All documentation covers both OLED (SH1106) and LCD (ST7789) environments. Differences in navigation, wiring, and interface are explained in each section.
 
 ## Start Here
-- Getting Started
-- Hardware Wiring
-- Configuration
+- [Getting Started](getting_started.md)
+- [Hardware Wiring](hardware_wiring.md)
+- [Configuration](configuration.md)
 
 ## Daily Usage
-- User Guide
-- Maintenance and Troubleshooting
-- FAQ
+- [User Guide](user_guide.md)
+- [Maintenance and Troubleshooting](maintenance_and_troubleshooting.md)
+- [FAQ](faq.md)
 
 ## Technical Understanding
-- Project Architecture
+- [Project Architecture](project_architecture.md)
+- [OLED/UX TODO roadmap](todo.md)
 
 ## French Documentation
 Each document above has a strict French equivalent with `_fr` suffix.
