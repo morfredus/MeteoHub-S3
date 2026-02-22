@@ -1,13 +1,17 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.135
+Version minimale valide : 1.0.136
 
 
 
 
 
 
+
+## Version 1.0.136
+- **UI (Taille Cartouche Alerte)** : Réduction de 25% de la hauteur du cartouche alerte pour compacter le dashboard tout en conservant l’accès au détail.
+- **UI (Gestion Dépassement)** : Ajout d’un défilement vertical pour les textes d’alerte/modale trop longs et garantie de visibilité de l’icône parchemin en bas à droite.
 
 ## Version 1.0.135
 - **Correctif (UI Tendance Statistiques)** : La page Statistiques affiche désormais les lignes de tendance depuis `/api/stats` et ne reste plus sur "Chargement...".

@@ -1,13 +1,17 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.135
+Minimum valid version: 1.0.136
 
 
 
 
 
 
+
+## Version 1.0.136
+- **UI (Alert Card Size)**: Reduced alert card height by 25% to compact dashboard layout while keeping details access.
+- **UI (Overflow Handling)**: Added vertical scroll behavior for long alert text/modal content and ensured the parchment details icon remains visible at bottom-right.
 
 ## Version 1.0.135
 - **Fix (Stats Trend UI)**: Stats page now renders trend rows from `/api/stats` so the trend section no longer stays on "Chargement...".
