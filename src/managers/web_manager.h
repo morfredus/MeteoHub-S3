@@ -7,11 +7,12 @@
 #include "config.h"
 #include "managers/history_manager.h"
 #include "managers/forecast_manager.h"
+#include "modules/sensors.h"
 
 class WebManager {
 public:
     WebManager();
-    void begin(HistoryManager& history, SdManager& sd, ForecastManager& forecast);
+    void begin(HistoryManager& history, SdManager& sd, ForecastManager& forecast, SensorManager& sensors);
     void handle();
 
 private:
@@ -22,6 +23,7 @@ private:
     HistoryManager* _history = nullptr;
     SdManager* _sd = nullptr;
     ForecastManager* _forecast = nullptr;
+    SensorManager* _sensors = nullptr;
 };
 
 #endif // WEB_MANAGER_H
