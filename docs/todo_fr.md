@@ -1,0 +1,17 @@
+# Feuille de route TODO OLED et UX
+
+Version minimale valide : 1.0.147
+
+## TODO code
+- [ ] Renommer `Sh1106Display` vers un nom neutre (`OledDisplay`) pour refléter correctement le backend U8g2 actuel qui prend en charge SH1106 et SSD1306.
+- [ ] Centraliser les constantes de géométrie OLED (`largeur`, `hauteur`, marges) pour supprimer les valeurs magiques dans `pages_sh1106.cpp`.
+- [ ] Ajouter une petite API de diagnostic d’affichage (FPS courant, durée du dernier rendu, compteur d’erreurs I2C) exposée dans `/api/system`.
+- [ ] Ajouter un flag de build optionnel pour compiler uniquement un backend contrôleur OLED (`SH1106` ou `SSD1306`) afin de réduire la taille binaire.
+- [ ] Ajouter des tests unitaires côté hôte pour les fonctions utilitaires pures de `pages_sh1106.cpp` (formatage, génération des titres, traduction des alertes).
+
+## TODO expérience utilisateur
+- [ ] Ajouter une page de réglages OLED rapide (contraste + aperçu adresse I2C) directement sur l’appareil.
+- [ ] Ajouter un assistant de premier démarrage OLED qui valide le câblage (SDA/SCL/adresse) et affiche des étapes claires si aucun écran n’est détecté.
+- [ ] Ajouter un toast/ligne de statut non bloquant lors des tentatives de reconnexion SD pour expliciter les échecs temporaires de sauvegarde.
+- [ ] Ajouter un réglage de vitesse de transition des pages et de densité du graphe pour améliorer la lisibilité selon les usages.
+- [ ] Ajouter une aide contextuelle sur appui long (légende/icônes/indices selon l’écran).
