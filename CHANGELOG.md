@@ -10,6 +10,7 @@ Minimum valid version: 1.0.145
 
 
 ## Version 1.0.145
+- **Documentation**: Updated all user documents (EN/FR) to version `1.0.145`, synchronized display-selection wording (build-time environment + OLED controller/address config), and aligned bilingual README links/sections.
 - **Improvement (Manual OLED Config)**: Added explicit `OLED_I2C_ADDRESS` setting in `config.h` to support SH1106/SSD1306 modules using `0x3C` or `0x3D` without code edits.
 - **OLED Init Logging**: Driver init logs now include configured I2C address for easier wiring/compatibility diagnostics.
 

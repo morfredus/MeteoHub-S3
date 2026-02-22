@@ -2,7 +2,7 @@
 L’API `/api/alert` retourne désormais le texte complet de l’alerte (en français si disponible). Le dashboard web affiche ce texte pour une clarté et une localisation maximale.
 # FAQ
 
-Version minimale valide : 1.0.139
+Version minimale valide : 1.0.145
 
 ## Internet est-il obligatoire ?
 Oui, pour les mises à jour de prévisions et d’alertes. Les pages capteurs locales restent utilisables sans internet.
@@ -42,7 +42,7 @@ La corruption du système de fichiers est rare mais possible après une coupure 
 3. **Robustesse maximale (avancé)** : stockez l’historique sur SD et/ou envoyez les données vers un service cloud (MQTT, ThingSpeak, etc.).
 
 ## Le projet gère-t-il OLED et LCD ?
-Oui. Le firmware auto-détecte SH1106 OLED et ST7789 LCD au démarrage, sans changement de code.
+Aucune auto-détection runtime n’est nécessaire : choisissez `esp32-s3-oled` ou `esp32-s3-lcd` à la compilation, puis flashez le firmware.
 
 ## Quelles sont les différences principales OLED vs LCD ?
 - **OLED (SH1106)** : monochrome, 128x64, navigation adaptée au layout OLED.

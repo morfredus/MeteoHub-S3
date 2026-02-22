@@ -2,9 +2,7 @@
 The API /api/alert now returns the full alert description (in French when available). The web dashboard displays this text for maximum clarity and localization.
 # Project Architecture
 
-
-Minimum valid version: 1.0.139
-
+Minimum valid version: 1.0.145
 
 ## New Features (since 1.0.127)
 - **Weather Alert Card**: The dashboard always displays a weather alert card (via `/api/alert`).
@@ -18,14 +16,14 @@ Minimum valid version: 1.0.139
 Explain the source code organization, the management of OLED and LCD environments, and the data flow within the system.
 
 ## Folder Structure
-- `src/main.cpp`: Boot and main orchestration, auto-detection of the display type (OLED/LCD).
+- `src/main.cpp`: Boot and main orchestration for the selected display environment (OLED/LCD).
 - `src/modules/`: Hardware/display/page modules (see below).
 - `src/managers/`: State and orchestration managers.
 - `src/utils/`: Reusable utilities.
 - `include/`: Reserved configuration headers only.
 
 ## Display Environment Management
-- The firmware automatically detects at startup whether an SH1106 OLED or a TFT ST7789 LCD is connected.
+- Display type is chosen at build time (`esp32-s3-oled` or `esp32-s3-lcd`).
 - All display/page logic is abstracted through `DisplayInterface`.
 - Dedicated modules for each display: `sh1106_display` (OLED), `st7789_display` (LCD).
 - Separate page rendering logic: `pages_sh1106.cpp` (OLED), `pages_st7789.cpp` (LCD).
@@ -52,10 +50,10 @@ Explain the source code organization, the management of OLED and LCD environment
 - `system_info`: Runtime memory/system metrics.
 
 ## Runtime Data Flow
-1. `main.cpp` initializes the display (auto-detection), sensors, Wi-Fi, and time.
+1. `main.cpp` initializes the selected display backend, sensors, Wi-Fi, and time.
 2. `ui_manager.update()` drives the periodic loop and adapts navigation based on the display.
 3. Managers refresh data (Wi-Fi, sensors, forecasts, history).
-4. Pages display the current state on the detected display (OLED or LCD).
+4. Pages display the current state on the selected display environment (OLED or LCD).
 5. NeoPixel (OLED) or on-screen alert (LCD) reflects the connection/alert status.
 
 ## Persistence Model
