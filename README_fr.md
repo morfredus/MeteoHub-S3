@@ -2,7 +2,10 @@
 
 # MeteoHub S3
 
-Version minimale valide : 1.0.127
+Version minimale valide : 1.0.139
+
+- ## Notes de version récentes (>=1.0.139)
+- **Amélioration OLED** : Depuis la version 1.0.139, le rendu OLED est plus fluide : disparition du clignotement lors des transitions de page grâce à la suppression du `show()` intermédiaire et à une gestion optimisée du buffer. Cela améliore la stabilité et la qualité d’affichage sur les écrans SH1106.
 
 ## Documentation complète
 - [Index de la documentation](docs/index_fr.md)
