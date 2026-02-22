@@ -2,13 +2,13 @@
 
 # MeteoHub S3
 
-Minimum valid version: 1.0.127
+Minimum valid version: 1.0.145
 
 ## Full Documentation
 - [Documentation Index](docs/index.md)
 
 ## Overview
-MeteoHub S3 is an ESP32-S3 PlatformIO project that displays local sensor data, weather forecast information, logs, and system status on a color LCD (TFT ST7789) or SH1106 OLED dashboard. The firmware auto-detects the display type and adapts the UI and navigation accordingly.
+MeteoHub S3 is an ESP32-S3 PlatformIO project that displays local sensor data, weather forecast information, logs, and system status on a color LCD (TFT ST7789) or SH1106 OLED dashboard. The display environment is selected at build time (`esp32-s3-oled` or `esp32-s3-lcd`) and the UI/navigation adapt accordingly.
 
 
 ## Required Hardware and Differences
@@ -25,7 +25,7 @@ MeteoHub S3 is an ESP32-S3 PlatformIO project that displays local sensor data, w
 	- Navigation: 2 detents = 1 page.
 	- AHT20/BMP280 sensors.
 
-Both environments are auto-detected at startup and the interface adapts accordingly.
+The selected build environment (`esp32-s3-oled` or `esp32-s3-lcd`) defines the display stack and the interface adapts accordingly.
 
 ## Project Architecture
 - `src/modules/`: hardware/display/page modules (`encoder`, `neopixel_status`, `sensors`, `sh1106_display`, `st7789_display`, `pages`)
@@ -88,6 +88,10 @@ The MeteoHub S3 features a comprehensive web interface accessible from any brows
 - **Long-Term History**: View archived data over several months/years.
 - **File Manager**: Accessible via the floppy disk icon 4be at the bottom of the page. Allows browsing internal memory and the SD card, downloading, or deleting files.
 - **System Logs**: Accessible via the scroll icon 4dc at the bottom of the page. Displays real-time system events.
+
+## OLED library choice
+- A documented evaluation of a potential migration to **U8g2** is available here: `docs/decisions/oled-library-evaluation.md`.
+- Current recommendation: keep SH1106/SSD1306Wire for short patch cycles, and evaluate U8g2 in a dedicated benchmark branch.
 
 ## LCD vs OLED: Key Differences
 - **Navigation**: On OLED, one detent = one page (HW-040 module, buttons + OLED integrated); on LCD, 2 detents = one page (EC11 module only).

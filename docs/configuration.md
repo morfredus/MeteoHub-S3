@@ -2,7 +2,7 @@
 The API /api/alert now returns the full alert description (in French when available). The web dashboard displays this text for maximum clarity and localization.
 # Configuration
 
-Minimum valid version: 1.0.127
+Minimum valid version: 1.0.145
 
 ## New Features (since 1.0.127)
 - **Weather Alert Card**: The dashboard always displays a weather alert card (via `/api/alert`).
@@ -33,7 +33,7 @@ Use this file for functional tuning:
 
 
 ## OLED/LCD environments
-The firmware supports both SH1106 OLED and ST7789 LCD. Display type, pin mapping, and navigation are auto-detected at boot. See user guide and hardware wiring for details.
+The firmware supports both SH1106/SSD1306 OLED and ST7789 LCD. Display type is selected at build time (`esp32-s3-oled` / `esp32-s3-lcd`), while OLED controller/address are configured in `include/config.h`. See user guide and hardware wiring for details.
 
 ## File you should not edit casually
 ### `include/board_config.h`
