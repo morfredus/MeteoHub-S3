@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <FS.h>
 #include <LittleFS.h>
+#include <ArduinoOTA.h>
 
 #include "managers/forecast_manager.h"
 #include "managers/ui_manager.h"
@@ -12,9 +13,10 @@
 #include "managers/sd_manager.h"
 #include "modules/neopixel_status.h"
 #include "modules/sensors.h"
+#include "config.h"
 #if defined(ESP32_S3_OLED)
 #include "modules/sh1106_display.h"
-#include "modules/pages_sh1106.h"
+#include "modules/pages_oled.h"
 #endif
 #if defined(ESP32_S3_LCD)
 #include "modules/st7789_display.h"
@@ -30,12 +32,13 @@ ForecastManager forecast;
 WebManager webManager;
 HistoryManager history;
 SdManager sdCard;
+bool ota_started = false;
 
 void setup() {
     Serial.begin(115200);
 
 #if defined(ESP32_S3_OLED)
-    static Sh1106Display oled;
+    static OledDisplay oled;
     display = &oled;
 #elif defined(ESP32_S3_LCD)
     static St7789Display lcd;
@@ -43,6 +46,24 @@ void setup() {
 #endif
     display->begin();
     neoInit();
+
+    ArduinoOTA.setHostname(WEB_MDNS_HOSTNAME);
+    ArduinoOTA.onStart([]() {
+        LOG_INFO("OTA update start");
+    });
+    ArduinoOTA.onEnd([]() {
+        LOG_INFO("OTA update end");
+    });
+    ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+        if (total == 0) {
+            return;
+        }
+        int percent = static_cast<int>((progress * 100U) / total);
+        LOG_DEBUG("OTA progress: " + std::to_string(percent) + "%");
+    });
+    ArduinoOTA.onError([](ota_error_t error) {
+        LOG_ERROR("OTA error code: " + std::to_string(static_cast<int>(error)));
+    });
 
     // --- Maintenance : Formatage LittleFS si BOOT maintenu ---
     pinMode(0, INPUT_PULLUP);
@@ -97,7 +118,7 @@ void setup() {
 #if defined(ESP32_S3_LCD)
     drawSplashScreen_st7789(*display);
 #elif defined(ESP32_S3_OLED)
-    drawSplashScreen_sh1106(*display);
+    drawSplashScreen_oled(*display);
 #endif
 
     LOG_INFO("System Boot");
@@ -106,7 +127,7 @@ void setup() {
 #if defined(ESP32_S3_LCD)
     drawBootProgress_st7789(*display, 1, 5, "Init Capteurs...");
 #elif defined(ESP32_S3_OLED)
-    drawBootProgress_sh1106(*display, 1, 5, "Init Capteurs...");
+    drawBootProgress_oled(*display, 1, 5, "Init Capteurs...");
 #endif
     sensors.begin();
     delay(200); // Petit delai visuel
@@ -115,7 +136,7 @@ void setup() {
 #if defined(ESP32_S3_LCD)
     drawBootProgress_st7789(*display, 2, 5, "Connexion WiFi...");
 #elif defined(ESP32_S3_OLED)
-    drawBootProgress_sh1106(*display, 2, 5, "Connexion WiFi...");
+    drawBootProgress_oled(*display, 2, 5, "Connexion WiFi...");
 #endif
     wifi.begin();
 
@@ -127,11 +148,19 @@ void setup() {
         w++;
     }
 
+    if (wifi.ip() != "0.0.0.0") {
+        ArduinoOTA.begin();
+        ota_started = true;
+        LOG_INFO(std::string("OTA ready: ") + WEB_MDNS_HOSTNAME + ".local");
+    } else {
+        LOG_WARNING("OTA not started (WiFi unavailable at boot)");
+    }
+
     // Etape 4 : Heure
 #if defined(ESP32_S3_LCD)
     drawBootProgress_st7789(*display, 3, 5, "Sync Heure...");
 #elif defined(ESP32_S3_OLED)
-    drawBootProgress_sh1106(*display, 3, 5, "Sync Heure...");
+    drawBootProgress_oled(*display, 3, 5, "Sync Heure...");
 #endif
     configTime(3600, 3600, "pool.ntp.org");
 
@@ -153,14 +182,14 @@ void setup() {
 #if defined(ESP32_S3_LCD)
     drawBootProgress_st7789(*display, 4, 5, "Chargement Historique...");
 #elif defined(ESP32_S3_OLED)
-    drawBootProgress_sh1106(*display, 4, 5, "Chargement Historique...");
+    drawBootProgress_oled(*display, 4, 5, "Chargement Historique...");
 #endif
     
     // Etape 6 : Lancement
 #if defined(ESP32_S3_LCD)
     drawBootProgress_st7789(*display, 5, 5, "Systeme Pret");
 #elif defined(ESP32_S3_OLED)
-    drawBootProgress_sh1106(*display, 5, 5, "Systeme Pret");
+    drawBootProgress_oled(*display, 5, 5, "Systeme Pret");
 #endif
     delay(800);
     
@@ -178,6 +207,16 @@ void loop() {
     static unsigned long lastLedUpdate = 0;
 
     wifi.update();
+
+    if (!ota_started && wifi.ip() != "0.0.0.0") {
+        ArduinoOTA.begin();
+        ota_started = true;
+        LOG_INFO(std::string("OTA ready (late): ") + WEB_MDNS_HOSTNAME + ".local");
+    }
+    if (ota_started) {
+        ArduinoOTA.handle();
+    }
+
     forecast.update();
     history.update(); 
     ui.update();
