@@ -1,13 +1,17 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.142
+Minimum valid version: 1.0.143
 
 
 
 
 
 
+
+## Version 1.0.143
+- **Fix (OLED Auto Switch Runtime)**: On OLED reconnect, AUTO mode now retries initialization with the opposite driver first, then fallback, to support real SH1106/SSD1306 hot-swaps.
+- **Stability (Hot-Plug Recovery)**: Added dedicated reconnect reinit strategy instead of always reusing the previous driver.
 
 ## Version 1.0.142
 - **Fix (SH1106 Hot-Plug Noise)**: Hardened SH1106 reinitialization/clear sequence and added runtime hot-plug recovery to avoid noisy/garbled pixels after unplug/replug.

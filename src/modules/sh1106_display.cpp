@@ -61,6 +61,32 @@ bool Sh1106Display::beginWithDriver(uint8_t address, int driver_mode) {
     return true;
 }
 
+bool Sh1106Display::reinitializeAfterReconnect() {
+    const uint8_t addr = detectOledAddress();
+    if (addr == 0) {
+        return false;
+    }
+
+#if OLED_DRIVER_MODE == OLED_DRIVER_SH1106
+    return beginWithDriver(addr, OLED_DRIVER_SH1106);
+#elif OLED_DRIVER_MODE == OLED_DRIVER_SSD1306
+    return beginWithDriver(addr, OLED_DRIVER_SSD1306);
+#else
+    int primary = OLED_DRIVER_SH1106;
+    int secondary = OLED_DRIVER_SSD1306;
+
+    if (active_driver == OLED_DRIVER_ACTIVE_SH1106) {
+        primary = OLED_DRIVER_SSD1306;
+        secondary = OLED_DRIVER_SH1106;
+    }
+
+    if (beginWithDriver(addr, primary)) {
+        return true;
+    }
+    return beginWithDriver(addr, secondary);
+#endif
+}
+
 bool Sh1106Display::begin() {
     Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN);
     const uint8_t oled_address = detectOledAddress();
@@ -103,7 +129,10 @@ void Sh1106Display::show() {
 
     if (device_was_missing) {
         LOG_WARNING("OLED hot-plug detected, reinitializing display driver");
-        beginWithDriver(active_address, active_driver == OLED_DRIVER_ACTIVE_SSD1306 ? OLED_DRIVER_SSD1306 : OLED_DRIVER_SH1106);
+        if (!reinitializeAfterReconnect()) {
+            LOG_ERROR("OLED reinit failed after reconnect");
+            return;
+        }
     }
 
     d->display();

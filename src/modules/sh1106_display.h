@@ -27,6 +27,7 @@ private:
     uint8_t active_address = 0;
     bool device_was_missing = false;
     bool beginWithDriver(uint8_t address, int driver_mode);
+    bool reinitializeAfterReconnect();
     uint8_t detectOledAddress() const;
     bool isDevicePresent(uint8_t address) const;
 };

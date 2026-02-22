@@ -1,13 +1,17 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.142
+Version minimale valide : 1.0.143
 
 
 
 
 
 
+
+## Version 1.0.143
+- **Correctif (Bascule OLED AUTO Runtime)** : En reconnexion OLED, le mode AUTO retente d'abord l'initialisation avec le driver opposé puis fallback, pour gérer les vrais hot-swap SH1106/SSD1306.
+- **Stabilité (Récupération Hot-Plug)** : Ajout d'une stratégie dédiée de réinitialisation en reconnexion au lieu de réutiliser systématiquement le driver précédent.
 
 ## Version 1.0.142
 - **Correctif (Neige SH1106 en Hot-Plug)** : Durcissement de la séquence de réinitialisation/nettoyage SH1106 et ajout d'une récupération runtime pour éviter les pixels bruités après débranchement/rebranchement.
