@@ -1,7 +1,8 @@
 #pragma once
 #if defined(ESP32_S3_OLED)
 #include <Arduino.h>
-#include <OLEDDisplay.h>
+#include <U8g2lib.h>
+#include <memory>
 #include <string>
 #include "display_interface.h"
 
@@ -16,6 +17,6 @@ public:
     void drawLine(int x0, int y0, int x1, int y1) override;
 
 private:
-    OLEDDisplay* d = nullptr;
+    std::unique_ptr<U8G2> d;
 };
 #endif
