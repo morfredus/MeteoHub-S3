@@ -165,30 +165,70 @@ void HistoryManager::saveToSd(const HistoryRecord& record) {
 
     char filename[32];
     strftime(filename, sizeof(filename), "/history/%Y-%m-%d.csv", &timeinfo);
-    
-    // Vérifier si le dossier existe (cas de formatage ou changement de carte à chaud)
+
+    // Vérifier et créer le dossier /history avec log explicite en cas d'échec
     if (!SD.exists("/history")) {
-        SD.mkdir("/history");
+        if (!SD.mkdir("/history")) {
+            LOG_WARNING("SD Save: mkdir failed for /history (cannot write " + std::string(filename) + ")");
+            return;
+        }
+        LOG_INFO("SD Save: created /history directory");
     }
 
-    bool fileExists = SD.exists(filename);
+    bool file_exists = SD.exists(filename);
 
-    File f = SD.open(filename, FILE_APPEND);
-    if (f) {
-        if (!fileExists) {
+    auto writeRecord = [&](File& f) -> bool {
+        if (!file_exists) {
             LOG_INFO("Creating new daily history file on SD: " + std::string(filename));
             f.println("Timestamp,Temperature,Humidity,Pressure");
+            file_exists = true;
         }
+
         char line[96];
         const long long ts = static_cast<long long>(record.timestamp);
         int written = snprintf(line, sizeof(line), "%lld,%.2f,%.1f,%.1f\n", ts, record.t, record.h, record.p);
-        if (written > 0 && written < static_cast<int>(sizeof(line))) {
-            f.write(reinterpret_cast<const uint8_t*>(line), written);
-        } else {
+        if (written <= 0 || written >= static_cast<int>(sizeof(line))) {
             LOG_WARNING("Failed to format SD CSV history line");
+            return false;
         }
-        f.close();
-    } else {
+
+        size_t bytes_written = f.write(reinterpret_cast<const uint8_t*>(line), static_cast<size_t>(written));
+        if (bytes_written != static_cast<size_t>(written)) {
+            LOG_WARNING("SD Save: partial write (" + std::to_string(bytes_written) + "/" + std::to_string(written) + ") to " + std::string(filename));
+            return false;
+        }
+
+        return true;
+    };
+
+    File f = SD.open(filename, FILE_APPEND);
+    if (!f) {
+        LOG_WARNING("SD Save: open failed for " + std::string(filename) + " (append). Trying immediate remount...");
+
+        if (!_sd || !_sd->ensureMounted()) {
+            LOG_WARNING("SD Save: remount failed, write aborted for " + std::string(filename));
+            return;
+        }
+
+        if (!SD.exists("/history") && !SD.mkdir("/history")) {
+            LOG_WARNING("SD Save: mkdir failed after remount for /history");
+            return;
+        }
+
+        file_exists = SD.exists(filename);
+        f = SD.open(filename, FILE_APPEND);
+        if (!f) {
+            LOG_WARNING("SD Save: open failed after remount for " + std::string(filename));
+            return;
+        }
+
+        LOG_INFO("SD Save: open succeeded after remount for " + std::string(filename));
+    }
+
+    bool ok = writeRecord(f);
+    f.close();
+
+    if (!ok) {
         LOG_WARNING("Failed to write to SD file: " + std::string(filename));
     }
 }

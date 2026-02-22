@@ -6,7 +6,7 @@
 #include <string>
 #include "display_interface.h"
 
-class Sh1106Display : public DisplayInterface {
+class OledDisplay : public DisplayInterface {
 public:
     bool begin() override;
     void clear() override;
@@ -19,4 +19,7 @@ public:
 private:
     std::unique_ptr<U8G2> d;
 };
+
+// Alias explicite pour refléter le backend OLED U8g2 actuel
+using Sh1106Display = OledDisplay;
 #endif
