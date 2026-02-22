@@ -61,6 +61,7 @@ GET /api/live
 
 Toutes les routes API sont déclarées uniquement dans la méthode `_setupApi()`. Aucun commentaire interdit ou placeholder n'existe dans le code. La documentation est toujours synchronisée avec le programme et accessible à un débutant.
 
+
 # Guide utilisateur
 
 Version minimale valide : 1.0.145
