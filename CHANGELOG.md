@@ -1,7 +1,11 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.147
+Minimum valid version: 1.0.148
+
+## Version 1.0.148
+- **Fix (SD Write Recovery)**: Improved SD history write path with explicit failure diagnostics (`mkdir` failure, `open` failure) and strict partial-write detection.
+- **Resilience (SD Runtime)**: On `FILE_APPEND` open failure, the firmware now performs an immediate SD remount attempt and retries the write once.
 
 ## Version 1.0.147
 - **Cleanup (OLED Migration)**: Archived obsolete OLED library evaluation guidance and aligned project docs with the current U8g2-based display baseline.
