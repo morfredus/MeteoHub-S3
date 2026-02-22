@@ -252,7 +252,7 @@ void pageForecast_sh1106(DisplayInterface& d, ForecastManager& forecast, int vie
 // --- Ecrans de démarrage (Splash & Boot) ---
 
 void drawSplashScreen_sh1106(DisplayInterface& d) {
-    Sh1106Display& disp = static_cast<Sh1106Display&>(d);
+    OledDisplay& disp = static_cast<OledDisplay&>(d);
     disp.clear();
     
     // Animation simple pour OLED
@@ -271,7 +271,7 @@ void drawSplashScreen_sh1106(DisplayInterface& d) {
 }
 
 void drawBootProgress_sh1106(DisplayInterface& d, int step, int total, const std::string& msg) {
-    Sh1106Display& disp = static_cast<Sh1106Display&>(d);
+    OledDisplay& disp = static_cast<OledDisplay&>(d);
     disp.clear();
     
     disp.center(10, PROJECT_NAME);
