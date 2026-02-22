@@ -5,6 +5,12 @@
 #include <string>
 #include "display_interface.h"
 
+enum OledDriverType {
+    OLED_DRIVER_UNKNOWN = 0,
+    OLED_DRIVER_ACTIVE_SH1106 = 1,
+    OLED_DRIVER_ACTIVE_SSD1306 = 2
+};
+
 class Sh1106Display : public DisplayInterface {
 public:
     bool begin() override;

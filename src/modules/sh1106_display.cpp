@@ -1,5 +1,6 @@
 #include "display_interface.h"
 #if defined(ESP32_S3_OLED)
+#include <Wire.h>
 #include <string>
 #include <SSD1306Wire.h>
 #include <SH1106Wire.h>
@@ -31,6 +32,8 @@ bool Sh1106Display::begin() {
     d->resetDisplay();
     d->clear();
     d->display();
+
+    device_was_missing = false;
     return true;
 }
 
