@@ -21,3 +21,8 @@
 // Configuration de l'écran LCD
 #define LCD_WIDTH            240
 #define LCD_HEIGHT           240 // Modifier à 240 pour l'ancien écran
+
+// OLED controller selection (manual)
+#define OLED_CTRL_SH1106 1
+#define OLED_CTRL_SSD1306 2
+#define OLED_CONTROLLER OLED_CTRL_SH1106

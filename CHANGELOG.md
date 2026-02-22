@@ -1,13 +1,84 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.127
+Minimum valid version: 1.0.144
 
 
 
 
 
 
+
+## Version 1.0.144
+- **Change (OLED Strategy)**: Removed OLED AUTO detection/hot-plug switching logic and switched to explicit manual controller selection in `config.h` (`OLED_CONTROLLER`).
+- **Simplification (OLED Driver)**: OLED wrapper now initializes only the configured controller (SH1106 or SSD1306), reducing runtime ambiguity.
+
+## Version 1.0.143
+- **Fix (OLED Auto Switch Runtime)**: On OLED reconnect, AUTO mode now retries initialization with the opposite driver first, then fallback, to support real SH1106/SSD1306 hot-swaps.
+- **Stability (Hot-Plug Recovery)**: Added dedicated reconnect reinit strategy instead of always reusing the previous driver.
+
+## Version 1.0.142
+- **Fix (SH1106 Hot-Plug Noise)**: Hardened SH1106 reinitialization/clear sequence and added runtime hot-plug recovery to avoid noisy/garbled pixels after unplug/replug.
+- **Stability (OLED Runtime)**: Added I2C presence checks in display flush path and automatic driver reinit when an OLED module reconnects.
+
+## Version 1.0.141
+- **Fix (OLED Auto Switch)**: AUTO mode now prefers SSD1306 initialization first, with SH1106 fallback, to improve hot-swap compatibility when replacing SH1106 by SSD1306.
+- **Fix (SSD1306 Ghosting)**: Hardened SSD1306 init/clear sequence (`resetDisplay` + extra clear/display) to reduce residual ghost pixels after module switch.
+
+## Version 1.0.140
+- **Feature (OLED Compatibility)**: Added dual OLED driver support (SH1106/SSD1306) in OLED environment with automatic I2C address detection and configurable driver mode.
+- **Improvement (Display Abstraction)**: OLED display wrapper now uses a generic `OLEDDisplay` backend and runtime initialization path to improve compatibility across different OLED modules.
+
+## Version 1.0.139
+- **Fix (OLED Rendering Regression)**: Removed forced intermediate `show()` during UI context transitions to avoid visible blank-frame flicker and degraded OLED rendering.
+- **Stability (OLED Cleanup)**: Kept context-change buffer clear while deferring frame flush to normal page render path.
+
+## Version 1.0.138
+- **Fix (OLED Page Artifacts)**: Added a forced clear+flush when UI screen context changes (page/menu/confirmation) to prevent leftover pixels from previous screens.
+- **UI Stability**: Added render-state tracking in `UiManager` to detect context transitions and trigger deterministic full-screen cleanup.
+
+## Version 1.0.137
+- **Fix (SD Robustness)**: Hardened SD availability checks with automatic remount attempts and cooldown-based reconnect logic when the card becomes unavailable.
+- **Fix (SD Mounting)**: Unified mount retries in `SdManager` and ensured `/history` directory creation on successful remount to reduce "SD absent/error" failures.
+
+## Version 1.0.136
+- **UI (Alert Card Size)**: Reduced alert card height by 25% to compact dashboard layout while keeping details access.
+- **UI (Overflow Handling)**: Added vertical scroll behavior for long alert text/modal content and ensured the parchment details icon remains visible at bottom-right.
+
+## Version 1.0.135
+- **Fix (Stats Trend UI)**: Stats page now renders trend rows from `/api/stats` so the trend section no longer stays on "Chargement...".
+- **Feature (Global Weather Trend)**: Added `trend.global_label_fr` in `/api/stats` with a synthetic global tendency label (e.g., "Vers beau temps", "Vers pluie").
+
+## Version 1.0.134
+- **Fix (Short Alert Language)**: Added a fallback for unmatched English alert event names so web short alert titles remain in French.
+- **UI (Alert Details Trigger)**: Replaced the large "Voir détails complets" button with a compact parchment icon anchored at the bottom-right of the alert card.
+
+## Version 1.0.133
+- **Fix (Alert Detail Language)**: Alert detail text returned by web APIs is now a deterministic French summary, avoiding any raw English provider wording.
+- **Clarification (API Behavior)**: `/api/alert` and `/api/live` continue exposing French alert fields while using provider `lang` parameter for forecast requests.
+
+## Version 1.0.132
+- **Optimization (Alert Refresh)**: Web UI alert polling now runs every 15 minutes (`ALERT_REFRESH_MS`) instead of every 5 seconds to reduce unnecessary requests.
+- **Behavior Update (Dashboard)**: Alert card is no longer refreshed from `/api/live`; alert content now updates only through dedicated `/api/alert` refresh scheduling.
+
+## Version 1.0.131
+- **Fix (Alert Details Language)**: Web alert details now prioritize French-only description fields and use a French fallback summary when raw provider text cannot be translated reliably.
+- **Fix (Dashboard Stability)**: Alert card now uses a fixed height with constrained text blocks to prevent page layout jumps during refreshes.
+
+## Version 1.0.130
+- **Fix (Web Alert Language)**: Added a French-translated alert description field (`description_fr`) in `/api/alert` and `alert_description_fr` in `/api/live`.
+- **Fix (Web Alert Details Modal)**: Dashboard now prioritizes French alert description fields for both card details and modal content.
+
+## Version 1.0.129
+- **Feature (Web Alert Context)**: Added alert validity window fields (`start_unix`, `end_unix`) and `alert_level_label_fr` in web APIs to provide direct French severity labels and timing context.
+- **Feature (Web Alert UX)**: Dashboard alert card now shows validity period and includes a "Voir détails complets" button opening a modal with long description and safety guidance.
+- **Feature (Live Data Trust)**: Added a visible "Capteur invalide" badge on dashboard when `sensor_valid=false` to prevent misleading interpretation of live cards.
+
+## Version 1.0.128
+- **Fix (Web Alerts)**: Added dedicated `/api/alert` endpoint and ensured web alert title uses French translation (`event_fr`) to match OLED language.
+- **Improvement (Web Alert UX)**: Dashboard alert card now changes background/text colors by severity with accessible contrast, and shows richer alert details (source + description).
+- **Fix (Live Sensor Values)**: `/api/live` now returns real values from `SensorManager` (`temp`, `hum`, `pres`) instead of placeholders, so dashboard cards display actual sensor readings.
+- **Integration**: `WebManager` now receives `SensorManager` at startup to provide live sensor data to web APIs.
 
 ## Version 1.0.127
 - **Fix (Web Alert Language)**: Web API `/api/live` now exposes weather alert fields from `ForecastManager`, including a French-translated alert label (`alert_event_fr`) for UI consistency with OLED.
