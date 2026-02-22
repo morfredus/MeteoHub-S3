@@ -2,7 +2,7 @@
 L’API `/api/alert` retourne désormais le texte complet de l’alerte (en français si disponible). Le dashboard web affiche ce texte pour une clarté et une localisation maximale.
 # FAQ
 
-Version minimale valide : 1.0.145
+Version minimale valide : 1.0.154
 
 ## Internet est-il obligatoire ?
 Oui, pour les mises à jour de prévisions et d’alertes. Les pages capteurs locales restent utilisables sans internet.

@@ -2,7 +2,7 @@
 The API /api/alert now returns the full alert description (in French when available). The web dashboard displays this text for maximum clarity and localization.
 # Configuration
 
-Minimum valid version: 1.0.145
+Minimum valid version: 1.0.154
 
 ## New Features (since 1.0.127)
 - **Weather Alert Card**: The dashboard always displays a weather alert card (via `/api/alert`).

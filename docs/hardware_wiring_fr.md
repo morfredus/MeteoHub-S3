@@ -1,6 +1,6 @@
 # Câblage matériel
 
-Version minimale valide : 1.0.145
+Version minimale valide : 1.0.154
 
 ## Vue d’ensemble
 Cette page explique le mapping GPIO exact utilisé par le firmware.

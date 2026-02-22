@@ -24,6 +24,9 @@ private:
     SdManager* _sd = nullptr;
     ForecastManager* _forecast = nullptr;
     SensorManager* _sensors = nullptr;
+
+    bool _ota_upload_error = false;
+    unsigned long _ota_restart_at_ms = 0;
 };
 
 #endif // WEB_MANAGER_H

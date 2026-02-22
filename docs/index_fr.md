@@ -1,6 +1,6 @@
 # Index de la documentation
 
-Version minimale valide : 1.0.145
+Version minimale valide : 1.0.154
 
 
 ## Environnements OLED/LCD
@@ -18,6 +18,7 @@ Toute la documentation couvre à la fois les environnements OLED (SH1106) et LCD
 
 ## Compréhension technique
 - [Architecture du projet](project_architecture_fr.md)
+- [Feuille de route TODO OLED/UX](todo_fr.md)
 
 ## Documentation anglaise
 Chaque document ci-dessus possède un équivalent anglais strict sans suffixe `_fr`.
