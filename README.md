@@ -2,7 +2,10 @@
 
 # MeteoHub S3
 
-Minimum valid version: 1.0.127
+Minimum valid version: 1.0.139
+
+- ## Recent Release Notes (>=1.0.139)
+- **OLED Improvement**: Since version 1.0.139, OLED rendering is smoother: no more flicker during page transitions thanks to the removal of the intermediate `show()` and optimized buffer management. This improves display stability and quality on SH1106 screens.
 
 ## Full Documentation
 - [Documentation Index](docs/index.md)
