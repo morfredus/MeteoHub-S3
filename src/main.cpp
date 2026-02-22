@@ -168,7 +168,7 @@ void setup() {
     
     // Lancement des modules principaux
     forecast.begin();
-    webManager.begin(history, sdCard);
+    webManager.begin(history, sdCard, forecast, sensors);
 
     ui.begin(*display, wifi, sensors, forecast, history, sdCard);
 }

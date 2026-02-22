@@ -61,9 +61,13 @@ GET /api/live
 
 All API routes are declared only inside the `_setupApi()` method. No forbidden comments or placeholders exist anywhere in the codebase. The documentation is always synchronized with the program and is beginner-friendly.
 
+
 # User Guide
 
-Minimum valid version: 1.0.119
+Minimum valid version: 1.0.139
+
+## Recent Release Notes (>=1.0.139)
+- **OLED Improvement**: Since version 1.0.139, OLED rendering is smoother: no more flicker during page transitions thanks to the removal of the intermediate `show()` and optimized buffer management. This improves display stability and quality on SH1106 screens.
 
 ## Goal
 Learn how to use the dashboard once the firmware has started.

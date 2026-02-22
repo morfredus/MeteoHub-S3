@@ -1,16 +1,69 @@
+
+# Project Changelog
+
+Minimum valid version: 1.0.139
+
+
+
+
+
+
+
+## Version 1.0.139
+- **Fix (OLED Rendering Regression)**: Removed forced intermediate `show()` during UI context transitions to avoid visible blank-frame flicker and degraded OLED rendering.
+- **Stability (OLED Cleanup)**: Kept context-change buffer clear while deferring frame flush to normal page render path.
+
+## Version 1.0.138
+- **Fix (OLED Page Artifacts)**: Added a forced clear+flush when UI screen context changes (page/menu/confirmation) to prevent leftover pixels from previous screens.
+- **UI Stability**: Added render-state tracking in `UiManager` to detect context transitions and trigger deterministic full-screen cleanup.
+
+## Version 1.0.137
+- **Fix (SD Robustness)**: Hardened SD availability checks with automatic remount attempts and cooldown-based reconnect logic when the card becomes unavailable.
+- **Fix (SD Mounting)**: Unified mount retries in `SdManager` and ensured `/history` directory creation on successful remount to reduce "SD absent/error" failures.
+
+## Version 1.0.136
+- **UI (Alert Card Size)**: Reduced alert card height by 25% to compact dashboard layout while keeping details access.
+- **UI (Overflow Handling)**: Added vertical scroll behavior for long alert text/modal content and ensured the parchment details icon remains visible at bottom-right.
+
+## Version 1.0.135
+- **Fix (Stats Trend UI)**: Stats page now renders trend rows from `/api/stats` so the trend section no longer stays on "Chargement...".
+- **Feature (Global Weather Trend)**: Added `trend.global_label_fr` in `/api/stats` with a synthetic global tendency label (e.g., "Vers beau temps", "Vers pluie").
+
+## Version 1.0.134
+- **Fix (Short Alert Language)**: Added a fallback for unmatched English alert event names so web short alert titles remain in French.
+- **UI (Alert Details Trigger)**: Replaced the large "Voir détails complets" button with a compact parchment icon anchored at the bottom-right of the alert card.
+
+## Version 1.0.133
+- **Fix (Alert Detail Language)**: Alert detail text returned by web APIs is now a deterministic French summary, avoiding any raw English provider wording.
+- **Clarification (API Behavior)**: `/api/alert` and `/api/live` continue exposing French alert fields while using provider `lang` parameter for forecast requests.
+
+## Version 1.0.132
+- **Optimization (Alert Refresh)**: Web UI alert polling now runs every 15 minutes (`ALERT_REFRESH_MS`) instead of every 5 seconds to reduce unnecessary requests.
+- **Behavior Update (Dashboard)**: Alert card is no longer refreshed from `/api/live`; alert content now updates only through dedicated `/api/alert` refresh scheduling.
+
+## Version 1.0.131
+- **Fix (Alert Details Language)**: Web alert details now prioritize French-only description fields and use a French fallback summary when raw provider text cannot be translated reliably.
+- **Fix (Dashboard Stability)**: Alert card now uses a fixed height with constrained text blocks to prevent page layout jumps during refreshes.
+
+## Version 1.0.130
+- **Fix (Web Alert Language)**: Added a French-translated alert description field (`description_fr`) in `/api/alert` and `alert_description_fr` in `/api/live`.
+- **Fix (Web Alert Details Modal)**: Dashboard now prioritizes French alert description fields for both card details and modal content.
+
+## Version 1.0.129
+- **Feature (Web Alert Context)**: Added alert validity window fields (`start_unix`, `end_unix`) and `alert_level_label_fr` in web APIs to provide direct French severity labels and timing context.
+- **Feature (Web Alert UX)**: Dashboard alert card now shows validity period and includes a "Voir détails complets" button opening a modal with long description and safety guidance.
+- **Feature (Live Data Trust)**: Added a visible "Capteur invalide" badge on dashboard when `sensor_valid=false` to prevent misleading interpretation of live cards.
+
 ## Version 1.0.128
-1. **Feature (Weather Alert Description)**: The API /api/alert now returns the full alert description (in French when available), and the web dashboard displays this text for maximum clarity and localization. The Alert struct and parsing logic have been updated accordingly.
-2. **Bugfix (Compilation)**: Added description field to Alert struct and ensured correct population during parsing, fixing compilation errors and guaranteeing API consistency.
-3. **Docs (User Guide/FAQ/Config/Arch)**: Updated all user-facing documentation (EN/FR) to explain the new alert description field, its display logic, and the improved French localization for weather alerts.
+- **Fix (Web Alerts)**: Added dedicated `/api/alert` endpoint and ensured web alert title uses French translation (`event_fr`) to match OLED language.
+- **Improvement (Web Alert UX)**: Dashboard alert card now changes background/text colors by severity with accessible contrast, and shows richer alert details (source + description).
+- **Fix (Live Sensor Values)**: `/api/live` now returns real values from `SensorManager` (`temp`, `hum`, `pres`) instead of placeholders, so dashboard cards display actual sensor readings.
+- **Integration**: `WebManager` now receives `SensorManager` at startup to provide live sensor data to web APIs.
 
 ## Version 1.0.127
-1. **Feature (Weather Trend Analysis)**: Added trend analysis for temperature, humidity, and pressure in HistoryManager, exposed via API and displayed on the Statistics page.
-2. **Feature (Weather Alert API)**: Added `/api/alert` endpoint in WebManager to expose current weather alert (or absence).
-3. **UI (Dashboard Alert Card)**: Added a fixed-height alert card to the dashboard, dynamically colored and always present, showing alert or "no alert".
-4. **Bugfix (API Route Declaration)**: Removed all residual `_server.on("/api/alert", ...)` code outside methods, ensuring correct compilation and route exposure.
-5. **UI (Statistics Trend Table)**: Added trend table to statistics page, showing 1h/24h variations and direction for each metric.
-6. **Style (Alert Card CSS)**: Added CSS classes for alert card with fixed height and severity color.
-7. **Refactor (API Consistency)**: Ensured all new API routes are declared only inside `_setupApi()`.
+- **Fix (Web Alert Language)**: Web API `/api/live` now exposes weather alert fields from `ForecastManager`, including a French-translated alert label (`alert_event_fr`) for UI consistency with OLED.
+- **Feature (Web Dashboard)**: Added a weather alert card on the main web page and wired live refresh in `data/app.js` to display active alerts in French with severity/sender.
+- **Fix (Integration)**: `WebManager` now receives `ForecastManager` reference at startup so alert data is available to Web UI endpoints.
 
 ## Version 1.0.126
 - **Fix (Documentation Consistency)**: Removed unresolved merge markers and fully synchronized troubleshooting/FAQ docs (`docs/*.md` and `docs/*_fr.md`).

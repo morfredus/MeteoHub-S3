@@ -2,13 +2,16 @@
 The API /api/alert now returns the full alert description (in French when available). The web dashboard displays this text for maximum clarity and localization.
 # Project Architecture
 
-Minimum valid version: 1.0.127
+
+Minimum valid version: 1.0.139
+
 
 ## New Features (since 1.0.127)
 - **Weather Alert Card**: The dashboard always displays a weather alert card (via `/api/alert`).
 - **Live Sensor Data**: The `/api/live` endpoint returns real sensor values (temperature, humidity, pressure).
 - **Dashboard vs History**: The dashboard graph shows the last 2 hours; the history page shows 24 hours.
 - **Strict Project Compliance**: All API routes are declared only inside `_setupApi()`. No forbidden comments or placeholders exist in the codebase.
+- **OLED Improvement (>=1.0.139)**: No more flicker during OLED page transitions thanks to the removal of the intermediate `show()` and optimized buffer management. Smoother and more stable rendering on SH1106.
 
 
 ## Goal

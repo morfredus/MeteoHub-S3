@@ -1,16 +1,69 @@
+
+# Journal des modifications du projet
+
+Version minimale valide : 1.0.139
+
+
+
+
+
+
+
+## Version 1.0.139
+- **Correctif (Régression Rendu OLED)** : Suppression du `show()` intermédiaire forcé lors des transitions de contexte UI pour éviter le clignotement d’image vide et la dégradation d’affichage OLED.
+- **Stabilité (Nettoyage OLED)** : Conservation du clear de buffer au changement de contexte, avec flush uniquement via le chemin normal de rendu de page.
+
+## Version 1.0.138
+- **Correctif (Artefacts Changement de Page OLED)** : Ajout d’un clear+flush forcé lors des changements de contexte d’écran (page/menu/confirmation) pour éviter les pixels résiduels de la page précédente.
+- **Stabilité UI** : Ajout d’un suivi d’état de rendu dans `UiManager` pour détecter les transitions et déclencher un nettoyage plein écran déterministe.
+
+## Version 1.0.137
+- **Correctif (Robustesse SD)** : Renforcement des contrôles de disponibilité SD avec tentative automatique de remontage et logique de reconnexion temporisée quand la carte devient indisponible.
+- **Correctif (Montage SD)** : Unification des retries de montage dans `SdManager` et création systématique du dossier `/history` après remontage pour réduire les erreurs "SD absente/erreur".
+
+## Version 1.0.136
+- **UI (Taille Cartouche Alerte)** : Réduction de 25% de la hauteur du cartouche alerte pour compacter le dashboard tout en conservant l’accès au détail.
+- **UI (Gestion Dépassement)** : Ajout d’un défilement vertical pour les textes d’alerte/modale trop longs et garantie de visibilité de l’icône parchemin en bas à droite.
+
+## Version 1.0.135
+- **Correctif (UI Tendance Statistiques)** : La page Statistiques affiche désormais les lignes de tendance depuis `/api/stats` et ne reste plus sur "Chargement...".
+- **Fonctionnalité (Tendance Météo Globale)** : Ajout de `trend.global_label_fr` dans `/api/stats` avec un libellé synthétique (ex. "Vers beau temps", "Vers pluie").
+
+## Version 1.0.134
+- **Correctif (Langue Alerte Courte)** : Ajout d’un fallback pour les intitulés d’événements anglais non reconnus afin que l’alerte courte Web reste en français.
+- **UI (Déclencheur Détails Alerte)** : Remplacement du gros bouton "Voir détails complets" par une petite icône parchemin ancrée en bas à droite du cartouche.
+
+## Version 1.0.133
+- **Correctif (Langue Détail Alerte)** : Le texte détaillé d’alerte renvoyé par les APIs Web est désormais un résumé déterministe en français, sans reprise de texte brut anglais du fournisseur.
+- **Clarification (Comportement API)** : `/api/alert` et `/api/live` continuent d’exposer les champs FR, tout en conservant le paramètre `lang` côté requête prévision.
+
+## Version 1.0.132
+- **Optimisation (Rafraîchissement Alerte)** : Le polling d’alerte Web passe à 15 minutes (`ALERT_REFRESH_MS`) au lieu de 5 secondes pour réduire les requêtes inutiles.
+- **Mise à jour de comportement (Dashboard)** : Le cartouche d’alerte n’est plus rafraîchi via `/api/live` ; il est mis à jour uniquement via la planification dédiée de `/api/alert`.
+
+## Version 1.0.131
+- **Correctif (Langue Détails Alerte)** : Les détails d’alerte Web utilisent désormais uniquement les champs français et appliquent un résumé de secours en français quand le texte fournisseur n’est pas traduisible de façon fiable.
+- **Correctif (Stabilité Dashboard)** : Le cartouche d’alerte a une hauteur fixe et des zones de texte contraintes pour supprimer l’effet d’ascenseur de la page lors des rafraîchissements.
+
+## Version 1.0.130
+- **Correctif (Langue Alerte Web)** : Ajout d'un champ de description d'alerte en français (`description_fr`) dans `/api/alert` et `alert_description_fr` dans `/api/live`.
+- **Correctif (Modal Détails Alerte)** : Le dashboard priorise désormais la description française pour le cartouche et la modal de détails.
+
+## Version 1.0.129
+- **Fonctionnalité (Contexte Alerte Web)** : Ajout des champs de validité (`start_unix`, `end_unix`) et du champ prêt à l’emploi `alert_level_label_fr` dans les APIs Web pour exposer directement le niveau en français.
+- **Fonctionnalité (UX Alerte Web)** : Le cartouche d’alerte affiche maintenant la période de validité et un bouton "Voir détails complets" ouvrant une modal lisible (description longue + consigne de sécurité).
+- **Fonctionnalité (Fiabilité Live)** : Ajout d’un badge visuel "Capteur invalide" sur le dashboard quand `sensor_valid=false` pour éviter les mauvaises interprétations des cartouches live.
+
 ## Version 1.0.128
-1. **Fonctionnalité (Description alerte météo)** : L’API `/api/alert` retourne désormais le texte complet de l’alerte (en français si disponible), et le dashboard web affiche ce texte pour une clarté et une localisation maximale. La structure Alert et la logique de parsing ont été adaptées.
-2. **Correctif (Compilation)** : Ajout du champ description à la structure Alert et remplissage correct lors du parsing, ce qui corrige les erreurs de compilation et garantit la cohérence de l’API.
-3. **Docs (Guide utilisateur/FAQ/Config/Arch)** : Mise à jour de toute la documentation utilisateur (FR/EN) pour expliquer le nouveau champ description, sa logique d’affichage, et la meilleure localisation française des alertes météo.
+- **Correctif (Alertes Web)** : Ajout d'un endpoint dédié `/api/alert` et utilisation systématique de la traduction française (`event_fr`) pour aligner l'UI Web avec l'OLED.
+- **Amélioration (UX Alerte Web)** : Le cartouche d'alerte du dashboard adapte maintenant sa couleur de fond et de texte selon la sévérité, avec contraste lisible, et affiche des détails plus complets (source + description).
+- **Correctif (Valeurs capteurs live)** : `/api/live` renvoie désormais les vraies mesures issues de `SensorManager` (`temp`, `hum`, `pres`) au lieu de valeurs fictives, pour afficher les données réelles dans les cartouches.
+- **Intégration** : `WebManager` reçoit maintenant `SensorManager` au démarrage pour alimenter les APIs live.
 
 ## Version 1.0.127
-1. **Fonctionnalité (Analyse de tendance météo)** : Ajout de l’analyse de tendance (température, humidité, pression) dans HistoryManager, exposée via l’API et affichée sur la page Statistiques.
-2. **Fonctionnalité (API alerte météo)** : Ajout de l’endpoint `/api/alert` dans WebManager pour exposer l’alerte météo courante (ou absence).
-3. **UI (Cartouche alerte dashboard)** : Ajout d’un cartouche d’alerte météo à hauteur fixe sur le dashboard, coloré dynamiquement et toujours présent, affichant l’alerte ou "aucune alerte".
-4. **Correctif (Déclaration route API)** : Suppression de tout code résiduel `_server.on("/api/alert", ...)` hors méthode, garantissant la compilation et l’exposition correcte de la route.
-5. **UI (Table tendance statistiques)** : Ajout d’un tableau de tendance sur la page Statistiques, affichant les variations 1h/24h et la direction pour chaque métrique.
-6. **Style (CSS cartouche alerte)** : Ajout des classes CSS pour le cartouche d’alerte avec hauteur fixe et couleur selon la sévérité.
-7. **Refactor (Cohérence API)** : Toutes les nouvelles routes API sont désormais déclarées uniquement dans `_setupApi()`.
+- **Correctif (Langue Alerte Web)** : L'API Web `/api/live` expose désormais les champs d'alerte météo depuis `ForecastManager`, avec un libellé traduit en français (`alert_event_fr`) pour aligner le rendu Web avec l'OLED.
+- **Fonctionnalité (Dashboard Web)** : Ajout d'une carte d'alerte météo sur la page principale, alimentée en temps réel par `data/app.js` (événement, niveau, émetteur).
+- **Correctif (Intégration)** : `WebManager` reçoit désormais une référence à `ForecastManager` au démarrage pour rendre les alertes disponibles côté endpoints Web.
 
 ## Version 1.0.126
 - **Correctif (Cohérence Documentation)** : Suppression des marqueurs de fusion non résolus et resynchronisation complète des documents FAQ/dépannage (`docs/*.md` et `docs/*_fr.md`).
