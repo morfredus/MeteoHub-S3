@@ -63,82 +63,27 @@ static std::string translateAlertToFrench(const std::string& event) {
     return event;
 }
 
-static void replaceAllInPlace(std::string& text, const std::string& from, const std::string& to) {
-    if (from.empty()) {
-        return;
-    }
-
-    size_t start_pos = 0;
-    while ((start_pos = text.find(from, start_pos)) != std::string::npos) {
-        text.replace(start_pos, from.length(), to);
-        start_pos += to.length();
-    }
-}
-
-static std::string buildAlertDescriptionSummaryFr(const std::string& event_fr, int severity) {
-    std::string level = "jaune";
-    if (severity >= 3) {
-        level = "rouge";
-    } else if (severity == 2) {
-        level = "orange";
-    }
-
-    std::string summary = "Alerte ";
-    summary += level;
-    summary += " : ";
-    summary += event_fr.empty() ? "événement météo" : event_fr;
-    summary += ". Restez informé via les canaux officiels et limitez les déplacements non essentiels.";
-    return summary;
-}
-
-static std::string translateAlertDescriptionToFrench(const std::string& description) {
-    if (description.empty()) {
-        return description;
-    }
-
-    std::string translated = description;
-
-    replaceAllInPlace(translated, "Thunderstorm", "Orage");
-    replaceAllInPlace(translated, "thunderstorm", "orage");
-    replaceAllInPlace(translated, "Heavy rain", "Fortes pluies");
-    replaceAllInPlace(translated, "heavy rain", "fortes pluies");
-    replaceAllInPlace(translated, "Rain", "Pluie");
-    replaceAllInPlace(translated, "rain", "pluie");
-    replaceAllInPlace(translated, "Snow", "Neige");
-    replaceAllInPlace(translated, "snow", "neige");
-    replaceAllInPlace(translated, "Wind", "Vent");
-    replaceAllInPlace(translated, "wind", "vent");
-    replaceAllInPlace(translated, "Flood", "Inondation");
-    replaceAllInPlace(translated, "flood", "inondation");
-    replaceAllInPlace(translated, "Warning", "Alerte");
-    replaceAllInPlace(translated, "warning", "alerte");
-    replaceAllInPlace(translated, "Advisory", "Vigilance");
-    replaceAllInPlace(translated, "advisory", "vigilance");
-    replaceAllInPlace(translated, "Expected", "Prévu");
-    replaceAllInPlace(translated, "expected", "prévu");
-    replaceAllInPlace(translated, "Possible", "Possible");
-    replaceAllInPlace(translated, "possible", "possible");
-    replaceAllInPlace(translated, "until", "jusqu'à");
-    replaceAllInPlace(translated, "from", "de");
-
-    return translated;
-}
-
-static std::string getAlertDescriptionFr(const ForecastManager* forecast) {
-    if (!forecast) {
+static std::string buildAlertDescriptionSummaryFr(const ForecastManager* forecast) {
+    if (!forecast || !forecast->alert_active) {
         return "";
     }
 
-    std::string translated = translateAlertDescriptionToFrench(forecast->alert.description);
-    if (!forecast->alert.description.empty() && translated == forecast->alert.description) {
-        return buildAlertDescriptionSummaryFr(translateAlertToFrench(forecast->alert.event), forecast->alert.severity);
+    std::string level_label = getAlertLevelLabelFr(forecast->alert.severity);
+    std::string event_fr = translateAlertToFrench(forecast->alert.event);
+    if (event_fr.empty()) {
+        event_fr = "événement météo";
     }
 
-    if (translated.empty() && forecast->alert_active) {
-        return buildAlertDescriptionSummaryFr(translateAlertToFrench(forecast->alert.event), forecast->alert.severity);
-    }
+    std::string summary = "Vigilance ";
+    summary += level_label;
+    summary += " : ";
+    summary += event_fr;
+    summary += ". Suivez les consignes officielles et limitez les déplacements non essentiels.";
+    return summary;
+}
 
-    return translated;
+static std::string getAlertDescriptionFr(const ForecastManager* forecast) {
+    return buildAlertDescriptionSummaryFr(forecast);
 }
 
 WebManager::WebManager() : _server(80) {
