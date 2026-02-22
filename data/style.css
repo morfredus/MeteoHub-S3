@@ -54,3 +54,146 @@ th { color: #aaa; }
 /* Icone footer */
 .footer-icon { text-decoration: none; color: #666; font-size: 1.1rem; margin-left: 10px; vertical-align: middle; transition: color 0.2s; }
 .footer-icon:hover { color: var(--accent); }
+
+#alertCard {
+    transition: background-color 0.3s, color 0.3s;
+}
+
+
+#alertCard {
+    position: relative;
+    height: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    overflow: hidden;
+}
+
+#alertText {
+    min-height: 72px;
+    max-height: 72px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#alertValidity {
+    min-height: 22px;
+    max-height: 22px;
+    overflow: hidden;
+}
+
+#alertCard.alert-level-none {
+    background: #1f3a2a;
+    color: #d7ffe4;
+}
+
+#alertCard.alert-level-yellow {
+    background: #ffe082;
+    color: #2f2500;
+}
+
+#alertCard.alert-level-orange {
+    background: #ffb74d;
+    color: #2a1400;
+}
+
+#alertCard.alert-level-red {
+    background: #e57373;
+    color: #2b0000;
+}
+
+#alertCard.alert-level-yellow h2,
+#alertCard.alert-level-orange h2,
+#alertCard.alert-level-red h2,
+#alertCard.alert-level-none h2 {
+    color: inherit;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sensor-badge {
+    background: #ff5252;
+    color: #ffffff;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-weight: 700;
+}
+
+.alert-validity {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    opacity: 0.95;
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.modal.open {
+    display: flex;
+}
+
+.modal-content {
+    width: min(700px, calc(100% - 32px));
+    background: #222;
+    color: #eaeaea;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    right: 12px;
+    top: 8px;
+    border: none;
+    background: transparent;
+    color: #ddd;
+    font-size: 1.8rem;
+    cursor: pointer;
+}
+
+.modal-close:hover {
+    color: #fff;
+}
+
+
+.alert-details-icon {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(0, 0, 0, 0.18);
+    color: inherit;
+    font-size: 1rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.alert-details-icon:hover {
+    transform: scale(1.05);
+}
+
+.alert-details-icon:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
