@@ -12,6 +12,7 @@ include/wifi-config.h
 # Fichiers divers (a ignorer si leur contenu n'est pas a partager)
 
 include/web_pages.h
+include/web_pages.h
 
 # -----------------------------------------------------------------------------
 # 2. FICHIERS GENERES PAR COMPILATION ET OUTILS
