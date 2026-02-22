@@ -2,7 +2,7 @@
 
 # MeteoHub S3
 
-Minimum valid version: 1.0.145
+Minimum valid version: 1.0.154
 
 ## Full Documentation
 - [Documentation Index](docs/index.md)
@@ -88,10 +88,11 @@ The MeteoHub S3 features a comprehensive web interface accessible from any brows
 - **Long-Term History**: View archived data over several months/years.
 - **File Manager**: Accessible via the floppy disk icon 4be at the bottom of the page. Allows browsing internal memory and the SD card, downloading, or deleting files.
 - **System Logs**: Accessible via the scroll icon 4dc at the bottom of the page. Displays real-time system events.
+- **OTA Update page**: Accessible from the web menu (`/ota.html`) with firmware upload, inline status validation, progress bar, and automatic return to dashboard after successful update.
 
 ## OLED library choice
 - A documented evaluation of a potential migration to **U8g2** is available here: `docs/decisions/oled-library-evaluation.md`.
-- Current recommendation: keep SH1106/SSD1306Wire for short patch cycles, and evaluate U8g2 in a dedicated benchmark branch.
+- Current state: OLED rendering is now based on U8g2 (SH1106/SSD1306 configurable).
 
 ## LCD vs OLED: Key Differences
 - **Navigation**: On OLED, one detent = one page (HW-040 module, buttons + OLED integrated); on LCD, 2 detents = one page (EC11 module only).

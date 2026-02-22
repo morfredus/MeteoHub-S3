@@ -64,7 +64,7 @@ Toutes les routes API sont déclarées uniquement dans la méthode `_setupApi()`
 
 # Guide utilisateur
 
-Version minimale valide : 1.0.145
+Version minimale valide : 1.0.154
 
 ## Objectif
 Apprendre à utiliser le dashboard une fois le firmware démarré.
