@@ -131,6 +131,8 @@ void WebManager::begin(HistoryManager& history, SdManager& sd, ForecastManager& 
     _sd = &sd;
     _forecast = &forecast;
     _sensors = &sensors;
+    _ota_upload_error = false;
+    _ota_restart_at_ms = 0;
     // LittleFS n'est plus requis ici pour les pages web (géré par HistoryManager pour les données)
     // Configuration mDNS
     if (MDNS.begin(WEB_MDNS_HOSTNAME)) {
