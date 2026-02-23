@@ -25,7 +25,7 @@
 // OLED controller selection (manual)
 #define OLED_CTRL_SH1106 1
 #define OLED_CTRL_SSD1306 2
-#define OLED_CONTROLLER OLED_CTRL_SH1106
+#define OLED_CONTROLLER OLED_CTRL_SSD1306
 
 // OLED I2C address (commonly 0x3C or 0x3D)
 #define OLED_I2C_ADDRESS 0x3C
