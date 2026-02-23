@@ -7,7 +7,7 @@
 #include "managers/history_manager.h"
 #include "managers/sd_manager.h"
 #include "modules/encoder.h"
-
+ 
 enum Page {
     PAGE_WEATHER,
     PAGE_FORECAST,

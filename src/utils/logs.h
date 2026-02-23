@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 
+
 #define LOG_BUFFER_SIZE 10
 
 void addLog(const std::string& msg);

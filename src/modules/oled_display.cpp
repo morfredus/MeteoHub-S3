@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <memory>
 #include <string>
-
 #include "oled_display.h"
 #include "board_config.h"
 #include "config.h"

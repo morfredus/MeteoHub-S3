@@ -9,7 +9,7 @@ include/wifi-config.h
 .copilot.instructions.md
 .cursorrules
 
-# Fichiers divers (a ignorer si leur contenu n'est pas a partager)
+# Fichiers divers (a ignorer si leur contenu n'est pas a partager) 
 
 include/web_pages.h
 

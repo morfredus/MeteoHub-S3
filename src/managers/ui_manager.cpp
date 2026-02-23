@@ -19,7 +19,7 @@
 #define C_GREY      0x8410
 #define C_DARKGREY  0x4208
 #endif
-
+ 
 void UiManager::begin(DisplayInterface& display, WifiManager& wifiMgr, SensorManager& sensorMgr, ForecastManager& forecastMgr, HistoryManager& historyMgr, SdManager& sdMgr) {
     d = &display;
     wifi = &wifiMgr;

@@ -8,7 +8,7 @@
 #include "managers/history_manager.h"
 #include "managers/forecast_manager.h"
 #include "modules/sensors.h"
-
+ 
 class WebManager {
 public:
     WebManager();

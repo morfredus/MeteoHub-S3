@@ -6,6 +6,7 @@
 #include "config.h"
 #include "managers/sd_manager.h"
 
+
 std::string getSystemInfoJson(SdManager* sd) {
     DynamicJsonDocument doc(1024);
 
