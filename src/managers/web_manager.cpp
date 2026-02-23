@@ -5,8 +5,10 @@
 #include <Update.h>
 #include <cctype>
 #include <string>
+#include <Arduino.h>
 #include "utils/logs.h"
 #include "utils/system_info.h"
+#include "utils/cooperative_yield.h"
 // Inclusion du fichier généré automatiquement par le script Python
 #include "web_pages.h"
  
@@ -372,6 +374,7 @@ void WebManager::_setupApi() {
                     sum_p += full_history[idx].p;
                     count++;
                     idx++;
+                    COOPERATIVE_YIELD_EVERY(idx, 64);
                 }
 
                 if (count == 0) {
@@ -402,6 +405,8 @@ void WebManager::_setupApi() {
             }
 
             for (size_t i = start_index; i < full_history.size(); i += step) {
+                COOPERATIVE_YIELD_EVERY(i - start_index, 64);
+
                 if (!first) {
                     response->print(",");
                 }
@@ -509,7 +514,10 @@ void WebManager::_setupApi() {
 
         File file = root.openNextFile();
         bool first = true;
+        size_t file_count = 0;
         while(file){
+            COOPERATIVE_YIELD_EVERY(file_count, 32);
+
             if(!first) response->print(",");
             response->print("{\"name\":\"");
             // Assurer que le nom commence par un /
@@ -522,6 +530,7 @@ void WebManager::_setupApi() {
             response->print("}");
             first = false;
             file = root.openNextFile();
+            file_count++;
         }
         response->print("]");
         request->send(response);
