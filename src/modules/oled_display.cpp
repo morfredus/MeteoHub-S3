@@ -6,7 +6,7 @@
 #include <memory>
 #include <string>
 
-#include "sh1106_display.h"
+#include "oled_display.h"
 #include "board_config.h"
 #include "config.h"
 #include "utils/logs.h"
@@ -50,16 +50,16 @@ void OledDisplay::show() {
 void OledDisplay::text(int x, int y, const std::string& s) {
     if (!d) return;
     d->setFont(u8g2_font_6x10_tf);
-    d->drawStr(x, y + 10, s.c_str());
+    d->drawUTF8(x, y + 10, s.c_str());
 }
 
 void OledDisplay::center(int y, const std::string& s) {
     if (!d) return;
     d->setFont(u8g2_font_6x10_tf);
-    int w = d->getStrWidth(s.c_str());
+    int w = d->getUTF8Width(s.c_str());
     int x = (128 - w) / 2;
     if (x < 0) x = 0;
-    d->drawStr(x, y + 10, s.c_str());
+    d->drawUTF8(x, y + 10, s.c_str());
 }
 
 void OledDisplay::bar(int x, int y, int w, int h, int value, int max) {

@@ -53,3 +53,6 @@ Dans `include/board_config.h`.
 
 ## Que faire si le téléversement échoue plusieurs fois ?
 Essayez un autre câble USB, vérifiez le port série/COM, fermez le moniteur série, puis relancez le téléversement.
+
+## L'OLED gère-t-il les accents ?
+Oui. Depuis la version 1.0.154, le backend OLED (`OledDisplay`) utilise le rendu UTF-8 pour tous les textes, y compris les accents français et les symboles spéciaux. Le module d'affichage porte désormais le nom neutre `OledDisplay` pour refléter sa compatibilité avec SH1106 et SSD1306.

@@ -61,3 +61,7 @@ Likely hardware/power issue:
 3. Upload and monitor startup logs.
 4. Verify pages and status indicators.
 5. Verify Web UI, logs, and history behavior.
+
+## OLED UTF-8 Rendering
+
+From version 1.0.154, the OLED backend (`OledDisplay`) supports UTF-8 rendering for all text, including accented characters and special symbols. The display module is now named `OledDisplay` to reflect its neutrality and compatibility with both SH1106 and SSD1306 controllers.

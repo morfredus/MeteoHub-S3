@@ -59,3 +59,7 @@ Le firmware prend en charge à la fois l’OLED SH1106 et le LCD ST7789. Le mapp
 ## Checklist de validation
 - OLED : écran de boot, encodeur, boutons, NeoPixel, valeurs capteurs
 - LCD : écran TFT, encodeur, boutons, valeurs capteurs
+
+## Rendu UTF-8 OLED
+
+Depuis la version 1.0.154, le backend OLED (`OledDisplay`) prend en charge le rendu UTF-8 pour tous les textes, y compris les caractères accentués et symboles spéciaux. Le module d'affichage porte désormais le nom neutre `OledDisplay` pour refléter sa compatibilité avec SH1106 et SSD1306.
