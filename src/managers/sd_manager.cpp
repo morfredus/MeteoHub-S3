@@ -18,6 +18,9 @@
 #ifndef SD_MOSI_PIN
 #define SD_MOSI_PIN 11
 #endif
+#ifndef SD_OFF_PIN
+#define SD_OFF_PIN -1
+#endif
 
 // Déclarations des fonctions internes de la librairie SD (sd_diskio.cpp)
 // Nécessaire pour initialiser la carte sans la monter (ce qui échoue si non formatée)
@@ -31,9 +34,37 @@ constexpr int SD_INIT_FREQUENCIES[] = {8000000, 4000000, 1000000, 400000};
 constexpr int SD_FORMAT_FREQUENCIES[] = {4000000, 1000000, 400000};
 constexpr unsigned long SD_RECONNECT_COOLDOWN_DEFAULT_MS = 15000;
 constexpr unsigned long SD_RECONNECT_COOLDOWN_MAX_MS = 120000;
+constexpr int SD_POWER_OFF_DELAY_MS = 30;
+constexpr int SD_POWER_ON_STABILIZE_MS = 60;
 
 bool mountSdAtFrequency(int frequency_hz) {
     return SD.begin(SD_CS_PIN, SPI, frequency_hz);
+}
+
+
+bool hasSdOffControl() {
+    return SD_OFF_PIN >= 0;
+}
+
+void setSdModulePower(bool power_on) {
+    if (!hasSdOffControl()) {
+        return;
+    }
+
+    pinMode(SD_OFF_PIN, OUTPUT);
+    // uPesy: HIGH = ON, LOW = OFF
+    digitalWrite(SD_OFF_PIN, power_on ? HIGH : LOW);
+}
+
+void powerCycleSdModuleIfSupported() {
+    if (!hasSdOffControl()) {
+        return;
+    }
+
+    setSdModulePower(false);
+    delay(SD_POWER_OFF_DELAY_MS);
+    setSdModulePower(true);
+    delay(SD_POWER_ON_STABILIZE_MS);
 }
 
 void prepareSdSpiBus() {
@@ -61,6 +92,12 @@ void logSdPinMapping() {
         " MISO=" + std::to_string(SD_MISO_PIN) +
         " MOSI=" + std::to_string(SD_MOSI_PIN)
     );
+
+    if (hasSdOffControl()) {
+        LOG_INFO("SD OFF pin configured on GPIO " + std::to_string(SD_OFF_PIN) + " (HIGH=ON, LOW=OFF)");
+    } else {
+        LOG_INFO("SD OFF pin not configured (module always ON)");
+    }
 }
 
 bool formatSdOnce(int frequency_hz) {
@@ -105,11 +142,13 @@ bool SdManager::mountWithRetries() {
     delay(10);
 
     logSdPinMapping();
+    powerCycleSdModuleIfSupported();
     prepareSdSpiBus();
 
     for (int i = 0; i < SD_INIT_RETRY_COUNT; i++) {
         int frequency_hz = SD_INIT_FREQUENCIES[i];
         SD.end();
+        powerCycleSdModuleIfSupported();
         prepareSdSpiBus();
 
         if (mountSdAtFrequency(frequency_hz)) {
@@ -138,6 +177,8 @@ bool SdManager::mountWithRetries() {
 
 bool SdManager::begin() {
     LOG_INFO("Init SD Card...");
+
+    setSdModulePower(true);
 
     SD.end();
     _available = false;
