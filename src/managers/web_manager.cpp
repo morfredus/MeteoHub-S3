@@ -1,5 +1,6 @@
 #include "managers/web_manager.h"
 #include "managers/forecast_manager.h"
+#include <Arduino.h>
 #include <ESPmDNS.h>
 #include <LittleFS.h>
 #include <Update.h>
@@ -14,6 +15,15 @@
 #ifndef WEB_MDNS_HOSTNAME
 #define WEB_MDNS_HOSTNAME "meteohub"
 #endif
+
+namespace {
+constexpr int HISTORY_WINDOW_MAX_S = 7 * 24 * 3600;
+constexpr int HISTORY_INTERVAL_MIN_S = 10;
+constexpr int HISTORY_MAX_POINTS_DEFAULT = 720;
+constexpr int HISTORY_MAX_POINTS_HARD = 1440;
+constexpr int HISTORY_MAX_RESPONSE_POINTS = 1200;
+constexpr int FILES_LIST_MAX_ENTRIES = 400;
+}
 
 static std::string toLowerCopy(const std::string& text) {
     std::string lower = text;
@@ -312,19 +322,33 @@ void WebManager::_setupApi() {
         int window_s = 0;
         if (request->hasParam("window")) {
             window_s = request->getParam("window")->value().toInt();
-            if (window_s < 0) window_s = 0;
+            if (window_s < 0) {
+                window_s = 0;
+            }
+            if (window_s > HISTORY_WINDOW_MAX_S) {
+                window_s = HISTORY_WINDOW_MAX_S;
+            }
         }
 
         int interval_s = 0;
         if (request->hasParam("interval")) {
             interval_s = request->getParam("interval")->value().toInt();
-            if (interval_s < 0) interval_s = 0;
+            if (interval_s < 0) {
+                interval_s = 0;
+            } else if (interval_s > 0 && interval_s < HISTORY_INTERVAL_MIN_S) {
+                interval_s = HISTORY_INTERVAL_MIN_S;
+            }
         }
 
-        int max_points = 0;
+        int max_points = HISTORY_MAX_POINTS_DEFAULT;
         if (request->hasParam("points")) {
             max_points = request->getParam("points")->value().toInt();
-            if (max_points < 0) max_points = 0;
+            if (max_points <= 0) {
+                max_points = HISTORY_MAX_POINTS_DEFAULT;
+            }
+        }
+        if (max_points > HISTORY_MAX_POINTS_HARD) {
+            max_points = HISTORY_MAX_POINTS_HARD;
         }
 
         size_t start_index = 0;
@@ -333,8 +357,13 @@ void WebManager::_setupApi() {
             const long min_ts = latest_ts - static_cast<long>(window_s);
 
             size_t i = full_history.size();
+            size_t guard = 0;
             while (i > 0 && static_cast<long>(full_history[i - 1].timestamp) >= min_ts) {
                 i--;
+                guard++;
+                if ((guard % 128U) == 0U) {
+                    delay(0);
+                }
             }
             start_index = i;
         }
@@ -350,14 +379,25 @@ void WebManager::_setupApi() {
             const long window_start_ts = (window_s > 0) ? (latest_ts - static_cast<long>(window_s)) : static_cast<long>(full_history[start_index].timestamp);
 
             size_t idx = start_index;
+            int produced_points = 0;
+            int bucket_guard = 0;
             for (long bucket_start = window_start_ts; bucket_start <= latest_ts; bucket_start += interval_s) {
+                bucket_guard++;
+                if ((bucket_guard % 64) == 0) {
+                    delay(0);
+                }
                 const long bucket_end = bucket_start + interval_s;
                 double sum_t = 0.0;
                 double sum_h = 0.0;
                 double sum_p = 0.0;
                 int count = 0;
 
+                int sample_guard = 0;
                 while (idx < full_history.size()) {
+                    sample_guard++;
+                    if ((sample_guard % 128) == 0) {
+                        delay(0);
+                    }
                     const long ts = static_cast<long>(full_history[idx].timestamp);
                     if (ts < bucket_start) {
                         idx++;
@@ -394,14 +434,22 @@ void WebManager::_setupApi() {
                     sum_p / count
                 );
                 response->print(buffer);
+                produced_points++;
+                if (produced_points >= HISTORY_MAX_RESPONSE_POINTS) {
+                    break;
+                }
             }
         } else {
             size_t step = 1;
-            if (max_points > 0 && available_points > static_cast<size_t>(max_points)) {
+            if (available_points > static_cast<size_t>(max_points)) {
                 step = (available_points + static_cast<size_t>(max_points) - 1) / static_cast<size_t>(max_points);
             }
 
+            int produced_points = 0;
             for (size_t i = start_index; i < full_history.size(); i += step) {
+                if ((produced_points % 64) == 0) {
+                    delay(0);
+                }
                 if (!first) {
                     response->print(",");
                 }
@@ -419,6 +467,10 @@ void WebManager::_setupApi() {
                     record.p
                 );
                 response->print(buffer);
+                produced_points++;
+                if (produced_points >= HISTORY_MAX_RESPONSE_POINTS) {
+                    break;
+                }
             }
         }
 
@@ -509,7 +561,15 @@ void WebManager::_setupApi() {
 
         File file = root.openNextFile();
         bool first = true;
+        int listed_entries = 0;
         while(file){
+            if ((listed_entries % 32) == 0) {
+                delay(0);
+            }
+            if (listed_entries >= FILES_LIST_MAX_ENTRIES) {
+                LOG_WARNING("Web files list truncated to " + std::to_string(FILES_LIST_MAX_ENTRIES) + " entries to protect watchdog");
+                break;
+            }
             if(!first) response->print(",");
             response->print("{\"name\":\"");
             // Assurer que le nom commence par un /
@@ -521,6 +581,7 @@ void WebManager::_setupApi() {
             response->print(file.isDirectory() ? "true" : "false");
             response->print("}");
             first = false;
+            listed_entries++;
             file = root.openNextFile();
         }
         response->print("]");

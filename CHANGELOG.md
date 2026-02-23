@@ -1,7 +1,26 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.154
+Minimum valid version: 1.0.158
+
+## Version 1.0.158
+1. **Fix (Web UI Watchdog)**: Hardened `/api/history` processing by clamping request parameters, limiting response point count, and adding cooperative yields during long iterations to prevent `async_tcp` watchdog resets.
+2. **Fix (Files API Watchdog)**: Added cooperative yields and a safe listing cap in `/api/files/list` to avoid long blocking loops on large directories.
+3. **Stability (Async Web)**: Preserved existing API outputs/behavior while reducing CPU monopolization in async handlers.
+
+## Version 1.0.157
+1. **Refactor (File Naming Consistency)**: Renamed display module files from `sh1106_display.*` to `oled_display.*` for coherent OLED-focused naming.
+2. **Refactor (Code References)**: Updated includes and references in runtime/page code to use `oled_display.h` while preserving SH1106/SSD1306 backend-specific logic and constants.
+3. **Documentation (Architecture Naming)**: Updated architecture docs to reference `oled_display` naming.
+
+## Version 1.0.156
+1. **Refactor (Display Stack Cleanup)**: Removed all LCD/ST7789 source modules and build environment, keeping only the OLED rendering path (SH1106/SSD1306 via U8g2).
+2. **Refactor (Runtime/UI Simplification)**: Simplified `main.cpp` and `UiManager` by removing LCD conditional branches while preserving existing weather, forecast, logs, system, SD, OTA, and web behaviors on OLED.
+3. **Documentation (OLED-only Baseline)**: Updated EN/FR documentation set to reflect the OLED-only firmware baseline and synchronized minimum valid version markers.
+
+## Version 1.0.155
+- **Fix (OLED UTF-8 Rendering)**: Switched OLED text rendering to U8g2 UTF-8 APIs to display French accented characters correctly.
+- **UI (OLED Weather Line)**: Added weather-description compression (e.g., `partiellement` -> `part.`) and tighter fit logic so the `Ciel:` line stays readable on 128x64 displays.
 
 ## Version 1.0.154
 - **Documentation (Full Refresh)**: Updated all user-facing EN/FR documents to the current OTA/OLED/SD baseline and synchronized minimum valid version markers.
