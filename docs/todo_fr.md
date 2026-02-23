@@ -1,6 +1,6 @@
 # Feuille de route TODO OLED et UX
 
-Version minimale valide : 1.0.159
+Version minimale valide : 1.0.160
 
 ## TODO code
 - [x] Renommer `Sh1106Display` vers un nom neutre (`OledDisplay`) pour refléter correctement le backend U8g2 actuel qui prend en charge SH1106 et SSD1306.
@@ -8,8 +8,8 @@ Version minimale valide : 1.0.159
 - [ ] Ajouter une petite API de diagnostic d’affichage (FPS courant, durée du dernier rendu, compteur d’erreurs I2C) exposée dans `/api/system`.
 - [ ] Ajouter un flag de build optionnel pour compiler uniquement un backend contrôleur OLED (`SH1106` ou `SSD1306`) afin de réduire la taille binaire.
 - [ ] Ajouter des tests unitaires côté hôte pour les fonctions utilitaires pures de `pages_oled.cpp` (formatage, génération des titres, traduction des alertes).
-- [ ] Remplacer les attentes UI bloquantes (`delay(1000/2000)`) dans les parcours OLED par une machine d’état non bloquante basée sur `millis()`.
-- [ ] Introduire un helper/macro de yield coopératif partagé (`delay(0)` toutes N itérations) et l’utiliser de manière homogène dans les longues boucles historique/fichiers.
+- [x] Remplacer les attentes UI bloquantes (`delay(1000/2000)`) dans les parcours OLED par une machine d’état non bloquante basée sur `millis()`.
+- [x] Introduire un helper/macro de yield coopératif partagé (`delay(0)` toutes N itérations) et l’utiliser de manière homogène dans les longues boucles historique/fichiers.
 - [ ] Réduire les allocations fréquentes de `std::string` dans les chemins de rendu OLED en utilisant des buffers de formatage réutilisables sur les pages critiques.
 - [ ] Ajouter des politiques de rafraîchissement intelligentes selon le type de page (rafraîchir seulement si changement sur pages statiques, plus rapide sur pages live).
 

@@ -8,6 +8,7 @@
 #include <Arduino.h>
 #include "utils/logs.h"
 #include "utils/system_info.h"
+#include "utils/cooperative_yield.h"
 // Inclusion du fichier généré automatiquement par le script Python
 #include "web_pages.h"
  
@@ -373,9 +374,7 @@ void WebManager::_setupApi() {
                     sum_p += full_history[idx].p;
                     count++;
                     idx++;
-                    if ((idx & 0x3F) == 0) {
-                        delay(0);
-                    }
+                    COOPERATIVE_YIELD_EVERY(idx, 64);
                 }
 
                 if (count == 0) {
@@ -406,9 +405,7 @@ void WebManager::_setupApi() {
             }
 
             for (size_t i = start_index; i < full_history.size(); i += step) {
-                if (((i - start_index) & 0x3F) == 0) {
-                    delay(0);
-                }
+                COOPERATIVE_YIELD_EVERY(i - start_index, 64);
 
                 if (!first) {
                     response->print(",");
@@ -519,9 +516,7 @@ void WebManager::_setupApi() {
         bool first = true;
         size_t file_count = 0;
         while(file){
-            if ((file_count & 0x1F) == 0) {
-                delay(0);
-            }
+            COOPERATIVE_YIELD_EVERY(file_count, 32);
 
             if(!first) response->print(",");
             response->print("{\"name\":\"");

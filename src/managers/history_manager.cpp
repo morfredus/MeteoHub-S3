@@ -16,9 +16,7 @@ MeteoTrend HistoryManager::getTrend() const {
     bool found_1h = false, found_24h = false;
     size_t trend_iteration = 0;
     for (auto it = _recentHistory.rbegin(); it != _recentHistory.rend(); ++it) {
-        if ((trend_iteration & 0xFF) == 0) {
-            delay(0);
-        }
+        COOPERATIVE_YIELD_EVERY(trend_iteration, 256);
         trend_iteration++;
 
         time_t dt = now - it->timestamp;
@@ -66,6 +64,7 @@ MeteoTrend HistoryManager::getTrend() const {
 #include <time.h>
 #include <inttypes.h>
 #include <Arduino.h>
+#include "../utils/cooperative_yield.h"
 
 #define HISTORY_FILE "/history/recent.dat"
 #define MAX_RECENT_RECORDS 1440 // 24h à 1 point/min
@@ -123,9 +122,7 @@ Stats24h HistoryManager::getRecentStats() const {
     stats.count = _recentHistory.size();
     size_t stats_iteration = 0;
     for (const auto& r : _recentHistory) {
-        if ((stats_iteration & 0xFF) == 0) {
-            delay(0);
-        }
+        COOPERATIVE_YIELD_EVERY(stats_iteration, 256);
         stats_iteration++;
 
         stats.temp.add(r.t);
@@ -148,9 +145,7 @@ void HistoryManager::loadRecent() {
         if (f.read((uint8_t*)&r, sizeof(HistoryRecord)) == sizeof(HistoryRecord)) {
             _recentHistory.push_back(r);
             loaded_records++;
-            if ((loaded_records & 0xFF) == 0) {
-                delay(0);
-            }
+            COOPERATIVE_YIELD_EVERY(loaded_records, 256);
         }
     }
     f.close();
