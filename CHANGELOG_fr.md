@@ -1,7 +1,12 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.156
+Version minimale valide : 1.0.157
+
+## Version 1.0.157
+1. **Refactorisation (Cohérence nommage fichiers)** : Renommage des fichiers du module d'affichage de `sh1106_display.*` vers `oled_display.*` pour un nommage cohérent orienté OLED.
+2. **Refactorisation (Références code)** : Mise à jour des includes et références runtime/pages vers `oled_display.h` en conservant la logique et les constantes spécifiques SH1106/SSD1306.
+3. **Documentation (Nommage architecture)** : Mise à jour des documents d'architecture pour refléter le nom `oled_display`.
 
 ## Version 1.0.156
 1. **Refactorisation (Nettoyage pile affichage)** : Suppression de tous les modules sources LCD/ST7789 et de l’environnement de build LCD, en conservant uniquement le chemin OLED (SH1106/SSD1306 via U8g2).

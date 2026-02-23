@@ -1,6 +1,6 @@
 # MeteoHub S3
 
-Minimum valid version: 1.0.156
+Minimum valid version: 1.0.157
 
 ## Full Documentation
 - [Documentation Index](docs/index.md)

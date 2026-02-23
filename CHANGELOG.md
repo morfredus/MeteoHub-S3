@@ -1,7 +1,12 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.156
+Minimum valid version: 1.0.157
+
+## Version 1.0.157
+1. **Refactor (File Naming Consistency)**: Renamed display module files from `sh1106_display.*` to `oled_display.*` for coherent OLED-focused naming.
+2. **Refactor (Code References)**: Updated includes and references in runtime/page code to use `oled_display.h` while preserving SH1106/SSD1306 backend-specific logic and constants.
+3. **Documentation (Architecture Naming)**: Updated architecture docs to reference `oled_display` naming.
 
 ## Version 1.0.156
 1. **Refactor (Display Stack Cleanup)**: Removed all LCD/ST7789 source modules and build environment, keeping only the OLED rendering path (SH1106/SSD1306 via U8g2).

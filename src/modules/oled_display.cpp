@@ -6,7 +6,7 @@
 #include <memory>
 #include <string>
 
-#include "sh1106_display.h"
+#include "oled_display.h"
 #include "board_config.h"
 #include "config.h"
 #include "utils/logs.h"

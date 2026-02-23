@@ -14,7 +14,7 @@
 #include "modules/neopixel_status.h"
 #include "modules/sensors.h"
 #include "config.h"
-#include "modules/sh1106_display.h"
+#include "modules/oled_display.h"
 #include "modules/pages_oled.h"
 #include "utils/logs.h"
 
