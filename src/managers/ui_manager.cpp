@@ -3,22 +3,7 @@
 #include <Arduino.h>
 #include "board_config.h"
 #include "config.h"
-#if defined(ESP32_S3_OLED)
 #include "modules/pages_oled.h"
-#endif
-#if defined(ESP32_S3_LCD)
-#include "modules/pages_st7789.h"
-#define C_BLACK     0x0000
-#define C_WHITE     0xFFFF
-#define C_RED       0xF800
-#define C_GREEN     0x07E0
-#define C_BLUE      0x001F
-#define C_CYAN      0x07FF
-#define C_MAGENTA   0xF81F
-#define C_YELLOW    0xFFE0
-#define C_GREY      0x8410
-#define C_DARKGREY  0x4208
-#endif
 
 void UiManager::begin(DisplayInterface& display, WifiManager& wifiMgr, SensorManager& sensorMgr, ForecastManager& forecastMgr, HistoryManager& historyMgr, SdManager& sdMgr) {
     d = &display;
@@ -47,25 +32,20 @@ void UiManager::update() {
     if (diff != 0) {
         enc.clearQueue();
         
-        // La logique de l'encodeur est inversée sur l'OLED par rapport au LCD.
-        // Nous normalisons ici : une rotation horaire donne toujours un diff positif.
-#if defined(ESP32_S3_OLED)
+        // Normalisation du sens sur OLED : rotation horaire = diff positif.
         diff = -diff;
-#endif
 
         if (menuMode) {
             menuIndex -= diff; // Inversion du sens pour le menu (horaire = monter)
             if (menuIndex < 0) menuIndex = MENU_COUNT - 1;
             if (menuIndex >= MENU_COUNT) menuIndex = 0;
 
-            #if defined(ESP32_S3_OLED)
             const int MENU_VISIBLE_ITEMS = 4;
             if (menuIndex < menuScrollOffset) {
                 menuScrollOffset = menuIndex;
             } else if (menuIndex >= menuScrollOffset + MENU_VISIBLE_ITEMS) {
                 menuScrollOffset = menuIndex - MENU_VISIBLE_ITEMS + 1;
             }
-            #endif
         } else {
             page += diff;
             if (page < 0) page = PAGE_COUNT - 1;
@@ -111,11 +91,7 @@ void UiManager::handleButtons() {
         if (btnEncoder || btnConfirm) {
             ignoreButtonsUntilMs = millis() + BUTTON_GUARD_MS;
             d->clear();
-#if defined(ESP32_S3_LCD)
-            int h = LCD_HEIGHT;
-#else
             int h = 64;
-#endif
             d->center(h / 2 - 10, "Formatage SD...");
             d->center(h / 2 + 10, "Veuillez patienter.");
             d->show();
@@ -150,11 +126,7 @@ void UiManager::handleButtons() {
             clearLogs();
             confirmClearLogsMode = false;
             d->clear();
-#if defined(ESP32_S3_LCD)
-            d->center(LCD_HEIGHT / 2, "Logs effaces !", C_GREEN, 1);
-#else
             d->center(32, "Logs effaces !");
-#endif
             d->show();
             delay(1000);
             drawPage();
@@ -172,11 +144,7 @@ void UiManager::handleButtons() {
             history->clearHistory();
             confirmClearHistMode = false;
             d->clear();
-#if defined(ESP32_S3_LCD)
-            d->center(LCD_HEIGHT / 2, "Historique efface !", C_GREEN, 1);
-#else
             d->center(32, "Historique efface !");
-#endif
             d->show();
             delay(1000);
             drawPage();
@@ -276,30 +244,18 @@ void UiManager::drawPage() {
         std::string title = "CONFIRMER";
         std::string msg = confirmFormatMode ? "Formater SD ?" : (confirmClearLogsMode ? "Effacer Logs ?" : "Effacer Hist ?");
         
-#if defined(ESP32_S3_OLED)
         d->center(10, title);
         d->center(30, msg);
         d->text(0, 50, "Clic=OK, Back=Non");
-#else
-        d->center(60, title, C_RED, 2);
-        d->center(120, msg, C_WHITE, 1);
-        d->center(180, "Clic = OK / Back = Non", C_GREY, 1);
-#endif
         d->show();
         return;
     }
 
     if (confirmFormatMode) {
         d->clear();
-#if defined(ESP32_S3_OLED)
         d->center(10, "CONFIRMER");
         d->center(30, "Formatage SD ?");
         d->text(0, 50, "Clic=OK, Back=Annuler");
-#else
-        d->center(60, "CONFIRMER", C_RED, 2);
-        d->center(120, "Formater la carte SD ?", C_WHITE, 1);
-        d->center(180, "Clic = OK / Back = Annuler", C_GREY, 1);
-#endif
         d->show();
         return;
     }
@@ -307,8 +263,7 @@ void UiManager::drawPage() {
     if (menuMode) {
         // drawMenu(); // Simplification pour l'exemple
         d->clear();
-#if defined(ESP32_S3_OLED)
-        // Layout compact pour OLED 128x64
+        // Layout compact OLED 128x64
         const char* itemNames[] = { "Retour", "Reboot", "Clear Logs", "Clear Hist", "Format SD" };
         const int MENU_VISIBLE_ITEMS = 4;
 
@@ -322,21 +277,11 @@ void UiManager::drawPage() {
             line += itemNames[itemIndex];
             d->text(0, 16 + i * 12, line);
         }
-#else
-        // Layout aere pour LCD
-        d->center(20, "MENU");
-        d->text(20, 60, (menuIndex == MENU_EXIT) ? "> Retour" : "  Retour");
-        d->text(20, 90, (menuIndex == MENU_REBOOT) ? "> Reboot" : "  Reboot");
-        d->text(20, 120, (menuIndex == MENU_CLEAR_LOGS) ? "> Clear Logs" : "  Clear Logs");
-        d->text(20, 150, (menuIndex == MENU_CLEAR_HISTORY) ? "> Clear Hist" : "  Clear Hist");
-        d->text(20, 180, (menuIndex == MENU_FORMAT_SD) ? "> Format SD" : "  Format SD", sd->isAvailable() ? C_WHITE : C_DARKGREY);
-#endif
         d->show();
         return;
     }
 
     int pCount = PAGE_COUNT;
-#if defined(ESP32_S3_OLED)
     switch(page) {
         case PAGE_WEATHER: pageWeather_oled(*d, *sensors, *forecast, page + 1, pCount); break;
         case PAGE_FORECAST: pageForecast_oled(*d, *forecast, forecastViewIndex, page + 1, pCount); break;
@@ -347,17 +292,4 @@ void UiManager::drawPage() {
         case PAGE_LOGS: pageLogs_oled(*d, page + 1, pCount, logScrollLine); break;
         case PAGE_SYSTEM: pageSystem_oled(*d, page + 1, pCount); break;
     }
-#elif defined(ESP32_S3_LCD)
-    switch(page) {
-        case PAGE_WEATHER: pageWeather_st7789(*d, *sensors, page + 1, pCount); break;
-        case PAGE_FORECAST: pageForecast_st7789(*d, *forecast, forecastViewIndex, page + 1, pCount); break;
-        case PAGE_GRAPH_TEMP: pageGraph_st7789(*d, *history, 0, page + 1, pCount); break;
-        case PAGE_GRAPH_HUM: pageGraph_st7789(*d, *history, 1, page + 1, pCount); break;
-        case PAGE_GRAPH_PRES: pageGraph_st7789(*d, *history, 2, page + 1, pCount); break;
-        case PAGE_NETWORK: pageNetwork_st7789(*d, *wifi, page + 1, pCount); break;
-        // Inversion Logs/System pour LCD (voir Changelog v1.0.29)
-        case PAGE_LOGS: pageSystem_st7789(*d, page + 1, pCount); break;
-        case PAGE_SYSTEM: pageLogs_st7789(*d, page + 1, pCount); break;
-    }
-#endif
 }
