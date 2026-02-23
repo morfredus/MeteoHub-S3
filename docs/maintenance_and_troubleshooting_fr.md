@@ -1,6 +1,6 @@
 # Maintenance et dépannage
 
-Version minimale valide : 1.0.154
+Version minimale valide : 1.0.155
 
 ## Objectif
 Fournir des étapes pratiques de diagnostic et de reprise quand le système ne se comporte pas comme prévu.
@@ -61,3 +61,7 @@ Cause probable : câblage/alimentation.
 3. Téléverser et observer les logs de démarrage.
 4. Vérifier les pages et indicateurs.
 5. Vérifier l’interface Web, les logs et l’historique.
+
+## Rendu UTF-8 OLED
+
+Depuis la version 1.0.154, le backend OLED (`OledDisplay`) prend en charge le rendu UTF-8 pour tous les textes, y compris les caractères accentués et symboles spéciaux. Le module d'affichage porte désormais le nom neutre `OledDisplay` pour refléter sa compatibilité avec SH1106 et SSD1306.

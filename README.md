@@ -1,8 +1,6 @@
-
-
 # MeteoHub S3
 
-Minimum valid version: 1.0.154
+> **Minimum valid version: 1.0.155**
 
 ## Full Documentation
 - [Documentation Index](docs/index.md)
@@ -90,9 +88,12 @@ The MeteoHub S3 features a comprehensive web interface accessible from any brows
 - **System Logs**: Accessible via the scroll icon 4dc at the bottom of the page. Displays real-time system events.
 - **OTA Update page**: Accessible from the web menu (`/ota.html`) with firmware upload, inline status validation, progress bar, and automatic return to dashboard after successful update.
 
-## OLED library choice
-- A documented evaluation of a potential migration to **U8g2** is available here: `docs/decisions/oled-library-evaluation.md`.
-- Current state: OLED rendering is now based on U8g2 (SH1106/SSD1306 configurable).
+## OLED UTF-8 Support and Neutral Naming
+
+From version 1.0.155, the OLED backend (`OledDisplay`) supports UTF-8 rendering for all text, including accented characters and special symbols. All OLED text uses `drawUTF8`, ensuring correct display of French and other international characters. The display module is now named `OledDisplay` to reflect its neutrality and compatibility with both SH1106 and SSD1306 controllers.
+
+- **Controller selection**: Choose SH1106 or SSD1306 in `include/config.h`.
+- **No runtime auto-detection**: The controller is selected at build time for reliability.
 
 ## LCD vs OLED: Key Differences
 - **Navigation**: On OLED, one detent = one page (HW-040 module, buttons + OLED integrated); on LCD, 2 detents = one page (EC11 module only).

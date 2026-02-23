@@ -1,12 +1,10 @@
-
-
 # MeteoHub S3
 
-Version minimale valide : 1.0.154
+> **Version minimale valide : 1.0.155**
 
 ## Documentation complète
 - [Index de la documentation](docs/index_fr.md)
-
+ 
 ## Présentation
 MeteoHub S3 est un projet PlatformIO pour ESP32-S3 qui affiche les données des capteurs locaux, les prévisions météo, les logs et l’état système sur un écran couleur LCD (TFT ST7789) ou un tableau de bord OLED SH1106. L’environnement d’affichage est choisi à la compilation (`esp32-s3-oled` ou `esp32-s3-lcd`) et l’interface/navigation s’adaptent en conséquence.
 

@@ -1,6 +1,6 @@
 # OLED library decision: migration completed to U8g2
 
-Minimum valid version: 1.0.154
+Minimum valid version: 1.0.155
 
 ## Status
 This decision is now **closed**: OLED rendering uses **U8g2** as the active backend.

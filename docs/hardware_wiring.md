@@ -1,6 +1,6 @@
 # Hardware Wiring
 
-Minimum valid version: 1.0.154
+Minimum valid version: 1.0.155
 
 ## Overview
 This page explains the exact GPIO mapping used by the firmware.
@@ -46,6 +46,10 @@ The firmware supports both SH1106 OLED and ST7789 LCD. Pin mapping and button la
 - I2C sensors:
 	- `I2C_SDA` = GPIO 15
 	- `I2C_SCL` = GPIO 16
+
+## OLED UTF-8 Rendering
+
+From version 1.0.154, the OLED backend (`OledDisplay`) supports UTF-8 rendering for all text, including accented characters and special symbols. The display module is now named `OledDisplay` to reflect its neutrality and compatibility with both SH1106 and SSD1306 controllers.
 
 ## Electrical notes
 - Connect board `3V3` and `GND` correctly.

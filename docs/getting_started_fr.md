@@ -1,6 +1,6 @@
 # Prise en main
 
-Version minimale valide : 1.0.154
+Version minimale valide : 1.0.155
 
 ## Objectif
 Ce guide aide un débutant à démarrer MeteoHub S3 depuis zéro jusqu’au premier upload réussi.
@@ -90,6 +90,10 @@ Après redémarrage, l’écran OLED doit afficher les phases de boot :
 > 5. L’appareil va effacer la mémoire et redémarrer proprement (toutes les données historiques seront perdues).
 
 Cette procédure ne nécessite aucun outil ni logiciel, et permet à tout utilisateur de repartir sur une base saine en cas de problème.
+
+## Rendu UTF-8 OLED
+
+Depuis la version 1.0.154, tous les textes OLED utilisent le rendu UTF-8 via `drawUTF8`, ce qui permet d'afficher correctement les accents et symboles spéciaux. Le module d'affichage porte désormais le nom neutre `OledDisplay` et prend en charge SH1106 et SSD1306.
 
 ## Étape suivante
 Continuer avec [Câblage matériel](hardware_wiring_fr.md) et [Configuration](configuration_fr.md).

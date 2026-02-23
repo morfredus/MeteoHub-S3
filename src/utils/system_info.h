@@ -10,4 +10,7 @@ class SdManager;
 // Function to get a JSON string with system information
 std::string getSystemInfoJson(SdManager* sd);
 
+//
+// This file is intentionally left blank to force a code change.
+
 #endif // SYSTEM_INFO_H

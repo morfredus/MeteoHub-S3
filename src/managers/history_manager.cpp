@@ -1,6 +1,6 @@
 // Inclure le header pour la visibilité des structures
 #include "history_manager.h"
-
+ 
 MeteoTrend HistoryManager::getTrend() const {
     MeteoTrend trend;
     if (_recentHistory.empty()) return trend;
