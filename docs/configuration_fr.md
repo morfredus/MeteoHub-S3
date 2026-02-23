@@ -57,3 +57,7 @@ Ne pas coder en dur le nom/la version ailleurs.
 - Le Wi-Fi se connecte au boot
 - La page prévisions affiche des données
 - La page logs montre les événements réseau/météo
+
+## Prise en charge UTF-8 OLED
+
+Depuis la version 1.0.154, le backend OLED (`OledDisplay`) prend en charge le rendu UTF-8 pour les caractères accentués et symboles spéciaux. Tous les textes affichés sur OLED (SH1106/SSD1306) utilisent la méthode `drawUTF8`, garantissant l'affichage correct du français, de l'espagnol et d'autres langues internationales. Le module d'affichage porte désormais le nom neutre `OledDisplay` pour refléter sa compatibilité avec SH1106 et SSD1306.
