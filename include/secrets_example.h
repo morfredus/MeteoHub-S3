@@ -13,7 +13,7 @@ const WifiCredential WIFI_CREDENTIALS[] = {
 };
 
 const int WIFI_CREDENTIALS_COUNT = sizeof(WIFI_CREDENTIALS) / sizeof(WifiCredential);
-
+ 
 
 // --- OpenWeatherMap Configuration ---
 // Remplacez par votre clé API OpenWeatherMap (One Call API 3.0)

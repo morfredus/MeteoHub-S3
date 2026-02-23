@@ -65,7 +65,7 @@ All API routes are declared only inside the `_setupApi()` method. No forbidden c
 # User Guide
 
 Minimum valid version: 1.0.155
-
+ 
 ## OLED Display: Naming and UTF-8 Support
 
 Starting from version 1.0.155, the project supports two OLED controllers (SH1106 and SSD1306) selectable in `config.h`. All display code and documentation now use the neutral `oled_display` naming.

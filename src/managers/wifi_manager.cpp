@@ -41,3 +41,5 @@ int WifiManager::rssi() const {
     if (WiFi.status() != WL_CONNECTED) return 0;
     return WiFi.RSSI();
 }
+
+//

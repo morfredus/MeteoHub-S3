@@ -27,3 +27,6 @@ int getLogCount() {
 void clearLogs() {
     logs.clear();
 }
+
+// Ajout d'une ligne vide pour forcer la modification
+// (logs.cpp)

@@ -1,6 +1,6 @@
 # OLED and UX TODO roadmap
 
-Minimum valid version: 1.0.154
+Minimum valid version: 1.0.155
 
 ## Code TODO
 - [x] Rename `Sh1106Display` to a neutral name (`OledDisplay`) to better reflect the current U8g2 backend that supports both SH1106 and SSD1306.
@@ -11,7 +11,7 @@ Minimum valid version: 1.0.154
 
 ## OLED UTF-8 Rendering
 
-From version 1.0.154, the OLED backend (`OledDisplay`) supports UTF-8 rendering for all text, including accented characters and special symbols. The display module is now named `OledDisplay` to reflect its neutrality and compatibility with both SH1106 and SSD1306 controllers.
+From version 1.0.155, the OLED backend (`OledDisplay`) supports UTF-8 rendering for all text, including accented characters and special symbols. The display module is now named `OledDisplay` to reflect its neutrality and compatibility with both SH1106 and SSD1306 controllers.
 
 ## User experience TODO
 - [ ] Add a quick OLED settings page (contrast + I2C address preview) directly on-device.

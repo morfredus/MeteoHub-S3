@@ -1,6 +1,6 @@
 # Feuille de route TODO OLED et UX
 
-Version minimale valide : 1.0.154
+Version minimale valide : 1.0.155
 
 ## TODO code
 - [x] Renommer `Sh1106Display` vers un nom neutre (`OledDisplay`) pour refléter correctement le backend U8g2 actuel qui prend en charge SH1106 et SSD1306.
@@ -18,4 +18,4 @@ Version minimale valide : 1.0.154
 
 ## Rendu UTF-8 OLED
 
-Depuis la version 1.0.154, le backend OLED (`OledDisplay`) prend en charge le rendu UTF-8 pour tous les textes, y compris les caractères accentués et symboles spéciaux. Le module d'affichage porte désormais le nom neutre `OledDisplay` pour refléter sa compatibilité avec SH1106 et SSD1306.
+Depuis la version 1.0.155, le backend OLED (`OledDisplay`) prend en charge le rendu UTF-8 pour tous les textes, y compris les caractères accentués et symboles spéciaux. Le module d'affichage porte désormais le nom neutre `OledDisplay` pour refléter sa compatibilité avec SH1106 et SSD1306.

@@ -1,6 +1,6 @@
 # Maintenance et dépannage
 
-Version minimale valide : 1.0.154
+Version minimale valide : 1.0.155
 
 ## Objectif
 Fournir des étapes pratiques de diagnostic et de reprise quand le système ne se comporte pas comme prévu.

@@ -1,5 +1,5 @@
 #pragma once
-
+ 
 // Fréquence de rafraîchissement du dashboard
 #define DASHBOARD_REFRESH_MS 1000
 

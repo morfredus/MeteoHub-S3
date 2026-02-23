@@ -5,6 +5,9 @@
 #include "../managers/forecast_manager.h"
 #include "../managers/history_manager.h"
 
+//
+// Page functions
+//
 void pageNetwork_st7789(DisplayInterface& d, WifiManager& wifi, int pageIndex, int pageCount);
 void pageSystem_st7789(DisplayInterface& d, int pageIndex, int pageCount);
 void pageLogs_st7789(DisplayInterface& d, int pageIndex, int pageCount);

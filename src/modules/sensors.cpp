@@ -53,3 +53,5 @@ SensorData SensorManager::read() {
 
     return data;
 }
+
+//
