@@ -23,6 +23,33 @@ constexpr int OLED_VALUE_COL_X = 92;
 constexpr int OLED_TIME_BOTTOM_Y = 54;
 constexpr int OLED_BOOT_BAR_W = 100;
 constexpr int OLED_BOOT_BAR_H = 10;
+
+std::string shortenWeatherDescriptionForOled(const std::string& description) {
+	if (description.empty()) {
+		return "N/A";
+	}
+
+	std::string shortened = description;
+
+	auto replaceAll = [&shortened](const std::string& from, const std::string& to) {
+		size_t position = 0;
+		while ((position = shortened.find(from, position)) != std::string::npos) {
+			shortened.replace(position, from.size(), to);
+			position += to.size();
+		}
+	};
+
+	replaceAll("Partiellement", "Part.");
+	replaceAll("partiellement", "part.");
+	replaceAll("Nuageux", "Nuag.");
+	replaceAll("nuageux", "nuag.");
+	replaceAll("Couvert", "Couv.");
+	replaceAll("couvert", "couv.");
+	replaceAll("Légère", "Lég.");
+	replaceAll("légère", "lég.");
+
+	return shortened;
+}
 }
 
 // 1. Formate un float avec précision donnée
@@ -120,10 +147,7 @@ void pageWeather_oled(DisplayInterface& d, SensorManager& sensors, ForecastManag
 		d.text(0, 28, std::string("Hum:  ") + formatFloat(data.humidity, 0) + " %");
 		d.text(0, 40, std::string("Pres: ") + formatFloat(data.pressure, 0) + " hPa");
 
-		std::string weather_now = forecast.today.description;
-		if (weather_now.empty()) {
-			weather_now = "N/A";
-		}
+		std::string weather_now = shortenWeatherDescriptionForOled(forecast.today.description);
 		constexpr size_t OLED_WEATHER_MAX_CHARS = 18;
 		if (weather_now.size() > OLED_WEATHER_MAX_CHARS) {
 			weather_now = weather_now.substr(0, OLED_WEATHER_MAX_CHARS - 1) + "~";
