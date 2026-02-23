@@ -3,7 +3,7 @@
 #include <string>
 #include <Arduino.h>
 #include "sd_manager.h"
-
+ 
 struct HistoryRecord {
     time_t timestamp;
     float t; // Température

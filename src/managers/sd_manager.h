@@ -3,7 +3,7 @@
 #include <SD.h>
 #include <SPI.h>
 #include <string>
-
+ 
 class SdManager {
 public:
     bool begin();

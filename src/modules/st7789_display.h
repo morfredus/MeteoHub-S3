@@ -5,7 +5,7 @@
 #include "board_config.h"
 #include "display_interface.h"
 
-// Palette de couleurs (RGB565)
+// Palette de couleurs
 #define C_BLACK       0x0000
 #define C_WHITE       0xFFFF
 #define C_GREY        0x8410

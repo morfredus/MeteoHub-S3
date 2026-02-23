@@ -15,7 +15,7 @@
 #include "modules/sensors.h"
 #include "config.h"
 #if defined(ESP32_S3_OLED)
-#include "modules/sh1106_display.h"
+#include "modules/oled_display.h"
 #include "modules/pages_oled.h"
 #endif
 #if defined(ESP32_S3_LCD)

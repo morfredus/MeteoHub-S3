@@ -2,7 +2,6 @@
 #include <string>
 #include <ArduinoJson.h>
 #include <HTTPClient.h>
-
 #include "forecast_manager.h"
 #include "secrets.h"
 #include "../utils/logs.h"

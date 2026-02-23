@@ -8,7 +8,7 @@
 
 // Forward declaration helper
 std::string removeAccents(const std::string& input);
-
+ 
 St7789Display::St7789Display() {
     _width = LCD_WIDTH;
     _height = LCD_HEIGHT;

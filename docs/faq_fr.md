@@ -2,7 +2,7 @@
 L’API `/api/alert` retourne désormais le texte complet de l’alerte (en français si disponible). Le dashboard web affiche ce texte pour une clarté et une localisation maximale.
 # FAQ
 
-Version minimale valide : 1.0.154
+Version minimale valide : 1.0.155
 
 ## Internet est-il obligatoire ?
 Oui, pour les mises à jour de prévisions et d’alertes. Les pages capteurs locales restent utilisables sans internet.
@@ -53,3 +53,6 @@ Dans `include/board_config.h`.
 
 ## Que faire si le téléversement échoue plusieurs fois ?
 Essayez un autre câble USB, vérifiez le port série/COM, fermez le moniteur série, puis relancez le téléversement.
+
+## L'OLED gère-t-il les accents ?
+Oui. Depuis la version 1.0.154, le backend OLED (`OledDisplay`) utilise le rendu UTF-8 pour tous les textes, y compris les accents français et les symboles spéciaux. Le module d'affichage porte désormais le nom neutre `OledDisplay` pour refléter sa compatibilité avec SH1106 et SSD1306.

@@ -2,7 +2,7 @@
 The API /api/alert now returns the full alert description (in French when available). The web dashboard displays this text for maximum clarity and localization.
 # FAQ
 
-Minimum valid version: 1.0.154
+Minimum valid version: 1.0.155
 
 ## Is internet access required?
 Yes, for weather forecast and alert updates. Local sensor pages still work without internet.
@@ -53,3 +53,6 @@ In `include/board_config.h`.
 
 ## What if upload fails repeatedly?
 Try another USB cable, verify COM/serial port, close serial monitor, then retry upload.
+
+## Does OLED support accented characters?
+Yes. From version 1.0.154, the OLED backend (`OledDisplay`) uses UTF-8 rendering for all text, including French accents and special symbols. The display module is now named `OledDisplay` to reflect its neutrality and compatibility with both SH1106 and SSD1306 controllers.

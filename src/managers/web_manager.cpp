@@ -9,7 +9,7 @@
 #include "utils/system_info.h"
 // Inclusion du fichier généré automatiquement par le script Python
 #include "web_pages.h"
-
+ 
 // Si WEB_MDNS_HOSTNAME n'est pas défini dans config.h, valeur par défaut
 #ifndef WEB_MDNS_HOSTNAME
 #define WEB_MDNS_HOSTNAME "meteohub"

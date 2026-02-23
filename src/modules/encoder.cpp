@@ -1,4 +1,3 @@
-
 #include "encoder.h"
 #include "board_config.h"
 
@@ -78,3 +77,5 @@ void Encoder::clearQueue() {
     stepQueue = 0;
     pulseAccumulator = 0;
 }
+
+//

@@ -3,7 +3,7 @@
 #include "board_config.h"
 
 #include "ff.h" // For f_mkfs
-
+ 
 // Valeurs par défaut si non définies dans board_config.h
 #ifndef SD_CS_PIN
 #define SD_CS_PIN 10
