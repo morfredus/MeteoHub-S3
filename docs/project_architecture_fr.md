@@ -3,7 +3,7 @@ L’API `/api/alert` retourne désormais le texte complet de l’alerte (en fran
 
 # Architecture du projet
 
-Version minimale valide : 1.0.154
+Version minimale valide : 1.0.155
 
 ## Nouvelles fonctionnalités (depuis 1.0.127)
 - **Cartouche alerte météo** : Le dashboard affiche en permanence une cartouche d’alerte météo (via `/api/alert`).

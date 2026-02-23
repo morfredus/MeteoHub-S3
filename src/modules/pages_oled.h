@@ -13,3 +13,4 @@ void pageGraph_oled(DisplayInterface& d, HistoryManager& history, int type, int 
 void pageForecast_oled(DisplayInterface& d, ForecastManager& forecast, int view, int pageIndex, int pageCount);
 void drawSplashScreen_oled(DisplayInterface& d);
 void drawBootProgress_oled(DisplayInterface& d, int step, int total, const std::string& msg);
+//

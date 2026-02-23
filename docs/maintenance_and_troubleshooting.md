@@ -1,6 +1,6 @@
 # Maintenance and Troubleshooting
 
-Minimum valid version: 1.0.154
+Minimum valid version: 1.0.155
 
 ## Goal
 Provide practical recovery steps when the dashboard does not behave as expected.
@@ -64,4 +64,4 @@ Likely hardware/power issue:
 
 ## OLED UTF-8 Rendering
 
-From version 1.0.154, the OLED backend (`OledDisplay`) supports UTF-8 rendering for all text, including accented characters and special symbols. The display module is now named `OledDisplay` to reflect its neutrality and compatibility with both SH1106 and SSD1306 controllers.
+From version 1.0.155, the OLED backend (`OledDisplay`) supports UTF-8 rendering for all text, including accented characters and special symbols. The display module is now named `OledDisplay` to reflect its neutrality and compatibility with both SH1106 and SSD1306 controllers.

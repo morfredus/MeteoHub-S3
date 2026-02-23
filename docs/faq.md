@@ -2,7 +2,7 @@
 The API /api/alert now returns the full alert description (in French when available). The web dashboard displays this text for maximum clarity and localization.
 # FAQ
 
-Minimum valid version: 1.0.154
+Minimum valid version: 1.0.155
 
 ## Is internet access required?
 Yes, for weather forecast and alert updates. Local sensor pages still work without internet.

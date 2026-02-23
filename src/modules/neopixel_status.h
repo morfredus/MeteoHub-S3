@@ -1,4 +1,5 @@
 #pragma once
+//
 void neoInit();
 void neoWifiOK();
 void neoWifiKO();

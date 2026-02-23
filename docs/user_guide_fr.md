@@ -63,9 +63,9 @@ Toutes les routes API sont déclarées uniquement dans la méthode `_setupApi()`
 
 
 # Guide utilisateur
-
+ 
 Version minimale valide : 1.0.155
-
+ 
 ## Affichage OLED : nommage et support UTF-8
 
 Depuis la version 1.0.155, le projet gère deux contrôleurs OLED (SH1106 et SSD1306) sélectionnables dans `config.h`. Toute la documentation et le code utilisent désormais le nommage neutre `oled_display`.
