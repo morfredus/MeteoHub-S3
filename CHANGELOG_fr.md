@@ -1,7 +1,16 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.154
+Version minimale valide : 1.0.156
+
+## Version 1.0.156
+1. **Refactorisation (Nettoyage pile affichage)** : Suppression de tous les modules sources LCD/ST7789 et de l’environnement de build LCD, en conservant uniquement le chemin OLED (SH1106/SSD1306 via U8g2).
+2. **Refactorisation (Simplification runtime/UI)** : Simplification de `main.cpp` et de `UiManager` avec suppression des branches conditionnelles LCD, tout en conservant les comportements météo, prévisions, logs, système, SD, OTA et web sur OLED.
+3. **Documentation (Baseline OLED uniquement)** : Mise à jour de la documentation EN/FR pour refléter la baseline firmware OLED-only et synchronisation des marqueurs de version minimale valide.
+
+## Version 1.0.155
+- **Correctif (Rendu UTF-8 OLED)** : Bascule du rendu texte OLED vers les API UTF-8 U8g2 afin d'afficher correctement les caractères accentués en français.
+- **UI (Ligne météo OLED)** : Ajout d'une compression des descriptions météo (ex. `partiellement` -> `part.`) et d'une logique de longueur plus stricte pour conserver une ligne `Ciel:` lisible sur écran 128x64.
 
 ## Version 1.0.154
 - **Documentation (Rafraîchissement complet)** : Mise à jour de l’ensemble de la documentation utilisateur EN/FR vers la baseline OTA/OLED/SD actuelle et synchronisation des versions minimales valides.
