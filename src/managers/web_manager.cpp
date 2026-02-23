@@ -5,6 +5,7 @@
 #include <Update.h>
 #include <cctype>
 #include <string>
+#include <Arduino.h>
 #include "utils/logs.h"
 #include "utils/system_info.h"
 // Inclusion du fichier généré automatiquement par le script Python
@@ -372,6 +373,9 @@ void WebManager::_setupApi() {
                     sum_p += full_history[idx].p;
                     count++;
                     idx++;
+                    if ((idx & 0x3F) == 0) {
+                        delay(0);
+                    }
                 }
 
                 if (count == 0) {
@@ -402,6 +406,10 @@ void WebManager::_setupApi() {
             }
 
             for (size_t i = start_index; i < full_history.size(); i += step) {
+                if (((i - start_index) & 0x3F) == 0) {
+                    delay(0);
+                }
+
                 if (!first) {
                     response->print(",");
                 }
@@ -509,7 +517,12 @@ void WebManager::_setupApi() {
 
         File file = root.openNextFile();
         bool first = true;
+        size_t file_count = 0;
         while(file){
+            if ((file_count & 0x1F) == 0) {
+                delay(0);
+            }
+
             if(!first) response->print(",");
             response->print("{\"name\":\"");
             // Assurer que le nom commence par un /
@@ -522,6 +535,7 @@ void WebManager::_setupApi() {
             response->print("}");
             first = false;
             file = root.openNextFile();
+            file_count++;
         }
         response->print("]");
         request->send(response);

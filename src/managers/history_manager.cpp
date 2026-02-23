@@ -14,7 +14,13 @@ MeteoTrend HistoryManager::getTrend() const {
     float t_1h = t_now, h_1h = h_now, p_1h = p_now;
     float t_24h = t_now, h_24h = h_now, p_24h = p_now;
     bool found_1h = false, found_24h = false;
+    size_t trend_iteration = 0;
     for (auto it = _recentHistory.rbegin(); it != _recentHistory.rend(); ++it) {
+        if ((trend_iteration & 0xFF) == 0) {
+            delay(0);
+        }
+        trend_iteration++;
+
         time_t dt = now - it->timestamp;
         if (!found_1h && dt >= 3600) {
             t_1h = it->t;
@@ -59,6 +65,7 @@ MeteoTrend HistoryManager::getTrend() const {
 #include "../utils/logs.h"
 #include <time.h>
 #include <inttypes.h>
+#include <Arduino.h>
 
 #define HISTORY_FILE "/history/recent.dat"
 #define MAX_RECENT_RECORDS 1440 // 24h à 1 point/min
@@ -114,7 +121,13 @@ const std::vector<HistoryRecord>& HistoryManager::getRecentHistory() const {
 Stats24h HistoryManager::getRecentStats() const {
     Stats24h stats;
     stats.count = _recentHistory.size();
+    size_t stats_iteration = 0;
     for (const auto& r : _recentHistory) {
+        if ((stats_iteration & 0xFF) == 0) {
+            delay(0);
+        }
+        stats_iteration++;
+
         stats.temp.add(r.t);
         stats.hum.add(r.h);
         stats.pres.add(r.p);
@@ -129,10 +142,15 @@ void HistoryManager::loadRecent() {
     if (!f) return;
 
     // Lecture simple des structures binaires
+    size_t loaded_records = 0;
     while (f.available()) {
         HistoryRecord r;
         if (f.read((uint8_t*)&r, sizeof(HistoryRecord)) == sizeof(HistoryRecord)) {
             _recentHistory.push_back(r);
+            loaded_records++;
+            if ((loaded_records & 0xFF) == 0) {
+                delay(0);
+            }
         }
     }
     f.close();
