@@ -53,3 +53,6 @@ In `include/board_config.h`.
 
 ## What if upload fails repeatedly?
 Try another USB cable, verify COM/serial port, close serial monitor, then retry upload.
+
+## Does OLED support accented characters?
+Yes. From version 1.0.154, the OLED backend (`OledDisplay`) uses UTF-8 rendering for all text, including French accents and special symbols. The display module is now named `OledDisplay` to reflect its neutrality and compatibility with both SH1106 and SSD1306 controllers.

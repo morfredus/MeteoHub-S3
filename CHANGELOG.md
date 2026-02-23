@@ -1,7 +1,12 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.154
+Minimum valid version: 1.0.155
+
+## Version 1.0.155
+- **Refactor (OLED Display)**: Renamed all `sh1106_display.*` files and references to `oled_display.*` for clarity and multi-controller support. All code and documentation now use the neutral OLED naming.
+- **Feature (OLED UTF-8 Support)**: Improved accented/UTF-8 character rendering on OLED by replacing all `drawStr`/`getStrWidth` calls with `drawUTF8`/`getUTF8Width` in the OLED display class. This ensures correct display of French and other accented characters on all supported OLEDs.
+- **Documentation**: User guides (EN/FR) updated to explain the new OLED naming and UTF-8 display support. Minimum valid version updated to 1.0.155.
 
 ## Version 1.0.154
 - **Documentation (Full Refresh)**: Updated all user-facing EN/FR documents to the current OTA/OLED/SD baseline and synchronized minimum valid version markers.
@@ -38,7 +43,6 @@ Minimum valid version: 1.0.154
 - **Cleanup (OLED Migration)**: Archived obsolete OLED library evaluation guidance and aligned project docs with the current U8g2-based display baseline.
 - **Documentation (Roadmap)**: Added dedicated bilingual TODO roadmap files for code and user-experience improvements (`docs/todo.md`, `docs/todo_fr.md`).
 
-
 ## Version 1.0.146
 - **Fix (SD SPI Mapping)**: `SdManager` now uses SD-specific pin macros (`SD_SCK_PIN`, `SD_MISO_PIN`, `SD_MOSI_PIN`) from `board_config.h` for mount and low-level format init, avoiding silent SPI pin mismatches.
 - **Diagnostics (SD Runtime)**: Added explicit SD pin mapping log (CS/SCK/MISO/MOSI) before mount retries to speed up wiring/runtime troubleshooting.
@@ -51,63 +55,6 @@ Minimum valid version: 1.0.154
 - **Feature (Web OTA Page)**: Added a dedicated OTA web page with firmware upload, live progress bar, and fixed-height inline status panel.
 - **Feature (OTA API)**: Added `/api/ota/update` upload endpoint with firmware validation feedback and automatic reboot scheduling on success.
 - **UX (OTA Flow)**: After successful OTA upload, the UI now auto-redirects to the main dashboard.
-
-## Version 1.0.151
-- **Feature (OTA)**: Added ArduinoOTA support with hostname binding (`WEB_MDNS_HOSTNAME`) and runtime handling in the main loop.
-- **Diagnostics (OTA)**: Added OTA lifecycle logs (start/end/progress/error) plus late-start behavior when WiFi becomes available after boot.
-
-## Version 1.0.150
-- **Feature (OLED Weather Page)**: Added current weather text (from OpenWeatherMap, localized by configured `lang`) on the first OLED weather page, displayed under atmospheric pressure.
-- **UI (OLED Readability)**: Added safe fallback and truncation for the current weather line to keep layout stable on 128x64 screens.
-
-## Version 1.0.149
-- **Refactor (OLED Naming)**: Renamed the OLED page module to `pages_oled.*` and updated OLED page/splash function names to neutral `_oled` suffixes.
-- **Refactor (Display Class)**: Renamed display class to `OledDisplay` (with compatibility alias) to reflect U8g2 backend support for both SH1106 and SSD1306.
-- **Cleanup (OLED Layout)**: Centralized key OLED geometry constants in the page renderer to reduce magic numbers and simplify maintenance.
-
-## Version 1.0.148
-- **Fix (SD Write Recovery)**: Improved SD history write path with explicit failure diagnostics (`mkdir` failure, `open` failure) and strict partial-write detection.
-- **Resilience (SD Runtime)**: On `FILE_APPEND` open failure, the firmware now performs an immediate SD remount attempt and retries the write once.
-
-## Version 1.0.147
-- **Cleanup (OLED Migration)**: Archived obsolete OLED library evaluation guidance and aligned project docs with the current U8g2-based display baseline.
-- **Documentation (Roadmap)**: Added dedicated bilingual TODO roadmap files for code and user-experience improvements (`docs/todo.md`, `docs/todo_fr.md`).
-
-
-## Version 1.0.146
-- **Fix (SD SPI Mapping)**: `SdManager` now uses SD-specific pin macros (`SD_SCK_PIN`, `SD_MISO_PIN`, `SD_MOSI_PIN`) from `board_config.h` for mount and low-level format init, avoiding silent SPI pin mismatches.
-- **Diagnostics (SD Runtime)**: Added explicit SD pin mapping log (CS/SCK/MISO/MOSI) before mount retries to speed up wiring/runtime troubleshooting.
-
-## Version 1.0.152
-- **Feature (Web OTA Page)**: Added a dedicated OTA web page with firmware upload, live progress bar, and fixed-height inline status panel.
-- **Feature (OTA API)**: Added `/api/ota/update` upload endpoint with firmware validation feedback and automatic reboot scheduling on success.
-- **UX (OTA Flow)**: After successful OTA upload, the UI now auto-redirects to the main dashboard.
-
-## Version 1.0.151
-- **Feature (OTA)**: Added ArduinoOTA support with hostname binding (`WEB_MDNS_HOSTNAME`) and runtime handling in the main loop.
-- **Diagnostics (OTA)**: Added OTA lifecycle logs (start/end/progress/error) plus late-start behavior when WiFi becomes available after boot.
-
-## Version 1.0.150
-- **Feature (OLED Weather Page)**: Added current weather text (from OpenWeatherMap, localized by configured `lang`) on the first OLED weather page, displayed under atmospheric pressure.
-- **UI (OLED Readability)**: Added safe fallback and truncation for the current weather line to keep layout stable on 128x64 screens.
-
-## Version 1.0.149
-- **Refactor (OLED Naming)**: Renamed the OLED page module to `pages_oled.*` and updated OLED page/splash function names to neutral `_oled` suffixes.
-- **Refactor (Display Class)**: Renamed display class to `OledDisplay` (with compatibility alias) to reflect U8g2 backend support for both SH1106 and SSD1306.
-- **Cleanup (OLED Layout)**: Centralized key OLED geometry constants in the page renderer to reduce magic numbers and simplify maintenance.
-
-## Version 1.0.148
-- **Fix (SD Write Recovery)**: Improved SD history write path with explicit failure diagnostics (`mkdir` failure, `open` failure) and strict partial-write detection.
-- **Resilience (SD Runtime)**: On `FILE_APPEND` open failure, the firmware now performs an immediate SD remount attempt and retries the write once.
-
-## Version 1.0.147
-- **Cleanup (OLED Migration)**: Archived obsolete OLED library evaluation guidance and aligned project docs with the current U8g2-based display baseline.
-- **Documentation (Roadmap)**: Added dedicated bilingual TODO roadmap files for code and user-experience improvements (`docs/todo.md`, `docs/todo_fr.md`).
-
-
-## Version 1.0.146
-- **Fix (SD SPI Mapping)**: `SdManager` now uses SD-specific pin macros (`SD_SCK_PIN`, `SD_MISO_PIN`, `SD_MOSI_PIN`) from `board_config.h` for mount and low-level format init, avoiding silent SPI pin mismatches.
-- **Diagnostics (SD Runtime)**: Added explicit SD pin mapping log (CS/SCK/MISO/MOSI) before mount retries to speed up wiring/runtime troubleshooting.
 
 ## Version 1.0.151
 - **Feature (OTA)**: Added ArduinoOTA support with hostname binding (`WEB_MDNS_HOSTNAME`) and runtime handling in the main loop.
@@ -199,7 +146,7 @@ Minimum valid version: 1.0.154
 - **UI (Overflow Handling)**: Added vertical scroll behavior for long alert text/modal content and ensured the parchment details icon remains visible at bottom-right.
 
 ## Version 1.0.135
-- **Fix (Stats Trend UI)**: Stats page now renders trend rows from `/api/stats` so the trend section no longer stays on "Chargement...".
+- **Fix (Stats Trend UI)**: Stats page now renders trend rows from `/api/stats` so the trend section no longer stays on "Chargement..."
 - **Feature (Global Weather Trend)**: Added `trend.global_label_fr` in `/api/stats` with a synthetic global tendency label (e.g., "Vers beau temps", "Vers pluie").
 
 ## Version 1.0.134

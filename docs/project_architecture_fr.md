@@ -81,3 +81,7 @@ Ceci améliore grandement la fiabilité avec les cartes SD problématiques et r�
 - Librairies capteurs Adafruit
 - ArduinoJson
 - WiFi / HTTPClient / LittleFS / Preferences
+
+## Rendu UTF-8 OLED
+
+Depuis la version 1.0.154, le backend OLED (`OledDisplay`) prend en charge le rendu UTF-8 pour tous les textes, y compris les caractères accentués et symboles spéciaux. Le module d'affichage porte désormais le nom neutre `OledDisplay` pour refléter sa compatibilité avec SH1106 et SSD1306.

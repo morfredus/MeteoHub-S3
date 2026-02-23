@@ -64,7 +64,20 @@ All API routes are declared only inside the `_setupApi()` method. No forbidden c
 
 # User Guide
 
-Minimum valid version: 1.0.154
+Minimum valid version: 1.0.155
+
+## OLED Display: Naming and UTF-8 Support
+
+Starting from version 1.0.155, the project supports two OLED controllers (SH1106 and SSD1306) selectable in `config.h`. All display code and documentation now use the neutral `oled_display` naming.
+
+**UTF-8/Accented Characters:**
+- The OLED display now renders all accented and UTF-8 characters correctly.
+- All calls to `drawStr` and `getStrWidth` have been replaced by `drawUTF8` and `getUTF8Width` in the OLED display class.
+- This ensures proper display of French, Spanish, and other accented characters on all supported OLEDs.
+
+**How to use:**
+- You can display any UTF-8 string (including accents) on the OLED.
+- No special configuration is needed: the firmware handles encoding automatically.
 
 ## Goal
 Learn how to use the dashboard once the firmware has started.

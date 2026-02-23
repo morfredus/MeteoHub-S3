@@ -65,6 +65,10 @@ Explain the source code organization, the management of OLED and LCD environment
   - **Format**: Daily CSV files (`/history/YYYY-MM-DD.csv`).
   - **Advantage**: High capacity, easy to read on a PC, increased robustness compared to internal flash for frequent writes.
 
+## OLED UTF-8 Rendering
+
+From version 1.0.154, the OLED backend (`OledDisplay`) supports UTF-8 rendering for all text, including accented characters and special symbols. The display module is now named `OledDisplay` to reflect its neutrality and compatibility with both SH1106 and SSD1306 controllers.
+
 ---
 **[v1.0.119+] SD Card Robustness**
 

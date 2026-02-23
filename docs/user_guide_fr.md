@@ -64,7 +64,20 @@ Toutes les routes API sont déclarées uniquement dans la méthode `_setupApi()`
 
 # Guide utilisateur
 
-Version minimale valide : 1.0.154
+Version minimale valide : 1.0.155
+
+## Affichage OLED : nommage et support UTF-8
+
+Depuis la version 1.0.155, le projet gère deux contrôleurs OLED (SH1106 et SSD1306) sélectionnables dans `config.h`. Toute la documentation et le code utilisent désormais le nommage neutre `oled_display`.
+
+**Caractères accentués/UTF-8 :**
+- L'affichage OLED gère désormais parfaitement tous les caractères accentués et UTF-8.
+- Tous les appels à `drawStr` et `getStrWidth` ont été remplacés par `drawUTF8` et `getUTF8Width` dans la classe d'affichage OLED.
+- Cela garantit l'affichage correct des caractères français, espagnols et autres accents sur tous les OLED supportés.
+
+**Utilisation :**
+- Vous pouvez afficher n'importe quelle chaîne UTF-8 (y compris les accents) sur l'OLED.
+- Aucune configuration spéciale n'est requise : le firmware gère automatiquement l'encodage.
 
 ## Objectif
 Apprendre à utiliser le dashboard une fois le firmware démarré.

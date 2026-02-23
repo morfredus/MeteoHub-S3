@@ -1,6 +1,6 @@
 #if defined(ESP32_S3_OLED)
 #include "display_interface.h"
-#include "sh1106_display.h"
+#include "oled_display.h"
 #include <algorithm>
 #include <cctype>
 #include <float.h>

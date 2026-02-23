@@ -56,3 +56,7 @@ Do not hardcode project name/version elsewhere.
 - Wi-Fi connects at boot
 - Forecast page populates data
 - Logs page shows network/weather events
+
+## OLED UTF-8 Support
+
+From version 1.0.154, the OLED backend (`OledDisplay`) supports UTF-8 rendering for accented characters and special symbols. All text displayed on OLED (SH1106/SSD1306) uses the `drawUTF8` method, ensuring proper display of French, Spanish, and other international characters. The display module is now named `OledDisplay` to reflect its neutrality and compatibility with both SH1106 and SSD1306 controllers.

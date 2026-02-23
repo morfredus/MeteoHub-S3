@@ -9,6 +9,10 @@ Minimum valid version: 1.0.154
 - [ ] Add an optional build flag to compile only one OLED controller backend (`SH1106` or `SSD1306`) to reduce binary size.
 - [ ] Add host-side unit tests for pure helper functions in `pages_oled.cpp` (formatting, title generation, alert translation).
 
+## OLED UTF-8 Rendering
+
+From version 1.0.154, the OLED backend (`OledDisplay`) supports UTF-8 rendering for all text, including accented characters and special symbols. The display module is now named `OledDisplay` to reflect its neutrality and compatibility with both SH1106 and SSD1306 controllers.
+
 ## User experience TODO
 - [ ] Add a quick OLED settings page (contrast + I2C address preview) directly on-device.
 - [ ] Add a first-boot OLED wizard that validates wiring (SDA/SCL/address) and displays clear next steps when no panel is detected.

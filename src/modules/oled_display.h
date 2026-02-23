@@ -21,5 +21,5 @@ private:
 };
 
 // Alias explicite pour refléter le backend OLED U8g2 actuel
-using Sh1106Display = OledDisplay;
+using OledDisplayAlias = OledDisplay;
 #endif
