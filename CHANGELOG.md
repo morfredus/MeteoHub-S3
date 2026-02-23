@@ -1,7 +1,12 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.155
+Minimum valid version: 1.0.156
+
+## Version 1.0.156
+1. **Refactor (Display Stack Cleanup)**: Removed all LCD/ST7789 source modules and build environment, keeping only the OLED rendering path (SH1106/SSD1306 via U8g2).
+2. **Refactor (Runtime/UI Simplification)**: Simplified `main.cpp` and `UiManager` by removing LCD conditional branches while preserving existing weather, forecast, logs, system, SD, OTA, and web behaviors on OLED.
+3. **Documentation (OLED-only Baseline)**: Updated EN/FR documentation set to reflect the OLED-only firmware baseline and synchronized minimum valid version markers.
 
 ## Version 1.0.155
 - **Fix (OLED UTF-8 Rendering)**: Switched OLED text rendering to U8g2 UTF-8 APIs to display French accented characters correctly.
