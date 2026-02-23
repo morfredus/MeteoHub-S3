@@ -25,7 +25,7 @@ Explain the source code organization, the management of OLED and LCD environment
 ## Display Environment Management
 - Display type is chosen at build time (`esp32-s3-oled` or `esp32-s3-lcd`).
 - All display/page logic is abstracted through `DisplayInterface`.
-- Dedicated modules for each display: `sh1106_display` (OLED), `st7789_display` (LCD).
+- Dedicated modules for each display: `oled_display` (OLED), `st7789_display` (LCD).
 - Separate page rendering logic: `pages_oled.cpp` (OLED), `pages_st7789.cpp` (LCD).
 - Adapted navigation: On LCD, 1 detent = 1 page; on OLED, 2 detents = 1 page.
 
@@ -34,7 +34,7 @@ Explain the source code organization, the management of OLED and LCD environment
 - `encoder`: Decodes encoder inputs (hardware abstraction).
 - `neopixel_status`: Color/status LED output (OLED only).
 - `sensors`: AHT20 + BMP280 data acquisition.
-- `sh1106_display`: OLED rendering abstraction.
+- `oled_display`: OLED rendering abstraction.
 - `st7789_display`: LCD rendering abstraction.
 - `pages_oled`: Renders pages for OLED.
 - `pages_st7789`: Renders pages for LCD.
