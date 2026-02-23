@@ -2,6 +2,7 @@
 #include "../utils/logs.h"
 #include "board_config.h"
 
+#include <algorithm>
 #include "ff.h" // For f_mkfs
  
 // Valeurs par défaut si non définies dans board_config.h
@@ -17,6 +18,9 @@
 #ifndef SD_MOSI_PIN
 #define SD_MOSI_PIN 11
 #endif
+#ifndef SD_OFF_PIN
+#define SD_OFF_PIN -1
+#endif
 
 // Déclarations des fonctions internes de la librairie SD (sd_diskio.cpp)
 // Nécessaire pour initialiser la carte sans la monter (ce qui échoue si non formatée)
@@ -24,14 +28,55 @@ uint8_t sdcard_init(uint8_t cs, SPIClass * spi, int hz);
 bool sdcard_uninit(uint8_t pdrv);
 
 namespace {
-constexpr int SD_INIT_RETRY_COUNT = 3;
+constexpr int SD_INIT_RETRY_COUNT = 4;
 constexpr int SD_FORMAT_RETRY_COUNT = 3;
-constexpr int SD_INIT_FREQUENCIES[] = {8000000, 4000000, 1000000};
+constexpr int SD_INIT_FREQUENCIES[] = {8000000, 4000000, 1000000, 400000};
 constexpr int SD_FORMAT_FREQUENCIES[] = {4000000, 1000000, 400000};
-constexpr unsigned long SD_RECONNECT_COOLDOWN_MS = 15000;
+constexpr unsigned long SD_RECONNECT_COOLDOWN_DEFAULT_MS = 15000;
+constexpr unsigned long SD_RECONNECT_COOLDOWN_MAX_MS = 120000;
+constexpr int SD_POWER_OFF_DELAY_MS = 30;
+constexpr int SD_POWER_ON_STABILIZE_MS = 60;
 
 bool mountSdAtFrequency(int frequency_hz) {
     return SD.begin(SD_CS_PIN, SPI, frequency_hz);
+}
+
+
+bool hasSdOffControl() {
+    return SD_OFF_PIN >= 0;
+}
+
+void setSdModulePower(bool power_on) {
+    if (!hasSdOffControl()) {
+        return;
+    }
+
+    pinMode(SD_OFF_PIN, OUTPUT);
+    // uPesy: HIGH = ON, LOW = OFF
+    digitalWrite(SD_OFF_PIN, power_on ? HIGH : LOW);
+}
+
+void powerCycleSdModuleIfSupported() {
+    if (!hasSdOffControl()) {
+        return;
+    }
+
+    setSdModulePower(false);
+    delay(SD_POWER_OFF_DELAY_MS);
+    setSdModulePower(true);
+    delay(SD_POWER_ON_STABILIZE_MS);
+}
+
+void prepareSdSpiBus() {
+    pinMode(SD_CS_PIN, OUTPUT);
+    digitalWrite(SD_CS_PIN, HIGH);
+
+    SPI.begin(SD_SCK_PIN, SD_MISO_PIN, SD_MOSI_PIN, SD_CS_PIN);
+
+    // Idle clocks with CS high to help some cards exit unstable state
+    for (int i = 0; i < 16; i++) {
+        SPI.transfer(0xFF);
+    }
 }
 
 bool lowLevelInit(uint8_t& pdrv, int frequency_hz) {
@@ -47,6 +92,12 @@ void logSdPinMapping() {
         " MISO=" + std::to_string(SD_MISO_PIN) +
         " MOSI=" + std::to_string(SD_MOSI_PIN)
     );
+
+    if (hasSdOffControl()) {
+        LOG_INFO("SD OFF pin configured on GPIO " + std::to_string(SD_OFF_PIN) + " (HIGH=ON, LOW=OFF)");
+    } else {
+        LOG_INFO("SD OFF pin not configured (module always ON)");
+    }
 }
 
 bool formatSdOnce(int frequency_hz) {
@@ -88,15 +139,18 @@ bool formatSdOnce(int frequency_hz) {
 
 
 bool SdManager::mountWithRetries() {
-    pinMode(SD_CS_PIN, OUTPUT);
-    digitalWrite(SD_CS_PIN, HIGH);
     delay(10);
 
     logSdPinMapping();
-    SPI.begin(SD_SCK_PIN, SD_MISO_PIN, SD_MOSI_PIN, SD_CS_PIN);
+    powerCycleSdModuleIfSupported();
+    prepareSdSpiBus();
 
     for (int i = 0; i < SD_INIT_RETRY_COUNT; i++) {
         int frequency_hz = SD_INIT_FREQUENCIES[i];
+        SD.end();
+        powerCycleSdModuleIfSupported();
+        prepareSdSpiBus();
+
         if (mountSdAtFrequency(frequency_hz)) {
             LOG_INFO("SD mount OK at " + std::to_string(frequency_hz) + "Hz");
             uint8_t card_type = SD.cardType();
@@ -114,7 +168,7 @@ bool SdManager::mountWithRetries() {
             LOG_WARNING("SD mount failed at " + std::to_string(frequency_hz) + "Hz");
         }
 
-        delay(60);
+        delay(120);
     }
 
     _available = false;
@@ -123,6 +177,8 @@ bool SdManager::mountWithRetries() {
 
 bool SdManager::begin() {
     LOG_INFO("Init SD Card...");
+
+    setSdModulePower(true);
 
     SD.end();
     _available = false;
@@ -135,6 +191,8 @@ bool SdManager::begin() {
 
     LOG_INFO("SD Card OK. Size: " + std::to_string(SD.cardSize() / (1024 * 1024)) + "MB");
     _last_reconnect_attempt_ms = millis();
+    _consecutive_reconnect_failures = 0;
+    _reconnect_cooldown_ms = SD_RECONNECT_COOLDOWN_DEFAULT_MS;
     return true;
 }
 
@@ -159,13 +217,28 @@ bool SdManager::ensureMounted() {
     }
 
     unsigned long now = millis();
-    if (now - _last_reconnect_attempt_ms < SD_RECONNECT_COOLDOWN_MS) {
+    if (now - _last_reconnect_attempt_ms < _reconnect_cooldown_ms) {
         return false;
     }
 
     _last_reconnect_attempt_ms = now;
-    LOG_INFO("SD reconnect attempt...");
-    return mountWithRetries();
+    LOG_INFO("SD reconnect attempt... (cooldown=" + std::to_string(_reconnect_cooldown_ms) + "ms)");
+
+    bool mounted = mountWithRetries();
+    if (mounted) {
+        _consecutive_reconnect_failures = 0;
+        _reconnect_cooldown_ms = SD_RECONNECT_COOLDOWN_DEFAULT_MS;
+        return true;
+    }
+
+    _consecutive_reconnect_failures++;
+    _reconnect_cooldown_ms = std::min(
+        SD_RECONNECT_COOLDOWN_MAX_MS,
+        SD_RECONNECT_COOLDOWN_DEFAULT_MS * static_cast<unsigned long>(_consecutive_reconnect_failures + 1)
+    );
+
+    LOG_WARNING("SD reconnect failed (count=" + std::to_string(_consecutive_reconnect_failures) + "), next cooldown=" + std::to_string(_reconnect_cooldown_ms) + "ms");
+    return false;
 }
 
 bool SdManager::format() {
