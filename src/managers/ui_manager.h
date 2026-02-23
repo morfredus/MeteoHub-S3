@@ -58,6 +58,23 @@ private:
     bool last_rendered_menu_mode = false;
     bool last_rendered_confirm_mode = false;
 
+    enum UiTransientMessageType {
+        UI_MESSAGE_NONE,
+        UI_MESSAGE_FORMAT_IN_PROGRESS,
+        UI_MESSAGE_FORMAT_SUCCESS,
+        UI_MESSAGE_FORMAT_FAIL,
+        UI_MESSAGE_LOGS_CLEARED,
+        UI_MESSAGE_HISTORY_CLEARED
+    };
+
+    UiTransientMessageType transientMessage = UI_MESSAGE_NONE;
+    unsigned long transientMessageUntilMs = 0;
+    bool pendingFormatResult = false;
+    bool pendingFormatResultSuccess = false;
+
+    void showTransientMessage(UiTransientMessageType messageType, unsigned long durationMs);
+    bool processTransientMessage();
+
     void handleButtons();
     void drawPage();
 };
