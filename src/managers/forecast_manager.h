@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-
+ 
 struct Forecast {
     // Daily
     float temp_day;

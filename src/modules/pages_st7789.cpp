@@ -15,7 +15,6 @@
 #include <Arduino.h> // Pour delay()
 
 // Fonctions utilitaires LCD (ex: formatage, couleurs, etc.)
-// À compléter selon besoins graphiques LCD
 
 std::string formatFloatLCD(float value, int precision) {
     std::ostringstream stream;

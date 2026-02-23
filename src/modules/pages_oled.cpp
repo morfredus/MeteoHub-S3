@@ -31,7 +31,7 @@ std::string formatFloat(float value, int precision) {
 	stream << std::fixed << std::setprecision(precision) << value;
 	return stream.str();
 }
-
+ 
 // 2. Génère l'entête de page avec titre, heure et pagination
 std::string getHeader(const std::string& title, int pageIndex, int pageCount) {
 	struct tm timeinfo;

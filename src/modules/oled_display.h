@@ -5,7 +5,7 @@
 #include <memory>
 #include <string>
 #include "display_interface.h"
-
+ 
 class OledDisplay : public DisplayInterface {
 public:
     bool begin() override;
