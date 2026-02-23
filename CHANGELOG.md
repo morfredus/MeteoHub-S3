@@ -1,7 +1,11 @@
 
 # Project Changelog
 
-Minimum valid version: 1.0.154
+Minimum valid version: 1.0.155
+
+## Version 1.0.155
+- **Fix (OLED UTF-8 Rendering)**: Switched OLED text rendering to U8g2 UTF-8 APIs to display French accented characters correctly.
+- **UI (OLED Weather Line)**: Added weather-description compression (e.g., `partiellement` -> `part.`) and tighter fit logic so the `Ciel:` line stays readable on 128x64 displays.
 
 ## Version 1.0.154
 - **Documentation (Full Refresh)**: Updated all user-facing EN/FR documents to the current OTA/OLED/SD baseline and synchronized minimum valid version markers.

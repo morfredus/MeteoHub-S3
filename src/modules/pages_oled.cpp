@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string>
 #include <time.h>
+#include <utility>
 #include "pages_oled.h"
 #include "../utils/logs.h"
 #include "../utils/system.h"
@@ -61,6 +62,52 @@ std::string translateAlert(const std::string& event) {
 	if (lowerEvent.find("cold") != std::string::npos) return "Vigilance Grand Froid";
 	if (lowerEvent.find("ice") != std::string::npos) return "Vigilance Verglas";
 	return event; // Fallback si aucune traduction
+}
+
+
+std::string compressWeatherText(std::string weather_text) {
+    if (weather_text.empty()) {
+        return "N/A";
+    }
+
+    std::transform(weather_text.begin(), weather_text.end(), weather_text.begin(), [](unsigned char character) {
+        return static_cast<char>(std::tolower(character));
+    });
+
+    const std::pair<const char*, const char*> replacements[] = {
+        {"partiellement", "part."},
+        {"faiblement", "faibl."},
+        {"fortement", "fort."},
+        {"nuageux", "nuag."},
+        {"couvert", "couv."},
+        {"éclaircies", "eclaircies"},
+        {"éparse", "eparse"},
+        {"légère", "leg."},
+        {"modérée", "mod."},
+        {"intense", "int."},
+        {"bruine", "br."},
+        {"averses", "avr."},
+        {"orage", "org."},
+        {"brouillard", "brume"}
+    };
+
+    for (const auto& replacement : replacements) {
+        const std::string from = replacement.first;
+        const std::string to = replacement.second;
+
+        size_t pos = 0;
+        while ((pos = weather_text.find(from, pos)) != std::string::npos) {
+            weather_text.replace(pos, from.size(), to);
+            pos += to.size();
+        }
+    }
+
+    constexpr size_t OLED_WEATHER_MAX_CHARS = 15;
+    if (weather_text.size() > OLED_WEATHER_MAX_CHARS) {
+        weather_text = weather_text.substr(0, OLED_WEATHER_MAX_CHARS - 1) + "~";
+    }
+
+    return weather_text;
 }
 
 // 4. Page réseau : affiche SSID, IP, RSSI
@@ -120,14 +167,7 @@ void pageWeather_oled(DisplayInterface& d, SensorManager& sensors, ForecastManag
 		d.text(0, 28, std::string("Hum:  ") + formatFloat(data.humidity, 0) + " %");
 		d.text(0, 40, std::string("Pres: ") + formatFloat(data.pressure, 0) + " hPa");
 
-		std::string weather_now = forecast.today.description;
-		if (weather_now.empty()) {
-			weather_now = "N/A";
-		}
-		constexpr size_t OLED_WEATHER_MAX_CHARS = 18;
-		if (weather_now.size() > OLED_WEATHER_MAX_CHARS) {
-			weather_now = weather_now.substr(0, OLED_WEATHER_MAX_CHARS - 1) + "~";
-		}
+		const std::string weather_now = compressWeatherText(forecast.today.description);
 		d.text(0, 52, std::string("Ciel: ") + weather_now);
 	} else {
 		d.center(30, "AHT20 / BMP280");

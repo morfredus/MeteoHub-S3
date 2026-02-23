@@ -1,7 +1,11 @@
 
 # Journal des modifications du projet
 
-Version minimale valide : 1.0.154
+Version minimale valide : 1.0.155
+
+## Version 1.0.155
+- **Correctif (Rendu UTF-8 OLED)** : Bascule du rendu texte OLED vers les API UTF-8 U8g2 afin d'afficher correctement les caractères accentués en français.
+- **UI (Ligne météo OLED)** : Ajout d'une compression des descriptions météo (ex. `partiellement` -> `part.`) et d'une logique de longueur plus stricte pour conserver une ligne `Ciel:` lisible sur écran 128x64.
 
 ## Version 1.0.154
 - **Documentation (Rafraîchissement complet)** : Mise à jour de l’ensemble de la documentation utilisateur EN/FR vers la baseline OTA/OLED/SD actuelle et synchronisation des versions minimales valides.

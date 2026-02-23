@@ -32,6 +32,7 @@ bool OledDisplay::begin() {
     Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN);
     d->setI2CAddress(static_cast<uint8_t>(OLED_I2C_ADDRESS << 1));
     d->begin();
+    d->enableUTF8Print();
     d->setContrast(OLED_CONTRAST);
     d->setFont(u8g2_font_6x10_tf);
     d->clearBuffer();
@@ -50,16 +51,16 @@ void OledDisplay::show() {
 void OledDisplay::text(int x, int y, const std::string& s) {
     if (!d) return;
     d->setFont(u8g2_font_6x10_tf);
-    d->drawStr(x, y + 10, s.c_str());
+    d->drawUTF8(x, y + 10, s.c_str());
 }
 
 void OledDisplay::center(int y, const std::string& s) {
     if (!d) return;
     d->setFont(u8g2_font_6x10_tf);
-    int w = d->getStrWidth(s.c_str());
+    int w = d->getUTF8Width(s.c_str());
     int x = (128 - w) / 2;
     if (x < 0) x = 0;
-    d->drawStr(x, y + 10, s.c_str());
+    d->drawUTF8(x, y + 10, s.c_str());
 }
 
 void OledDisplay::bar(int x, int y, int w, int h, int value, int max) {
