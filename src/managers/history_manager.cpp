@@ -1,5 +1,6 @@
 // Inclure le header pour la visibilité des structures
 #include "history_manager.h"
+#include "../utils/cooperative_yield.h"
  
 MeteoTrend HistoryManager::getTrend() const {
     MeteoTrend trend;
@@ -64,7 +65,6 @@ MeteoTrend HistoryManager::getTrend() const {
 #include <time.h>
 #include <inttypes.h>
 #include <Arduino.h>
-#include "../utils/cooperative_yield.h"
 
 #define HISTORY_FILE "/history/recent.dat"
 #define MAX_RECENT_RECORDS 1440 // 24h à 1 point/min
