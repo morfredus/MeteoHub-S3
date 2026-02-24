@@ -1,6 +1,6 @@
 # FAQ
 
-Version minimale valide : 1.0.167
+Version minimale valide : 1.0.169
 
 ## Quel afficheur est supporté ?
 Uniquement OLED (SH1106/SSD1306).
@@ -12,4 +12,4 @@ Uniquement OLED (SH1106/SSD1306).
 Non, elle est optionnelle pour l’archivage long terme.
 
 ## Mon SSD1306 a une bande jaune en haut. L’interface peut-elle chevaucher cette zone ?
-Non. Depuis la version 1.0.167, le firmware applique une zone haute réservée sur SSD1306 et décale le rendu pour éviter tout chevauchement.
+Le titre de page reste sur la ligne haute (zone jaune), tandis que la zone de contenu est maintenue sous la zone haute réservée SSD1306 pour éviter le chevauchement.

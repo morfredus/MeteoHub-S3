@@ -1,6 +1,6 @@
 # Getting Started
 
-Minimum valid version: 1.0.167
+Minimum valid version: 1.0.169
 
 1. Clone the project.
 2. Create `include/secrets.h` from `include/secrets_example.h`.

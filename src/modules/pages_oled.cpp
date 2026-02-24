@@ -21,14 +21,14 @@ constexpr int OLED_SAFE_TOP_Y = 16;
 #else
 constexpr int OLED_SAFE_TOP_Y = 0;
 #endif
-constexpr int OLED_HEADER_Y = OLED_SAFE_TOP_Y;
-constexpr int OLED_LINE_1_Y = OLED_SAFE_TOP_Y + 10;
-constexpr int OLED_LINE_2_Y = OLED_SAFE_TOP_Y + 18;
-constexpr int OLED_LINE_3_Y = OLED_SAFE_TOP_Y + 26;
-constexpr int OLED_LINE_4_Y = OLED_SAFE_TOP_Y + 34;
-constexpr int OLED_LINE_5_Y = OLED_SAFE_TOP_Y + 42;
+constexpr int OLED_HEADER_Y = 0;
+constexpr int OLED_LINE_1_Y = 12;
+constexpr int OLED_LINE_2_Y = 16;
+constexpr int OLED_LINE_3_Y = 28;
+constexpr int OLED_LINE_4_Y = 40;
+constexpr int OLED_LINE_5_Y = 52;
 constexpr int OLED_GRAPH_X = 0;
-constexpr int OLED_GRAPH_Y = OLED_SAFE_TOP_Y + 8;
+constexpr int OLED_GRAPH_Y = OLED_SAFE_TOP_Y;
 constexpr int OLED_GRAPH_W = 90;
 constexpr int OLED_GRAPH_H = 28;
 constexpr int OLED_VALUE_COL_X = 92;
