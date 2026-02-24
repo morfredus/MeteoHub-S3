@@ -1,6 +1,6 @@
 # Documentation Index
 
-Minimum valid version: 1.0.169
+Minimum valid version: 1.0.170
 
 - [Getting Started](getting_started.md)
 - [Hardware Wiring](hardware_wiring.md)

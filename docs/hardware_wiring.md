@@ -1,6 +1,6 @@
 # Hardware Wiring
 
-Minimum valid version: 1.0.169
+Minimum valid version: 1.0.170
 
 This project targets an OLED setup only.
 
