@@ -1,11 +1,9 @@
 # Changelog
 
-Minimum valid version: 1.0.166
+Minimum valid version: 1.0.167
 
-## [1.0.166] - 2026-02-24
+## [1.0.167] - 2026-02-24
 ### Fixed
-- Added a safe top rendering offset for SSD1306 to avoid overlap with yellow band variants.
-- Shifted all OLED pages (header, lines, graphs, forecast, logs, boot screens) to respect the reserved top area on SSD1306 panels.
-
-### Notes
-- OLED-only target remains unchanged.
+- Fixed OLED page compilation by explicitly including `config.h` where OLED controller macros are used.
+- Replaced constexpr ternary on controller macros with preprocessor constants to satisfy strict compile-time evaluation.
+- Kept SSD1306 safe top-zone behavior to avoid overlap with yellow-band panels.

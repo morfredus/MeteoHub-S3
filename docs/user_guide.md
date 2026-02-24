@@ -1,6 +1,6 @@
 # User Guide
 
-Minimum valid version: 1.0.166
+Minimum valid version: 1.0.167
 
 - Rotate encoder to navigate pages.
 - Encoder click opens the menu.

@@ -9,13 +9,18 @@
 #include <string>
 #include <time.h>
 #include "pages_oled.h"
+#include "config.h"
 #include "../utils/logs.h"
 #include "../utils/system.h"
 #include <Arduino.h>
 
 namespace {
 constexpr int OLED_WIDTH = 128;
-constexpr int OLED_SAFE_TOP_Y = (OLED_CONTROLLER == OLED_CTRL_SSD1306) ? 16 : 0;
+#if OLED_CONTROLLER == OLED_CTRL_SSD1306
+constexpr int OLED_SAFE_TOP_Y = 16;
+#else
+constexpr int OLED_SAFE_TOP_Y = 0;
+#endif
 constexpr int OLED_HEADER_Y = OLED_SAFE_TOP_Y;
 constexpr int OLED_LINE_1_Y = OLED_SAFE_TOP_Y + 10;
 constexpr int OLED_LINE_2_Y = OLED_SAFE_TOP_Y + 18;

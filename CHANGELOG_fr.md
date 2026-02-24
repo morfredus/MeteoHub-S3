@@ -1,11 +1,9 @@
 # Journal des modifications
 
-Version minimale valide : 1.0.166
+Version minimale valide : 1.0.167
 
-## [1.0.166] - 2026-02-24
+## [1.0.167] - 2026-02-24
 ### Corrigé
-- Ajout d’un décalage de rendu haut sécurisé pour SSD1306 afin d’éviter le chevauchement avec les variantes à bande jaune.
-- Décalage de toutes les pages OLED (en-tête, lignes, graphes, prévisions, logs, écrans de boot) pour respecter la zone réservée en haut des écrans SSD1306.
-
-### Notes
-- La cible OLED unique reste inchangée.
+- Correction de la compilation des pages OLED via inclusion explicite de `config.h` là où les macros du contrôleur OLED sont utilisées.
+- Remplacement de l’expression ternaire `constexpr` basée sur macros par des constantes préprocesseur pour satisfaire l’évaluation stricte à la compilation.
+- Conservation du comportement de zone haute sécurisée SSD1306 pour éviter le chevauchement de la bande jaune.

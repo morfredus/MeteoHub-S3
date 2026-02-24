@@ -1,6 +1,6 @@
 # Configuration
 
-Version minimale valide : 1.0.166
+Version minimale valide : 1.0.167
 
 ## Fichiers modifiables
 - `include/secrets.h` (identifiants, clé API, coordonnées)
