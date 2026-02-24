@@ -1,6 +1,6 @@
 # Guide utilisateur
 
-Version minimale valide : 1.0.169
+Version minimale valide : 1.0.170
 
 - Tourner l’encodeur pour naviguer entre les pages.
 - Le clic encodeur ouvre le menu.

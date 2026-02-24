@@ -1,6 +1,6 @@
 # FAQ
 
-Minimum valid version: 1.0.169
+Minimum valid version: 1.0.170
 
 ## Which display is supported?
 Only OLED (SH1106/SSD1306).

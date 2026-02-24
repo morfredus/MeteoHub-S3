@@ -1,6 +1,6 @@
 # FAQ
 
-Version minimale valide : 1.0.169
+Version minimale valide : 1.0.170
 
 ## Quel afficheur est supporté ?
 Uniquement OLED (SH1106/SSD1306).

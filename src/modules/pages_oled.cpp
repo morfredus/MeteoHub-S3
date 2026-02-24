@@ -22,11 +22,12 @@ constexpr int OLED_SAFE_TOP_Y = 16;
 constexpr int OLED_SAFE_TOP_Y = 0;
 #endif
 constexpr int OLED_HEADER_Y = 0;
-constexpr int OLED_LINE_1_Y = 12;
-constexpr int OLED_LINE_2_Y = 16;
-constexpr int OLED_LINE_3_Y = 28;
-constexpr int OLED_LINE_4_Y = 40;
-constexpr int OLED_LINE_5_Y = 52;
+constexpr int OLED_CONTENT_TOP_Y = OLED_SAFE_TOP_Y;
+constexpr int OLED_LINE_1_Y = OLED_CONTENT_TOP_Y;
+constexpr int OLED_LINE_2_Y = OLED_CONTENT_TOP_Y + 12;
+constexpr int OLED_LINE_3_Y = OLED_CONTENT_TOP_Y + 24;
+constexpr int OLED_LINE_4_Y = OLED_CONTENT_TOP_Y + 36;
+constexpr int OLED_LINE_5_Y = OLED_CONTENT_TOP_Y + 46;
 constexpr int OLED_GRAPH_X = 0;
 constexpr int OLED_GRAPH_Y = OLED_SAFE_TOP_Y;
 constexpr int OLED_GRAPH_W = 90;
@@ -145,7 +146,7 @@ void pageLogs_oled(DisplayInterface& d, int pageIndex, int pageCount, int scroll
 	int y = OLED_LINE_1_Y;
 	for (int i = scrollOffset; i < totalLogs; i++) {
 		d.text(0, y, getLog(i));
-		y += 8;
+		y += 10;
 		if (y > OLED_LINE_5_Y) break;
 	}
 

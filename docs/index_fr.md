@@ -1,6 +1,6 @@
 # Index de la documentation
 
-Version minimale valide : 1.0.169
+Version minimale valide : 1.0.170
 
 - [Démarrage rapide](getting_started_fr.md)
 - [Câblage matériel](hardware_wiring_fr.md)

@@ -1,9 +1,9 @@
 # Changelog
 
-Minimum valid version: 1.0.169
+Minimum valid version: 1.0.170
 
-## [1.0.169] - 2026-02-24
+## [1.0.170] - 2026-02-24
 ### Fixed
-- Restored page titles to the top line (yellow zone on SSD1306 variants).
-- Kept only page content protected below the SSD1306 yellow-band area.
-- Corrected graph top boundary so plotted lines no longer cross into the yellow zone.
+- Applied the graph safe-zone layout scheme to other OLED pages.
+- Kept page titles in the top band and moved forecast/logs content start below SSD1306 reserved top area.
+- Aligned log line spacing to avoid top-content overlap in yellow-band SSD1306 variants.
