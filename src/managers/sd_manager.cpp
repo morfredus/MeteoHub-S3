@@ -3,6 +3,7 @@
 #include "board_config.h"
 
 #include <algorithm>
+#include <driver/gpio.h>
 #include "ff.h" // For f_mkfs
  
 // Valeurs par défaut si non définies dans board_config.h
@@ -67,9 +68,22 @@ void powerCycleSdModuleIfSupported() {
     delay(SD_POWER_ON_STABILIZE_MS);
 }
 
+
+void configureSdGpioDriveStrength() {
+    // Strengthen output edges on SPI outputs for long/noisy wires.
+    gpio_set_drive_capability(static_cast<gpio_num_t>(SD_SCK_PIN), GPIO_DRIVE_CAP_3);
+    gpio_set_drive_capability(static_cast<gpio_num_t>(SD_MOSI_PIN), GPIO_DRIVE_CAP_3);
+    gpio_set_drive_capability(static_cast<gpio_num_t>(SD_CS_PIN), GPIO_DRIVE_CAP_3);
+}
+
 void prepareSdSpiBus() {
+    pinMode(SD_SCK_PIN, OUTPUT);
+    pinMode(SD_MOSI_PIN, OUTPUT);
     pinMode(SD_CS_PIN, OUTPUT);
+    pinMode(SD_MISO_PIN, INPUT_PULLUP);
     digitalWrite(SD_CS_PIN, HIGH);
+
+    configureSdGpioDriveStrength();
 
     SPI.begin(SD_SCK_PIN, SD_MISO_PIN, SD_MOSI_PIN, SD_CS_PIN);
 
