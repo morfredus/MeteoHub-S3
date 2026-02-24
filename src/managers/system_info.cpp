@@ -4,6 +4,8 @@
 
 #include "system_info.h"
 
+#include <array>
+
 namespace system_info {
 
 std::string get_system_info() {
