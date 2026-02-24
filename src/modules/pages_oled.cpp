@@ -31,9 +31,9 @@ constexpr int OLED_LINE_5_Y = OLED_CONTENT_TOP_Y + 46;
 constexpr int OLED_GRAPH_X = 0;
 constexpr int OLED_GRAPH_Y = OLED_SAFE_TOP_Y;
 constexpr int OLED_GRAPH_W = 90;
-constexpr int OLED_GRAPH_H = 38;
+constexpr int OLED_GRAPH_H = 28;
 constexpr int OLED_VALUE_COL_X = 92;
-constexpr int OLED_TIME_BOTTOM_Y = 54;
+constexpr int OLED_TIME_BOTTOM_Y = OLED_SAFE_TOP_Y + 38;
 constexpr int OLED_BOOT_BAR_W = 100;
 constexpr int OLED_BOOT_BAR_H = 10;
 
