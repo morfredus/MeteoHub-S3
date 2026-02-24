@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-// Interface d'affichage générique commune OLED/LCD
+// Interface d'affichage générique
 class DisplayInterface {
 public:
     virtual ~DisplayInterface() = default;
