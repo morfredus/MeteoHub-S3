@@ -1,6 +1,6 @@
 # FAQ
 
-Minimum valid version: 1.0.167
+Minimum valid version: 1.0.169
 
 ## Which display is supported?
 Only OLED (SH1106/SSD1306).
@@ -12,4 +12,4 @@ Only OLED (SH1106/SSD1306).
 No, it is optional for long-term archival.
 
 ## My SSD1306 has a yellow top band. Can UI overlap it?
-No. Since version 1.0.167, the firmware applies a reserved top zone on SSD1306 and shifts page rendering to prevent overlap with this band.
+The page title stays on the top line (yellow band area), while the page content area is kept below the reserved SSD1306 top zone to avoid overlap.

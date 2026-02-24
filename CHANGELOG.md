@@ -1,9 +1,9 @@
 # Changelog
 
-Minimum valid version: 1.0.167
+Minimum valid version: 1.0.169
 
-## [1.0.167] - 2026-02-24
+## [1.0.169] - 2026-02-24
 ### Fixed
-- Fixed OLED page compilation by explicitly including `config.h` where OLED controller macros are used.
-- Replaced constexpr ternary on controller macros with preprocessor constants to satisfy strict compile-time evaluation.
-- Kept SSD1306 safe top-zone behavior to avoid overlap with yellow-band panels.
+- Restored page titles to the top line (yellow zone on SSD1306 variants).
+- Kept only page content protected below the SSD1306 yellow-band area.
+- Corrected graph top boundary so plotted lines no longer cross into the yellow zone.

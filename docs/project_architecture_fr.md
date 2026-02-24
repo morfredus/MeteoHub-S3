@@ -1,6 +1,6 @@
 # Architecture du projet
 
-Version minimale valide : 1.0.167
+Version minimale valide : 1.0.169
 
 - `src/modules/` : modules matériels et affichage OLED
 - `src/managers/` : gestionnaires fonctionnels et orchestration
