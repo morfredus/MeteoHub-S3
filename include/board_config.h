@@ -42,19 +42,4 @@
 
     #define ENCODER_MODEL_EC11
 
-#elif defined(ESP32_S3_LCD)
-
-    #define ENCODER_MODEL_HW040
-
-    // ------------------------------------
-    // TFT ST7789 — Mapping FIXE ESP32-S3
-    // ------------------------------------
-    #define DISPLAY_CS_PIN      13
-    #define DISPLAY_MOSI_PIN    11
-    #define DISPLAY_SCK_PIN     12
-    #define DISPLAY_DC_PIN      10
-    #define DISPLAY_RST_PIN      9
-    #define DISPLAY_BL_PIN      46
-    #define DISPLAY_MISO_PIN    -1
-
 #endif
