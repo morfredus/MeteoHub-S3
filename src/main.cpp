@@ -18,10 +18,6 @@
 #include "modules/oled_display.h"
 #include "modules/pages_oled.h"
 #endif
-#if defined(ESP32_S3_LCD)
-#include "modules/st7789_display.h"
-#include "modules/pages_st7789.h"
-#endif
 #include "utils/logs.h"
 
 DisplayInterface* display = nullptr;
@@ -40,9 +36,6 @@ void setup() {
 #if defined(ESP32_S3_OLED)
     static OledDisplay oled;
     display = &oled;
-#elif defined(ESP32_S3_LCD)
-    static St7789Display lcd;
-    display = &lcd;
 #endif
     display->begin();
     neoInit();
@@ -71,7 +64,7 @@ void setup() {
         delay(100); // Debounce
         if (digitalRead(0) == LOW) {
             display->clear();
-            // Utilisation de la méthode center de base (compatible OLED/LCD)
+            // Utilisation de la méthode center de base
             display->center(30, "MAINTENANCE");
             display->center(50, "Maintenir BOOT");
             display->center(70, "pour Formater");
@@ -115,27 +108,21 @@ void setup() {
     sdCard.begin();
 
     // Etape 1 : Splash Screen (MORFREDUS + Projet)
-#if defined(ESP32_S3_LCD)
-    drawSplashScreen_st7789(*display);
-#elif defined(ESP32_S3_OLED)
+#if defined(ESP32_S3_OLED)
     drawSplashScreen_oled(*display);
 #endif
 
     LOG_INFO("System Boot");
 
     // Etape 2 : Capteurs
-#if defined(ESP32_S3_LCD)
-    drawBootProgress_st7789(*display, 1, 5, "Init Capteurs...");
-#elif defined(ESP32_S3_OLED)
+#if defined(ESP32_S3_OLED)
     drawBootProgress_oled(*display, 1, 5, "Init Capteurs...");
 #endif
     sensors.begin();
     delay(200); // Petit delai visuel
 
     // Etape 3 : WiFi
-#if defined(ESP32_S3_LCD)
-    drawBootProgress_st7789(*display, 2, 5, "Connexion WiFi...");
-#elif defined(ESP32_S3_OLED)
+#if defined(ESP32_S3_OLED)
     drawBootProgress_oled(*display, 2, 5, "Connexion WiFi...");
 #endif
     wifi.begin();
@@ -157,9 +144,7 @@ void setup() {
     }
 
     // Etape 4 : Heure
-#if defined(ESP32_S3_LCD)
-    drawBootProgress_st7789(*display, 3, 5, "Sync Heure...");
-#elif defined(ESP32_S3_OLED)
+#if defined(ESP32_S3_OLED)
     drawBootProgress_oled(*display, 3, 5, "Sync Heure...");
 #endif
     configTime(3600, 3600, "pool.ntp.org");
@@ -179,16 +164,12 @@ void setup() {
     }
 
     // Etape 5 : Pret
-#if defined(ESP32_S3_LCD)
-    drawBootProgress_st7789(*display, 4, 5, "Chargement Historique...");
-#elif defined(ESP32_S3_OLED)
+#if defined(ESP32_S3_OLED)
     drawBootProgress_oled(*display, 4, 5, "Chargement Historique...");
 #endif
     
     // Etape 6 : Lancement
-#if defined(ESP32_S3_LCD)
-    drawBootProgress_st7789(*display, 5, 5, "Systeme Pret");
-#elif defined(ESP32_S3_OLED)
+#if defined(ESP32_S3_OLED)
     drawBootProgress_oled(*display, 5, 5, "Systeme Pret");
 #endif
     delay(800);
