@@ -19,7 +19,39 @@
 #define C_GREY      0x8410
 #define C_DARKGREY  0x4208
 #endif
- 
+
+namespace {
+constexpr unsigned long UI_MESSAGE_SHORT_MS = 1000;
+constexpr unsigned long UI_MESSAGE_LONG_MS = 2000;
+}
+
+void UiManager::showTransientMessage(UiTransientMessageType messageType, unsigned long durationMs) {
+    transientMessage = messageType;
+    transientMessageUntilMs = millis() + durationMs;
+    drawPage();
+}
+
+bool UiManager::processTransientMessage() {
+    if (transientMessage == UI_MESSAGE_NONE) {
+        return false;
+    }
+
+    if (transientMessageUntilMs == 0 || millis() < transientMessageUntilMs) {
+        return true;
+    }
+
+    if (pendingFormatResult) {
+        pendingFormatResult = false;
+        showTransientMessage(pendingFormatResultSuccess ? UI_MESSAGE_FORMAT_SUCCESS : UI_MESSAGE_FORMAT_FAIL, UI_MESSAGE_LONG_MS);
+        return true;
+    }
+
+    transientMessage = UI_MESSAGE_NONE;
+    transientMessageUntilMs = 0;
+    drawPage();
+    return false;
+}
+
 void UiManager::begin(DisplayInterface& display, WifiManager& wifiMgr, SensorManager& sensorMgr, ForecastManager& forecastMgr, HistoryManager& historyMgr, SdManager& sdMgr) {
     d = &display;
     wifi = &wifiMgr;
@@ -76,6 +108,10 @@ void UiManager::update() {
         lastRefresh = millis();
     }
 
+    if (processTransientMessage()) {
+        return;
+    }
+
     handleButtons();
 
     // Rafraîchissement auto
@@ -119,20 +155,12 @@ void UiManager::handleButtons() {
             d->center(h / 2 - 10, "Formatage SD...");
             d->center(h / 2 + 10, "Veuillez patienter.");
             d->show();
-            
-            bool success = sd->format();
-            
-            d->clear();
-            if (success) {
-                d->center(h / 2, "Formatage reussi !");
-            } else {
-                d->center(h / 2, "Echec du formatage.");
-            }
-            d->show();
-            delay(2000);
 
+            bool success = sd->format();
             confirmFormatMode = false;
-            drawPage();
+            pendingFormatResult = true;
+            pendingFormatResultSuccess = success;
+            showTransientMessage(UI_MESSAGE_FORMAT_IN_PROGRESS, 50);
             return;
         }
         if (btnBack) {
@@ -156,8 +184,7 @@ void UiManager::handleButtons() {
             d->center(32, "Logs effaces !");
 #endif
             d->show();
-            delay(1000);
-            drawPage();
+            showTransientMessage(UI_MESSAGE_LOGS_CLEARED, UI_MESSAGE_SHORT_MS);
         } else if (btnBack) {
             confirmClearLogsMode = false;
             drawPage();
@@ -178,8 +205,7 @@ void UiManager::handleButtons() {
             d->center(32, "Historique efface !");
 #endif
             d->show();
-            delay(1000);
-            drawPage();
+            showTransientMessage(UI_MESSAGE_HISTORY_CLEARED, UI_MESSAGE_SHORT_MS);
         } else if (btnBack) {
             confirmClearHistMode = false;
             drawPage();
@@ -270,6 +296,57 @@ void UiManager::drawPage() {
     last_rendered_page = page;
     last_rendered_menu_mode = menuMode;
     last_rendered_confirm_mode = current_confirm_mode;
+
+    if (transientMessage != UI_MESSAGE_NONE) {
+        d->clear();
+#if defined(ESP32_S3_OLED)
+        d->center(10, "INFO");
+        switch (transientMessage) {
+            case UI_MESSAGE_FORMAT_IN_PROGRESS:
+                d->center(28, "Formatage SD...");
+                d->center(44, "Veuillez patienter");
+                break;
+            case UI_MESSAGE_FORMAT_SUCCESS:
+                d->center(32, "Formatage reussi !");
+                break;
+            case UI_MESSAGE_FORMAT_FAIL:
+                d->center(32, "Echec formatage");
+                break;
+            case UI_MESSAGE_LOGS_CLEARED:
+                d->center(32, "Logs effaces !");
+                break;
+            case UI_MESSAGE_HISTORY_CLEARED:
+                d->center(32, "Historique efface !");
+                break;
+            case UI_MESSAGE_NONE:
+                break;
+        }
+#else
+        switch (transientMessage) {
+            case UI_MESSAGE_FORMAT_IN_PROGRESS:
+                d->center(LCD_HEIGHT / 2 - 10, "Formatage SD...", C_WHITE, 1);
+                d->center(LCD_HEIGHT / 2 + 10, "Veuillez patienter.", C_WHITE, 1);
+                break;
+            case UI_MESSAGE_FORMAT_SUCCESS:
+                d->center(LCD_HEIGHT / 2, "Formatage reussi !", C_GREEN, 1);
+                break;
+            case UI_MESSAGE_FORMAT_FAIL:
+                d->center(LCD_HEIGHT / 2, "Echec du formatage.", C_RED, 1);
+                break;
+            case UI_MESSAGE_LOGS_CLEARED:
+                d->center(LCD_HEIGHT / 2, "Logs effaces !", C_GREEN, 1);
+                break;
+            case UI_MESSAGE_HISTORY_CLEARED:
+                d->center(LCD_HEIGHT / 2, "Historique efface !", C_GREEN, 1);
+                break;
+            case UI_MESSAGE_NONE:
+                break;
+        }
+#endif
+        d->show();
+        return;
+    }
+
     // Ecrans de confirmation
     if (confirmClearLogsMode || confirmClearHistMode || confirmFormatMode) {
         d->clear();
