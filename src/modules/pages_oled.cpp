@@ -112,9 +112,9 @@ void pageNetwork_oled(DisplayInterface& d, WifiManager& wifi, int pageIndex, int
 	d.clear();
 	d.text(0, OLED_HEADER_Y, getHeader("Net.", pageIndex, pageCount));
 
-	d.text(0, OLED_LINE_2_Y, std::string("SSID: ") + wifi.ssid());
-	d.text(0, OLED_LINE_3_Y, std::string("IP:   ") + wifi.ip());
-	d.text(0, OLED_LINE_4_Y, std::string("RSSI: ") + std::to_string(wifi.rssi()) + " dBm");
+	d.text(0, OLED_LINE_1_Y, std::string("SSID: ") + wifi.ssid());
+	d.text(0, OLED_LINE_2_Y, std::string("IP:   ") + wifi.ip());
+	d.text(0, OLED_LINE_3_Y, std::string("RSSI: ") + std::to_string(wifi.rssi()) + " dBm");
 
 	d.show();
 }
@@ -126,10 +126,10 @@ void pageSystem_oled(DisplayInterface& d, int pageIndex, int pageCount) {
 	d.clear();
 	d.text(0, OLED_HEADER_Y, getHeader("Sys.", pageIndex, pageCount));
 
-	d.text(0, OLED_LINE_2_Y, std::string("Heap:  ") + std::to_string(s.heapFree / 1024) + " KB");
-	d.text(0, OLED_LINE_3_Y, std::string("PSRAM: ") + std::to_string(s.psramFree / 1024) + " KB");
-	d.text(0, OLED_LINE_4_Y, std::string("Flash: ") + std::to_string(s.flashSize / 1024 / 1024) + " MB");
-	d.text(0, OLED_LINE_5_Y, std::string("Ver:   ") + std::string(PROJECT_VERSION));
+	d.text(0, OLED_LINE_1_Y, std::string("Heap:  ") + std::to_string(s.heapFree / 1024) + " KB");
+	d.text(0, OLED_LINE_2_Y, std::string("PSRAM: ") + std::to_string(s.psramFree / 1024) + " KB");
+	d.text(0, OLED_LINE_3_Y, std::string("Flash: ") + std::to_string(s.flashSize / 1024 / 1024) + " MB");
+	d.text(0, OLED_LINE_4_Y, std::string("Ver:   ") + std::string(PROJECT_VERSION));
 
 	d.show();
 }
@@ -160,16 +160,16 @@ void pageWeather_oled(DisplayInterface& d, SensorManager& sensors, ForecastManag
 	d.text(0, OLED_HEADER_Y, getHeader("Meteo", pageIndex, pageCount));
 
 	if (data.valid) {
-		d.text(0, OLED_LINE_2_Y, std::string("Temp: ") + formatFloat(data.temperature, 1) + " C");
-		d.text(0, OLED_LINE_3_Y, std::string("Hum:  ") + formatFloat(data.humidity, 0) + " %");
-		d.text(0, OLED_LINE_4_Y, std::string("Pres: ") + formatFloat(data.pressure, 0) + " hPa");
+		d.text(0, OLED_LINE_1_Y, std::string("Temp: ") + formatFloat(data.temperature, 1) + " C");
+		d.text(0, OLED_LINE_2_Y, std::string("Hum:  ") + formatFloat(data.humidity, 0) + " %");
+		d.text(0, OLED_LINE_3_Y, std::string("Pres: ") + formatFloat(data.pressure, 0) + " hPa");
 
 		std::string weather_now = shortenWeatherDescriptionForOled(forecast.today.description);
 		constexpr size_t OLED_WEATHER_MAX_CHARS = 18;
 		if (weather_now.size() > OLED_WEATHER_MAX_CHARS) {
 			weather_now = weather_now.substr(0, OLED_WEATHER_MAX_CHARS - 1) + "~";
 		}
-		d.text(0, OLED_LINE_5_Y, std::string("Ciel: ") + weather_now);
+		d.text(0, OLED_LINE_4_Y, std::string("Ciel: ") + weather_now);
 	} else {
 		d.center(OLED_LINE_3_Y, "AHT20 / BMP280");
 		d.center(OLED_LINE_4_Y, "Non detecte");
