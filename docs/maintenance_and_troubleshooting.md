@@ -1,6 +1,6 @@
 # Maintenance and Troubleshooting
 
-Minimum valid version: 1.0.165
+Minimum valid version: 1.0.166
 
 - If Wi-Fi does not connect, verify credentials in `include/secrets.h`.
 - If forecast is empty, verify API key and network access.

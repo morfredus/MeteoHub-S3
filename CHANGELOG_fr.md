@@ -1,10 +1,11 @@
 # Journal des modifications
 
-Version minimale valide : 1.0.165
+Version minimale valide : 1.0.166
 
-## [1.0.165] - 2026-02-24
-### Modifié
-- Suppression de l'ancien environnement d'affichage secondaire pour conserver un firmware uniquement OLED.
-- Nettoyage des branches de code, modules et chemins UI liés à la pile d'affichage supprimée.
-- Mise à jour et synchronisation de toute la documentation utilisateur (EN/FR) pour un fonctionnement OLED uniquement.
-- Archivage de l'historique des versions dans `docs/archive/changelog_legacy_fr.md`.
+## [1.0.166] - 2026-02-24
+### Corrigé
+- Ajout d’un décalage de rendu haut sécurisé pour SSD1306 afin d’éviter le chevauchement avec les variantes à bande jaune.
+- Décalage de toutes les pages OLED (en-tête, lignes, graphes, prévisions, logs, écrans de boot) pour respecter la zone réservée en haut des écrans SSD1306.
+
+### Notes
+- La cible OLED unique reste inchangée.

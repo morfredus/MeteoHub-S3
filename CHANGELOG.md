@@ -1,10 +1,11 @@
 # Changelog
 
-Minimum valid version: 1.0.165
+Minimum valid version: 1.0.166
 
-## [1.0.165] - 2026-02-24
-### Changed
-- Removed the legacy secondary display environment and kept a single OLED-only firmware target.
-- Cleaned code paths, modules, and UI branches tied to the removed display stack.
-- Updated and synchronized user documentation (EN/FR) for OLED-only operation.
-- Archived legacy changelog history in `docs/archive/changelog_legacy.md`.
+## [1.0.166] - 2026-02-24
+### Fixed
+- Added a safe top rendering offset for SSD1306 to avoid overlap with yellow band variants.
+- Shifted all OLED pages (header, lines, graphs, forecast, logs, boot screens) to respect the reserved top area on SSD1306 panels.
+
+### Notes
+- OLED-only target remains unchanged.
