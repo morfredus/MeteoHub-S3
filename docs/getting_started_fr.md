@@ -1,6 +1,6 @@
 # Démarrage rapide
 
-Version minimale valide : 1.0.166
+Version minimale valide : 1.0.167
 
 1. Cloner le projet.
 2. Créer `include/secrets.h` à partir de `include/secrets_example.h`.
