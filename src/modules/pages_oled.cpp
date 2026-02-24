@@ -9,18 +9,30 @@
 #include <string>
 #include <time.h>
 #include "pages_oled.h"
+#include "config.h"
 #include "../utils/logs.h"
 #include "../utils/system.h"
 #include <Arduino.h>
 
 namespace {
 constexpr int OLED_WIDTH = 128;
+#if OLED_CONTROLLER == OLED_CTRL_SSD1306
+constexpr int OLED_SAFE_TOP_Y = 16;
+#else
+constexpr int OLED_SAFE_TOP_Y = 0;
+#endif
+constexpr int OLED_HEADER_Y = OLED_SAFE_TOP_Y;
+constexpr int OLED_LINE_1_Y = OLED_SAFE_TOP_Y + 10;
+constexpr int OLED_LINE_2_Y = OLED_SAFE_TOP_Y + 18;
+constexpr int OLED_LINE_3_Y = OLED_SAFE_TOP_Y + 26;
+constexpr int OLED_LINE_4_Y = OLED_SAFE_TOP_Y + 34;
+constexpr int OLED_LINE_5_Y = OLED_SAFE_TOP_Y + 42;
 constexpr int OLED_GRAPH_X = 0;
-constexpr int OLED_GRAPH_Y = 14;
+constexpr int OLED_GRAPH_Y = OLED_SAFE_TOP_Y + 8;
 constexpr int OLED_GRAPH_W = 90;
-constexpr int OLED_GRAPH_H = 38;
+constexpr int OLED_GRAPH_H = 28;
 constexpr int OLED_VALUE_COL_X = 92;
-constexpr int OLED_TIME_BOTTOM_Y = 54;
+constexpr int OLED_TIME_BOTTOM_Y = OLED_SAFE_TOP_Y + 38;
 constexpr int OLED_BOOT_BAR_W = 100;
 constexpr int OLED_BOOT_BAR_H = 10;
 
@@ -49,6 +61,10 @@ std::string shortenWeatherDescriptionForOled(const std::string& description) {
 	replaceAll("légère", "lég.");
 
 	return shortened;
+}
+
+int safeTopForDisplay() {
+    return OLED_SAFE_TOP_Y;
 }
 }
 
@@ -93,11 +109,11 @@ std::string translateAlert(const std::string& event) {
 // 4. Page réseau : affiche SSID, IP, RSSI
 void pageNetwork_oled(DisplayInterface& d, WifiManager& wifi, int pageIndex, int pageCount) {
 	d.clear();
-	d.text(0, 0, getHeader("Net.", pageIndex, pageCount));
+	d.text(0, OLED_HEADER_Y, getHeader("Net.", pageIndex, pageCount));
 
-	d.text(0, 16, std::string("SSID: ") + wifi.ssid());
-	d.text(0, 28, std::string("IP:   ") + wifi.ip());
-	d.text(0, 40, std::string("RSSI: ") + std::to_string(wifi.rssi()) + " dBm");
+	d.text(0, OLED_LINE_2_Y, std::string("SSID: ") + wifi.ssid());
+	d.text(0, OLED_LINE_3_Y, std::string("IP:   ") + wifi.ip());
+	d.text(0, OLED_LINE_4_Y, std::string("RSSI: ") + std::to_string(wifi.rssi()) + " dBm");
 
 	d.show();
 }
@@ -107,12 +123,12 @@ void pageSystem_oled(DisplayInterface& d, int pageIndex, int pageCount) {
 	SystemInfo s = getSystemInfo();
 
 	d.clear();
-	d.text(0, 0, getHeader("Sys.", pageIndex, pageCount));
+	d.text(0, OLED_HEADER_Y, getHeader("Sys.", pageIndex, pageCount));
 
-	d.text(0, 16, std::string("Heap:  ") + std::to_string(s.heapFree / 1024) + " KB");
-	d.text(0, 28, std::string("PSRAM: ") + std::to_string(s.psramFree / 1024) + " KB");
-	d.text(0, 40, std::string("Flash: ") + std::to_string(s.flashSize / 1024 / 1024) + " MB");
-	d.text(0, 52, std::string("Ver:   ") + std::string(PROJECT_VERSION));
+	d.text(0, OLED_LINE_2_Y, std::string("Heap:  ") + std::to_string(s.heapFree / 1024) + " KB");
+	d.text(0, OLED_LINE_3_Y, std::string("PSRAM: ") + std::to_string(s.psramFree / 1024) + " KB");
+	d.text(0, OLED_LINE_4_Y, std::string("Flash: ") + std::to_string(s.flashSize / 1024 / 1024) + " MB");
+	d.text(0, OLED_LINE_5_Y, std::string("Ver:   ") + std::string(PROJECT_VERSION));
 
 	d.show();
 }
@@ -120,17 +136,17 @@ void pageSystem_oled(DisplayInterface& d, int pageIndex, int pageCount) {
 // 6. Page logs : affiche les derniers logs
 void pageLogs_oled(DisplayInterface& d, int pageIndex, int pageCount, int scrollOffset) {
 	d.clear();
-	d.text(0, 0, getHeader("Logs", pageIndex, pageCount));
+	d.text(0, OLED_HEADER_Y, getHeader("Logs", pageIndex, pageCount));
 
     int totalLogs = getLogCount();
     // Sécurité si le buffer a changé entre temps
     if (scrollOffset >= totalLogs) scrollOffset = 0;
 
-	int y = 12;
+	int y = OLED_LINE_1_Y;
 	for (int i = scrollOffset; i < totalLogs; i++) {
 		d.text(0, y, getLog(i));
-		y += 10;
-		if (y > 54) break;
+		y += 8;
+		if (y > OLED_LINE_5_Y) break;
 	}
 
 	d.show();
@@ -140,22 +156,22 @@ void pageLogs_oled(DisplayInterface& d, int pageIndex, int pageCount, int scroll
 void pageWeather_oled(DisplayInterface& d, SensorManager& sensors, ForecastManager& forecast, int pageIndex, int pageCount) {
 	SensorData data = sensors.read();
 	d.clear();
-	d.text(0, 0, getHeader("Meteo", pageIndex, pageCount));
+	d.text(0, OLED_HEADER_Y, getHeader("Meteo", pageIndex, pageCount));
 
 	if (data.valid) {
-		d.text(0, 16, std::string("Temp: ") + formatFloat(data.temperature, 1) + " C");
-		d.text(0, 28, std::string("Hum:  ") + formatFloat(data.humidity, 0) + " %");
-		d.text(0, 40, std::string("Pres: ") + formatFloat(data.pressure, 0) + " hPa");
+		d.text(0, OLED_LINE_2_Y, std::string("Temp: ") + formatFloat(data.temperature, 1) + " C");
+		d.text(0, OLED_LINE_3_Y, std::string("Hum:  ") + formatFloat(data.humidity, 0) + " %");
+		d.text(0, OLED_LINE_4_Y, std::string("Pres: ") + formatFloat(data.pressure, 0) + " hPa");
 
 		std::string weather_now = shortenWeatherDescriptionForOled(forecast.today.description);
 		constexpr size_t OLED_WEATHER_MAX_CHARS = 18;
 		if (weather_now.size() > OLED_WEATHER_MAX_CHARS) {
 			weather_now = weather_now.substr(0, OLED_WEATHER_MAX_CHARS - 1) + "~";
 		}
-		d.text(0, 52, std::string("Ciel: ") + weather_now);
+		d.text(0, OLED_LINE_5_Y, std::string("Ciel: ") + weather_now);
 	} else {
-		d.center(30, "AHT20 / BMP280");
-		d.center(42, "Non detecte");
+		d.center(OLED_LINE_3_Y, "AHT20 / BMP280");
+		d.center(OLED_LINE_4_Y, "Non detecte");
 	}
 	d.show();
 }
@@ -169,12 +185,12 @@ void pageGraph_oled(DisplayInterface& d, HistoryManager& history, int type, int 
     else if (type == 1) title = "Hum. (%)";
     else title = "Pres. (hPa)";
     
-    d.text(0, 0, getHeader(title, pageIndex, pageCount));
+    d.text(0, OLED_HEADER_Y, getHeader(title, pageIndex, pageCount));
 
     const auto& records = history.getRecentHistory();
     int count = records.size();
     if (count == 0) {
-        d.center(30, "Attente donnees...");
+        d.center(OLED_LINE_3_Y, "Attente donnees...");
         d.show();
         return;
     }
@@ -259,37 +275,37 @@ void pageGraph_oled(DisplayInterface& d, HistoryManager& history, int type, int 
 // 9. Page prévisions : affiche prévisions aujourd'hui, demain, alertes
 void pageForecast_oled(DisplayInterface& d, ForecastManager& forecast, int view, int pageIndex, int pageCount) {
     d.clear();
-    d.text(0, 0, getHeader("Prev.", pageIndex, pageCount));
+    d.text(0, OLED_HEADER_Y, getHeader("Prev.", pageIndex, pageCount));
 
     if (view == 0) { // Vue "Aujourd'hui"
-        d.center(14, "Aujourd'hui");
-        d.text(0, 28, std::string("Min: ") + formatFloat(forecast.today.temp_min, 0) + "C / Max: " + formatFloat(forecast.today.temp_max, 0) + "C");
-        d.center(42, forecast.today.description);
+        d.center(OLED_LINE_1_Y, "Aujourd'hui");
+        d.text(0, OLED_LINE_3_Y, std::string("Min: ") + formatFloat(forecast.today.temp_min, 0) + "C / Max: " + formatFloat(forecast.today.temp_max, 0) + "C");
+        d.center(OLED_LINE_5_Y, forecast.today.description);
 
     } else if (view == 1) { // Vue "Demain"
-        d.center(14, "Demain");
-        d.text(0, 28, std::string("Min: ") + formatFloat(forecast.tomorrow.temp_min, 0) + "C / Max: " + formatFloat(forecast.tomorrow.temp_max, 0) + "C");
-        d.center(42, forecast.tomorrow.description);
+        d.center(OLED_LINE_1_Y, "Demain");
+        d.text(0, OLED_LINE_3_Y, std::string("Min: ") + formatFloat(forecast.tomorrow.temp_min, 0) + "C / Max: " + formatFloat(forecast.tomorrow.temp_max, 0) + "C");
+        d.center(OLED_LINE_5_Y, forecast.tomorrow.description);
 
     } else { // Vue "Alertes"
-        d.center(14, "Alertes Météo");
+        d.center(OLED_LINE_1_Y, "Alertes Météo");
         if (forecast.alert_active) {
-            d.center(28, forecast.alert.sender);
+            d.center(OLED_LINE_3_Y, forecast.alert.sender);
             
             // Traduction et affichage de l'alerte
             std::string event = translateAlert(forecast.alert.event);
             if (event.size() > 20) {
                 size_t split = event.rfind(' ', 20);
                 if (split == std::string::npos) split = 20;
-                d.center(40, event.substr(0, split));
+                d.center(OLED_LINE_4_Y, event.substr(0, split));
                 if (split + 1 < event.size()) {
-                    d.center(50, event.substr(split + 1));
+                    d.center(OLED_LINE_5_Y, event.substr(split + 1));
                 }
             } else {
-                d.center(42, event);
+                d.center(OLED_LINE_4_Y, event);
             }
         } else {
-            d.center(35, "Aucune alerte");
+            d.center(OLED_LINE_4_Y, "Aucune alerte");
         }
     }
     d.show();
@@ -302,16 +318,17 @@ void drawSplashScreen_oled(DisplayInterface& d) {
     disp.clear();
     
     // Animation simple pour OLED
-    disp.center(20, "MORFREDUS");
-    disp.drawLine(10, 35, 118, 35);
+    const int safe_top = safeTopForDisplay();
+    disp.center(safe_top + 10, "MORFREDUS");
+    disp.drawLine(10, safe_top + 24, 118, safe_top + 24);
     
     disp.show();
     delay(2000);
 
     disp.clear();
-    disp.center(15, PROJECT_NAME);
-    disp.center(30, std::string("v") + PROJECT_VERSION);
-    disp.center(50, "Initialisation...");
+    disp.center(safe_top + 8, PROJECT_NAME);
+    disp.center(safe_top + 20, std::string("v") + PROJECT_VERSION);
+    disp.center(safe_top + 36, "Initialisation...");
     disp.show();
     delay(1500);
 }
@@ -320,17 +337,18 @@ void drawBootProgress_oled(DisplayInterface& d, int step, int total, const std::
     OledDisplay& disp = static_cast<OledDisplay&>(d);
     disp.clear();
     
-    disp.center(10, PROJECT_NAME);
+    const int safe_top = safeTopForDisplay();
+    disp.center(safe_top + 2, PROJECT_NAME);
     
     // Barre de progression
     int barW = OLED_BOOT_BAR_W;
     int barH = OLED_BOOT_BAR_H;
     int barX = (OLED_WIDTH - barW) / 2;
-    int barY = 30;
+    int barY = safe_top + 20;
     
     disp.bar(barX, barY, barW, barH, step, total);
     
-    disp.center(50, msg);
+    disp.center(safe_top + 38, msg);
     disp.show();
 }
 #endif
