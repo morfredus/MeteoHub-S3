@@ -1,62 +1,13 @@
-## Weather Alert Description
-The API /api/alert now returns the full alert description (in French when available). The web dashboard displays this text for maximum clarity and localization.
 # Configuration
 
-Minimum valid version: 1.0.155
+Minimum valid version: 1.0.170
 
-## New Features (since 1.0.127)
-- **Weather Alert Card**: The dashboard always displays a weather alert card (via `/api/alert`).
-- **Live Sensor Data**: The `/api/live` endpoint returns real sensor values (temperature, humidity, pressure).
-- **Dashboard vs History**: The dashboard graph shows the last 2 hours; the history page shows 24 hours.
-- **Strict Project Compliance**: All API routes are declared only inside `_setupApi()`. No forbidden comments or placeholders exist in the codebase.
+## Editable files
+- `include/secrets.h` (credentials, API key, coordinates)
+- `include/config.h` (refresh rate, OLED contrast, mdns hostname)
 
+## Reserved file
+- `include/board_config.h` (hardware pin mapping)
 
-## Goal
-Configure network, weather API, and runtime constants safely.
-
-## Files you may edit
-### 1) `include/secrets.h`
-Create this file from `include/secrets_example.h`.
-
-Use this file for private data:
-- Wi-Fi credentials array (`WIFI_CREDENTIALS`)
-- OpenWeatherMap API key (`OWM_API_KEY`)
-- Coordinates (`OWM_LAT`, `OWM_LON`)
-- Units and language (`OWM_UNITS`, `OWM_LANG`)
-
-### 2) `include/config.h`
-Use this file for functional tuning:
-- Dashboard refresh interval (`DASHBOARD_REFRESH_MS`)
-- Wi-Fi retry delay (`WIFI_RETRY_DELAY_MS`)
-- OLED contrast (`OLED_CONTRAST`)
-- Ping test flag (`ENABLE_PING_TEST`)
-
-
-## OLED/LCD environments
-The firmware supports both SH1106/SSD1306 OLED and ST7789 LCD. Display type is selected at build time (`esp32-s3-oled` / `esp32-s3-lcd`), while OLED controller/address are configured in `include/config.h`. See user guide and hardware wiring for details.
-
-## File you should not edit casually
-### `include/board_config.h`
-This file defines GPIO mapping and should only be changed after hardware decision.
-
-## Platform version metadata
-Project name and version are injected from `platformio.ini` using build flags:
-- `PROJECT_NAME`
-- `PROJECT_VERSION`
-
-Do not hardcode project name/version elsewhere.
-
-## Secure setup tips
-- `include/secrets.h` must be created from `include/secrets_example.h`.
-- Never push `include/secrets.h` to GitHub.
-- Never share `include/secrets.h` outside your trusted local environment.
-
-## Quick configuration sanity check
-- Build works (`platformio run`)
-- Wi-Fi connects at boot
-- Forecast page populates data
-- Logs page shows network/weather events
-
-## OLED UTF-8 Support
-
-From version 1.0.154, the OLED backend (`OledDisplay`) supports UTF-8 rendering for accented characters and special symbols. All text displayed on OLED (SH1106/SSD1306) uses the `drawUTF8` method, ensuring proper display of French, Spanish, and other international characters. The display module is now named `OledDisplay` to reflect its neutrality and compatibility with both SH1106 and SSD1306 controllers.
+## Metadata
+Project name/version are injected from `platformio.ini` with build flags.
