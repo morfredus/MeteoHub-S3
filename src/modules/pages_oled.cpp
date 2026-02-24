@@ -19,7 +19,7 @@ constexpr int OLED_WIDTH = 128;
 #if OLED_CONTROLLER == OLED_CTRL_SSD1306
 constexpr int OLED_SAFE_TOP_Y = 16;
 #else
-constexpr int OLED_SAFE_TOP_Y = 0;
+constexpr int OLED_SAFE_TOP_Y = 13;
 #endif
 constexpr int OLED_HEADER_Y = 0;
 constexpr int OLED_CONTENT_TOP_Y = OLED_SAFE_TOP_Y;
@@ -280,27 +280,27 @@ void pageForecast_oled(DisplayInterface& d, ForecastManager& forecast, int view,
 
     if (view == 0) { // Vue "Aujourd'hui"
         d.center(OLED_LINE_1_Y, "Aujourd'hui");
-        d.text(0, OLED_LINE_3_Y, std::string("Min: ") + formatFloat(forecast.today.temp_min, 0) + "C / Max: " + formatFloat(forecast.today.temp_max, 0) + "C");
-        d.center(OLED_LINE_5_Y, forecast.today.description);
+        d.text(0, OLED_LINE_2_Y, std::string("Min: ") + formatFloat(forecast.today.temp_min, 0) + "C / Max: " + formatFloat(forecast.today.temp_max, 0) + "C");
+        d.center(OLED_LINE_3_Y, forecast.today.description);
 
     } else if (view == 1) { // Vue "Demain"
         d.center(OLED_LINE_1_Y, "Demain");
-        d.text(0, OLED_LINE_3_Y, std::string("Min: ") + formatFloat(forecast.tomorrow.temp_min, 0) + "C / Max: " + formatFloat(forecast.tomorrow.temp_max, 0) + "C");
-        d.center(OLED_LINE_5_Y, forecast.tomorrow.description);
+        d.text(0, OLED_LINE_2_Y, std::string("Min: ") + formatFloat(forecast.tomorrow.temp_min, 0) + "C / Max: " + formatFloat(forecast.tomorrow.temp_max, 0) + "C");
+        d.center(OLED_LINE_3_Y, forecast.tomorrow.description);
 
     } else { // Vue "Alertes"
         d.center(OLED_LINE_1_Y, "Alertes Météo");
         if (forecast.alert_active) {
-            d.center(OLED_LINE_3_Y, forecast.alert.sender);
+            d.center(OLED_LINE_2_Y, forecast.alert.sender);
             
             // Traduction et affichage de l'alerte
             std::string event = translateAlert(forecast.alert.event);
             if (event.size() > 20) {
                 size_t split = event.rfind(' ', 20);
                 if (split == std::string::npos) split = 20;
-                d.center(OLED_LINE_4_Y, event.substr(0, split));
+                d.center(OLED_LINE_3_Y, event.substr(0, split));
                 if (split + 1 < event.size()) {
-                    d.center(OLED_LINE_5_Y, event.substr(split + 1));
+                    d.center(OLED_LINE_4_Y, event.substr(split + 1));
                 }
             } else {
                 d.center(OLED_LINE_4_Y, event);
@@ -320,7 +320,7 @@ void drawSplashScreen_oled(DisplayInterface& d) {
     
     // Animation simple pour OLED
     const int safe_top = safeTopForDisplay();
-    disp.center(safe_top + 10, "MORFREDUS");
+    disp.center(safe_top + 10, "morfredus");
     disp.drawLine(10, safe_top + 24, 118, safe_top + 24);
     
     disp.show();
