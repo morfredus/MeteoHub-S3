@@ -1,6 +1,70 @@
 // Affichage de l'alerte météo sur le dashboard
 let current_alert_payload = null;
 
+// Injection dynamique des valeurs min/max via graph_config.js
+// (graph_config.js est généré lors du build à partir de config.h)
+let GRAPH_SCALE_MODE = window.GRAPH_CONFIG?.scale_mode ?? 2;
+let GRAPH_SCALE_MARGIN_PCT = window.GRAPH_CONFIG?.scale_margin_pct ?? 20;
+const GRAPH_TEMP_MIN = window.GRAPH_CONFIG?.temp_min ?? -10.0;
+const GRAPH_TEMP_MAX = window.GRAPH_CONFIG?.temp_max ?? 40.0;
+const GRAPH_HUM_MIN  = window.GRAPH_CONFIG?.hum_min  ?? 20.0;
+const GRAPH_HUM_MAX  = window.GRAPH_CONFIG?.hum_max  ?? 90.0;
+const GRAPH_PRES_MIN = window.GRAPH_CONFIG?.pres_min ?? 970.0;
+const GRAPH_PRES_MAX = window.GRAPH_CONFIG?.pres_max ?? 1040.0;
+
+// Ajout UI : contrôle du mode d'échelle et du pourcentage
+function setGraphScaleMode(mode) {
+    GRAPH_SCALE_MODE = mode;
+    updateChartScale();
+}
+function setGraphScaleMarginPct(pct) {
+    GRAPH_SCALE_MARGIN_PCT = pct;
+    document.getElementById('scaleMarginValue').textContent = pct;
+    updateChartScale();
+}
+
+function getDynamicMinMax(data, key, userMin, userMax) {
+    let dynMin = Math.min(...data.map(d => d[key]));
+    let dynMax = Math.max(...data.map(d => d[key]));
+    if (dynMin === dynMax) {
+        dynMin -= 0.3;
+        dynMax += 0.3;
+    }
+    if (GRAPH_SCALE_MODE === 1) {
+        return [dynMin, dynMax];
+    } else if (GRAPH_SCALE_MODE === 2) {
+        let range = dynMax - dynMin;
+        let margin = range * (GRAPH_SCALE_MARGIN_PCT / 100);
+        let min = dynMin - margin;
+        let max = dynMax + margin;
+        min = Math.max(min, userMin);
+        max = Math.min(max, userMax);
+        return [min, max];
+    } else {
+        return [userMin, userMax];
+    }
+}
+
+function updateChartScale() {
+    if (!chart || !chart.data || !chart.data.datasets) return;
+    const data = chart.data.labels.length > 0 ? chart.data.datasets[0].data.map((_, i) => ({
+        temp: chart.data.datasets[0].data[i],
+        hum: chart.data.datasets[1].data[i],
+        pres: chart.data.datasets[2].data[i]
+    })) : [];
+    if (data.length === 0) return;
+    let [tmin, tmax] = getDynamicMinMax(data, 'temp', GRAPH_TEMP_MIN, GRAPH_TEMP_MAX);
+    let [hmin, hmax] = getDynamicMinMax(data, 'hum', GRAPH_HUM_MIN, GRAPH_HUM_MAX);
+    let [pmin, pmax] = getDynamicMinMax(data, 'pres', GRAPH_PRES_MIN, GRAPH_PRES_MAX);
+    chart.options.scales.y.min = tmin;
+    chart.options.scales.y.max = tmax;
+    chart.options.scales.y1.min = hmin;
+    chart.options.scales.y1.max = hmax;
+    chart.options.scales.y2.min = pmin;
+    chart.options.scales.y2.max = pmax;
+    chart.update();
+}
+
 function getAlertThemeClass(level) {
     if (level >= 3) return 'alert-level-red';
     if (level === 2) return 'alert-level-orange';
@@ -310,7 +374,7 @@ function updateChart(data) {
     chart.data.datasets[0].data = data.map((d) => d.temp);
     chart.data.datasets[1].data = data.map((d) => d.hum);
     chart.data.datasets[2].data = data.map((d) => d.pres);
-    chart.update();
+    updateChartScale();
 }
 
 function initChart() {
@@ -392,6 +456,7 @@ function initChart() {
             }
         }
     });
+    updateChartScale();
 }
 
 window.onload = () => {
@@ -404,6 +469,16 @@ window.onload = () => {
         initChart();
         fetchHistory();
         setInterval(fetchHistory, HISTORY_REFRESH_MS);
+        // Synchronise le slider avec la valeur initiale
+        const marginSlider = document.getElementById('scaleMargin');
+        const marginValue = document.getElementById('scaleMarginValue');
+        if (marginSlider && marginValue) {
+            marginSlider.value = GRAPH_SCALE_MARGIN_PCT;
+            marginValue.textContent = GRAPH_SCALE_MARGIN_PCT;
+        }
+        // Synchronise le select avec la valeur initiale
+        const modeSelect = document.getElementById('scaleMode');
+        if (modeSelect) modeSelect.value = GRAPH_SCALE_MODE;
     }
 
     if (isStatsPage()) {

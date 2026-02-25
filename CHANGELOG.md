@@ -1,4 +1,11 @@
-# Changelog
+
+
+# [1.0.171] – 2026-02-25
+- Added advanced scale management for temperature, humidity and pressure graphs.
+- Three modes: fixed, dynamic, mixed (with configurable expansion).
+- Interactive controls on web UI to select mode and percentage.
+- Contextual help below the graph.
+- Automatic synchronization between config.h and web UI.
 
 Minimum valid version: 1.0.170
 

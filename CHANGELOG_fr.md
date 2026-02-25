@@ -1,4 +1,11 @@
-# Journal des modifications
+
+
+# [1.0.171] – 2026-02-25
+- Ajout de la gestion avancée des échelles pour les graphiques température, humidité et pression.
+- Trois modes disponibles : fixe, dynamique, mixte (avec élargissement configurable).
+- Contrôles interactifs sur l'UI web pour choisir le mode et le pourcentage.
+- Aide contextuelle sous le graphique.
+- Synchronisation automatique entre config.h et l'UI web.
 
 Version minimale valide : 1.0.170
 

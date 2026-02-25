@@ -1,6 +1,6 @@
 # MeteoHub S3
 
-> **Minimum valid version: 1.0.170**
+> **Minimum valid version: 1.0.171**
 
 ## Full Documentation
 - [Documentation Index](docs/index.md)
@@ -21,12 +21,20 @@ MeteoHub S3 is an ESP32-S3 PlatformIO project focused on an OLED dashboard (SH11
 - Build: `platformio run`
 - Upload: `platformio run --target upload`
 
-## Key Features
-- Real-time local sensor display
-- Weather forecast pages
-- Local log pages
-- Persistent history (LittleFS + optional SD archiving)
-- OTA update from web interface
-- UTF-8 rendering on OLED
+## Main features
+- Temperature, humidity, pressure graph display
+- Three scale modes for graphs:
+	1. Fixed: bounds defined in configuration (config.h), ideal for multi-day comparison.
+	2. Dynamic: bounds calculated from displayed data, highlights recent variations.
+	3. Mixed: combines both, expands dynamic scale by a percentage (configurable), but stays within fixed bounds.
+- Control scale mode and expansion percentage on web UI
+- Automatic parameter synchronization between config.h and web UI
+- Contextual help below the graph (mode explanations)
 
-For setup, usage, and troubleshooting, see `docs/`.
+## Usage
+
+See docs/user_guide.md for details on scale modes.
+
+---
+
+Any change in config.h is injected into the web UI at build time.
