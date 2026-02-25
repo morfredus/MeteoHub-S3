@@ -1,5 +1,7 @@
 # Index de la documentation
 
+**Débutant ?** Voir le [Guide Débutant](../docs/beginner/index_fr.md) ou [Beginner's Guide](../docs/beginner/index.md)
+
 Version minimale valide : 1.0.170
 
 - [Démarrage rapide](getting_started_fr.md)

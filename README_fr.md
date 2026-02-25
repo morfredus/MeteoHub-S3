@@ -5,6 +5,10 @@
 ## Documentation complète
 - [Index de la documentation](docs/index_fr.md)
 
+## Documentation Débutant
+- [Guide Débutant (Français)](docs/beginner/index_fr.md)
+- [Beginner's Guide (English)](docs/beginner/index.md)
+
 ## Présentation
 MeteoHub S3 est un projet PlatformIO pour ESP32-S3 centré sur un tableau de bord OLED (SH1106/SSD1306 via U8g2). Il affiche les données capteurs locales, les prévisions météo, les logs et l’état système.
 
