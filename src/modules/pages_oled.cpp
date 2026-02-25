@@ -210,21 +210,52 @@ void pageGraph_oled(DisplayInterface& d, HistoryManager& history, int type, int 
     }
     int startIndex = count - visibleCount;
 
-    // Calculate min/max from displayed data window
-    float minVal = FLT_MAX;
-    float maxVal = -FLT_MAX;
-    for (int i = startIndex; i < count; i++) {
-        float val;
-        if (type == 0) val = records[i].t;
-        else if (type == 1) val = records[i].h;
-        else val = records[i].p;
-        if (val < minVal) minVal = val;
-        if (val > maxVal) maxVal = val;
+    float minVal, maxVal;
+    float userMin, userMax;
+    if (type == 0) {
+        userMin = GRAPH_TEMP_MIN;
+        userMax = GRAPH_TEMP_MAX;
+    } else if (type == 1) {
+        userMin = GRAPH_HUM_MIN;
+        userMax = GRAPH_HUM_MAX;
+    } else {
+        userMin = GRAPH_PRES_MIN;
+        userMax = GRAPH_PRES_MAX;
     }
-    if (minVal == maxVal) {
-        float margin = (type == 2) ? 0.5f : 0.3f;
-        minVal -= margin;
-        maxVal += margin;
+
+    if (GRAPH_SCALE_MODE == GRAPH_SCALE_FIXED) {
+        minVal = userMin;
+        maxVal = userMax;
+    } else {
+        // Calcul dynamique
+        float dynMin = FLT_MAX;
+        float dynMax = -FLT_MAX;
+        for (int i = startIndex; i < count; i++) {
+            float val;
+            if (type == 0) val = records[i].t;
+            else if (type == 1) val = records[i].h;
+            else val = records[i].p;
+            if (val < dynMin) dynMin = val;
+            if (val > dynMax) dynMax = val;
+        }
+        if (dynMin == dynMax) {
+            float margin = (type == 2) ? 0.5f : 0.3f;
+            dynMin -= margin;
+            dynMax += margin;
+        }
+        if (GRAPH_SCALE_MODE == GRAPH_SCALE_DYNAMIC) {
+            minVal = dynMin;
+            maxVal = dynMax;
+        } else {
+            // Mode mixte : élargissement
+            float range = dynMax - dynMin;
+            float margin = range * (GRAPH_SCALE_MARGIN_PCT / 100.0f);
+            minVal = dynMin - margin;
+            maxVal = dynMax + margin;
+            // Limiter aux bornes utilisateur
+            if (minVal < userMin) minVal = userMin;
+            if (maxVal > userMax) maxVal = userMax;
+        }
     }
 
     int labelPrecision = 0;

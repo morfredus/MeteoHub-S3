@@ -1,27 +1,39 @@
 #pragma once
- 
-// Fréquence de rafraîchissement du dashboard
-#define DASHBOARD_REFRESH_MS 1000
 
-// Délai entre tentatives WiFi
-#define WIFI_RETRY_DELAY_MS  5000
 
-// Contraste OLED
-#define OLED_CONTRAST        180
+// =====================
+// Paramètres graphiques
+// =====================
+#define GRAPH_SCALE_FIXED        0   // Utiliser min/max fixes
+#define GRAPH_SCALE_DYNAMIC      1   // Utiliser min/max dynamiques
+#define GRAPH_SCALE_MIXED        2   // Mixte : dynamique élargi
+#define GRAPH_SCALE_MODE         GRAPH_SCALE_MIXED // Mode d'échelle pour les graphes
+#define GRAPH_SCALE_MARGIN_PCT   20   // Pourcentage d'élargissement pour le mode mixte (ex: 20 = 20%)
+#define GRAPH_TEMP_MIN           -10.0f   // Température minimale affichée (°C)
+#define GRAPH_TEMP_MAX            40.0f   // Température maximale affichée (°C)
+#define GRAPH_HUM_MIN             20.0f   // Humidité minimale affichée (%)
+#define GRAPH_HUM_MAX             90.0f   // Humidité maximale affichée (%)
+#define GRAPH_PRES_MIN           970.0f   // Pression minimale affichée (hPa)
+#define GRAPH_PRES_MAX          1040.0f   // Pression maximale affichée (hPa)
 
-// Activer le test de ping
-#define ENABLE_PING_TEST     1
+// ===============
+// Paramètres OLED
+// ===============
+#define OLED_CONTRAST            180
+#define OLED_CTRL_SH1106         1
+#define OLED_CTRL_SSD1306        2
+#define OLED_CONTROLLER          OLED_CTRL_SH1106
+#define OLED_I2C_ADDRESS         0x3C
 
-// Anti-rebond pour les boutons
-#define BUTTON_GUARD_MS      200
+// ===============
+// Paramètres réseau
+// ===============
+#define WEB_MDNS_HOSTNAME        "meteohub" // Accessible via http://meteohub.local
+#define WIFI_RETRY_DELAY_MS      5000
+#define ENABLE_PING_TEST         1
 
-// Nom mDNS pour accès local
-#define WEB_MDNS_HOSTNAME "meteohub" // Accessible via http://meteohub.local
-
-// OLED controller selection (manual)
-#define OLED_CTRL_SH1106 1
-#define OLED_CTRL_SSD1306 2
-#define OLED_CONTROLLER OLED_CTRL_SH1106
-
-// OLED I2C address (commonly 0x3C or 0x3D)
-#define OLED_I2C_ADDRESS 0x3C
+// ===============
+// Paramètres système
+// ===============
+#define DASHBOARD_REFRESH_MS     1000
+#define BUTTON_GUARD_MS          200

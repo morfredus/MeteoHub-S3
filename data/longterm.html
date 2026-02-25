@@ -18,6 +18,19 @@
 
         <div class="chart-container" style="height: 600px;">
             <canvas id="historyChart"></canvas>
+            <div class="graph-controls" style="margin-top:10px; display:flex; flex-direction:column; align-items:center;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <label for="scaleMode">Échelle :</label>
+                    <select id="scaleMode" onchange="setGraphScaleMode(Number(this.value))">
+                        <option value="0">Fixe</option>
+                        <option value="1">Dynamique</option>
+                        <option value="2" selected>Mixte</option>
+                    </select>
+                    <label for="scaleMargin" style="margin-left:10px;">Élargissement (%) :</label>
+                    <input type="range" id="scaleMargin" min="0" max="50" value="20" step="1" style="vertical-align:middle;" oninput="setGraphScaleMarginPct(Number(this.value))">
+                    <span id="scaleMarginValue">20</span>%
+                </div>
+            </div>
         </div>
         <p style="text-align: center; color: #666; margin-top: 10px;">Données des 24 dernières heures</p>
 
