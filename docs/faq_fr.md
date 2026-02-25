@@ -1,5 +1,7 @@
 # FAQ
 
+**Débutant ?** Voir le [Guide Débutant](../beginner/index_fr.md) ou [Beginner's Guide](../beginner/index.md)
+
 Version minimale valide : 1.0.170
 
 ## Quel afficheur est supporté ?
