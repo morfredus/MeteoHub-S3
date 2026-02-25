@@ -1,3 +1,7 @@
+# [1.0.173] – 2026-02-26
+- Ajout de l'API diagnostic OLED (FPS, durée de rendu, erreurs I2C) exposée dans `/api/system`.
+- La page système de l'UI web affiche désormais les diagnostics OLED en temps réel.
+- Version minimale valide : 1.0.173
 # [1.0.172] – 2026-02-25
 - Ajout et liens croisés de la documentation débutant (EN/FR) dans tous les documents utilisateur.
 - Tous les guides, FAQ, configuration et index référencent désormais l'onboarding débutant.

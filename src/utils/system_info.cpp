@@ -5,6 +5,7 @@
 #include <WiFi.h>
 #include "config.h"
 #include "managers/sd_manager.h"
+#include "modules/oled_display.h"
 
 
 std::string getSystemInfoJson(SdManager* sd) {
@@ -17,6 +18,7 @@ std::string getSystemInfoJson(SdManager* sd) {
     doc["chip_model"] = ESP.getChipModel();
     doc["chip_revision"] = ESP.getChipRevision();
     doc["cpu_freq_mhz"] = ESP.getCpuFreqMHz();
+    doc["flash_size_mb"] = (uint32_t)(ESP.getFlashChipSize() / (1024 * 1024));
 
     if (psramFound()) {
         doc["free_psram_b"] = ESP.getFreePsram();
@@ -39,6 +41,12 @@ std::string getSystemInfoJson(SdManager* sd) {
     } else {
         doc["sd_card"] = "not_mounted";
     }
+
+    // Ajout diagnostic OLED
+    JsonObject oled_diag = doc.createNestedObject("oled_diag");
+    oled_diag["fps"] = OledDisplay::getFps();
+    oled_diag["last_render_ms"] = OledDisplay::getLastRenderMs();
+    oled_diag["i2c_errors"] = OledDisplay::getI2cErrorCount();
 
     std::string output;
     serializeJson(doc, output);

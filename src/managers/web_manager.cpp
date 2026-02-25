@@ -197,6 +197,9 @@ void WebManager::_setupRoutes() {
     _server.on("/ota.html", HTTP_GET, [](AsyncWebServerRequest *request) {
         request->send(200, "text/html", web_ota_html);
     });
+    _server.on("/system.html", HTTP_GET, [](AsyncWebServerRequest *request) {
+        request->send(200, "text/html", web_system_html);
+    });
     // Raccourci pour l'accès manuel
     _server.on("/files", HTTP_GET, [](AsyncWebServerRequest *request) {
         request->redirect("/files.html");

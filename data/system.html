@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informations système - MeteoHub S3</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="app.js"></script>
+    <script src="menu.js"></script>
+    <script src="footer.js"></script>
+</head>
+<body data-page="system">
+    <div class="container">
+        <header>
+            <h1>MeteoHub S3</h1>
+            <div class="header-right">
+                <span id="sensorInvalidBadge" class="sensor-badge" hidden>Capteur invalide</span>
+                <div id="status">Informations système</div>
+            </div>
+        </header>
+        <nav data-shared-menu="true" data-active=""></nav>
+        <div class="grid">
+            <div class="card">
+                <h2>Diagnostic Affichage</h2>
+                <div style="display:flex; flex-direction:column; gap:8px; align-items:center;">
+                    <div><b>FPS :</b> <span id="oledFps">--</span></div>
+                    <div><b>Dernier rendu :</b> <span id="oledRender">--</span> ms</div>
+                    <div><b>Erreurs I2C :</b> <span id="oledI2cErr">--</span></div>
+                </div>
+            </div>
+            <div class="card">
+                <h2>Système</h2>
+                <table id="systemInfo">
+                    <tr><th>Nom du projet</th><td id="sysName">--</td></tr>
+                    <tr><th>Version</th><td id="sysVer">--</td></tr>
+                    <tr><th>Uptime</th><td id="sysUptime">--</td></tr>
+                    <tr><th>Heap libre</th><td id="sysHeap">--</td></tr>
+                    <tr><th>PSRAM libre</th><td id="sysPsram">--</td></tr>
+                    <tr><th>Taille Flash</th><td id="sysFlash">--</td></tr>
+                    <tr><th>WiFi RSSI</th><td id="sysRssi">--</td></tr>
+                    <tr><th>Adresse IP</th><td id="sysIp">--</td></tr>
+                    <tr><th>LittleFS</th><td id="sysLittleFS">--</td></tr>
+                    <tr><th>SD Card</th><td id="sysSD">--</td></tr>
+                </table>
+            </div>
+        </div>
+        <footer></footer>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/api/system')
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('sysName').innerText = data.project_name || '--';
+                document.getElementById('sysVer').innerText = data.project_version || '--';
+                document.getElementById('sysUptime').innerText = data.uptime_s ? data.uptime_s + ' s' : '--';
+                document.getElementById('sysHeap').innerText = data.free_heap_b ? data.free_heap_b + ' o' : '--';
+                document.getElementById('sysPsram').innerText = data.free_psram_b ? data.free_psram_b + ' o' : '--';
+                document.getElementById('sysRssi').innerText = data.wifi_rssi ? data.wifi_rssi + ' dBm' : '--';
+                document.getElementById('sysIp').innerText = data.ip_address || '--';
+                if(data.littlefs){
+                    document.getElementById('sysLittleFS').innerText = `Utilisé : ${(data.littlefs.used_b/1024).toFixed(1)} / ${(data.littlefs.total_b/1024).toFixed(1)} KB`;
+                }
+                if(data.sd_card && typeof data.sd_card === 'object'){
+                    document.getElementById('sysSD').innerText = `Utilisé : ${(data.sd_card.used_b/1024).toFixed(1)} / ${(data.sd_card.total_b/1024).toFixed(1)} KB (${data.sd_card.size_mb} Mo)`;
+                } else {
+                    document.getElementById('sysSD').innerText = 'Non montée';
+                }
+                document.getElementById('sysHeap').innerText = data.free_heap_b ? (data.free_heap_b/1024).toFixed(1) + ' KB' : '--';
+                document.getElementById('sysPsram').innerText = data.free_psram_b ? (data.free_psram_b/1024).toFixed(1) + ' KB' : '--';
+                document.getElementById('sysFlash').innerText = data.flash_size_mb ? data.flash_size_mb + ' Mo' : '--';
+                if(data.oled_diag){
+                    document.getElementById('oledFps').innerText = (data.oled_diag.fps && data.oled_diag.fps > 0) ? data.oled_diag.fps : '--';
+                    document.getElementById('oledRender').innerText = (data.oled_diag.last_render_ms && data.oled_diag.last_render_ms > 0) ? data.oled_diag.last_render_ms : '--';
+                    document.getElementById('oledI2cErr').innerText = (typeof data.oled_diag.i2c_errors === 'number') ? data.oled_diag.i2c_errors : '--';
+                } else {
+                    document.getElementById('oledFps').innerText = '--';
+                    document.getElementById('oledRender').innerText = '--';
+                    document.getElementById('oledI2cErr').innerText = '--';
+                }
+            });
+    });
+    </script>
+</body>
+</html>

@@ -10,6 +10,11 @@
 #include "config.h"
 #include "utils/logs.h"
 
+float OledDisplay::fps = 0.0f;
+uint32_t OledDisplay::last_render_ms = 0;
+uint32_t OledDisplay::i2c_error_count = 0;
+uint32_t OledDisplay::last_render_time = 0;
+
 bool OledDisplay::begin() {
     d.reset();
 
@@ -61,20 +66,38 @@ void OledDisplay::center(int y, const std::string& s) {
     d->drawUTF8(x, y + 10, s.c_str());
 }
 
-void OledDisplay::bar(int x, int y, int w, int h, int value, int max) {
-    if (!d || max <= 0 || w <= 0 || h <= 0) return;
-
-    int filled = map(value, 0, max, 0, w);
-    filled = std::max(0, std::min(w, filled));
-
-    d->drawFrame(x, y, w, h);
-    if (filled > 2 && h > 2) {
-        d->drawBox(x + 1, y + 1, filled - 2, h - 2);
-    }
+// --- Diagnostic ---
+float OledDisplay::getFps() {
+    return fps;
 }
+    void OledDisplay::bar(int x, int y, int w, int h, int value, int max) {
+        if (!d || max <= 0) return;
+        int filled = (int)((float)value / max * w);
+        d->drawFrame(x, y, w, h);
+        if (filled > 0) d->drawBox(x, y, filled, h);
+    }
 
-void OledDisplay::drawLine(int x0, int y0, int x1, int y1) {
-    if (!d) return;
-    d->drawLine(x0, y0, x1, y1);
+    void OledDisplay::drawLine(int x0, int y0, int x1, int y1) {
+        if (!d) return;
+        d->drawLine(x0, y0, x1, y1);
+    }
+uint32_t OledDisplay::getLastRenderMs() {
+    return last_render_ms;
+}
+uint32_t OledDisplay::getI2cErrorCount() {
+    return i2c_error_count;
+}
+void OledDisplay::notifyRender(uint32_t durationMs) {
+    last_render_ms = durationMs;
+    uint32_t now = millis();
+    if (last_render_time > 0) {
+        float frame_time = (now - last_render_time) / 1000.0f;
+        if (frame_time > 0.0f)
+            fps = 1.0f / frame_time;
+    }
+    last_render_time = now;
+}
+void OledDisplay::notifyI2cError() {
+    i2c_error_count++;
 }
 #endif
