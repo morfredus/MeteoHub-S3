@@ -1,4 +1,7 @@
-
+# [1.0.172] – 2026-02-25
+- Added and cross-linked beginner documentation (EN/FR) in all user-facing docs.
+- All guides, FAQ, configuration, and index now reference beginner onboarding.
+- Minimum valid version: 1.0.172
 
 # [1.0.171] – 2026-02-25
 - Added advanced scale management for temperature, humidity and pressure graphs.
@@ -7,9 +10,7 @@
 - Contextual help below the graph.
 - Automatic synchronization between config.h and web UI.
 
-Minimum valid version: 1.0.170
-
-## [1.0.170] - 2026-02-24
+# [1.0.170] - 2026-02-24
 ### Fixed
 - Applied the graph safe-zone layout scheme to other OLED pages.
 - Kept page titles in the top band and moved forecast/logs content start below SSD1306 reserved top area.
