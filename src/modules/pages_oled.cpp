@@ -188,8 +188,23 @@ void pageGraph_oled(DisplayInterface& d, HistoryManager& history, int type, int 
     
     d.text(0, OLED_HEADER_Y, getHeader(title, pageIndex, pageCount));
 
-    const auto& records = history.getRecentHistory();
-    int count = records.size();
+
+    // --- Limitation stricte à 2h pour l'affichage OLED ---
+    const auto& all_records = history.getRecentHistory();
+    std::vector<HistoryRecord> records_2h;
+    if (!all_records.empty()) {
+        time_t now = all_records.back().timestamp;
+        for (auto it = all_records.rbegin(); it != all_records.rend(); ++it) {
+            if (now - it->timestamp <= 7200) {
+                records_2h.push_back(*it);
+            } else {
+                break;
+            }
+        }
+        // Les push_back en reverse, donc on remet dans l'ordre chronologique
+        std::reverse(records_2h.begin(), records_2h.end());
+    }
+    int count = records_2h.size();
     if (count == 0) {
         d.center(OLED_LINE_3_Y, "Attente donnees...");
         d.show();
@@ -203,7 +218,7 @@ void pageGraph_oled(DisplayInterface& d, HistoryManager& history, int type, int 
     int graphH = OLED_GRAPH_H; // Hauteur reduite pour laisser place au temps en bas
     int bottomY = graphY + graphH;
 
-    // N'utiliser que la fenetre affichee (points les plus recents)
+    // N'utiliser que la fenêtre affichée (points les plus récents, max largeur graphe)
     int visibleCount = count;
     if (visibleCount > graphW + 1) {
         visibleCount = graphW + 1;
@@ -227,14 +242,14 @@ void pageGraph_oled(DisplayInterface& d, HistoryManager& history, int type, int 
         minVal = userMin;
         maxVal = userMax;
     } else {
-        // Calcul dynamique
+        // Calcul dynamique sur la fenêtre 2h
         float dynMin = FLT_MAX;
         float dynMax = -FLT_MAX;
         for (int i = startIndex; i < count; i++) {
             float val;
-            if (type == 0) val = records[i].t;
-            else if (type == 1) val = records[i].h;
-            else val = records[i].p;
+            if (type == 0) val = records_2h[i].t;
+            else if (type == 1) val = records_2h[i].h;
+            else val = records_2h[i].p;
             if (val < dynMin) dynMin = val;
             if (val > dynMax) dynMax = val;
         }
@@ -283,15 +298,15 @@ void pageGraph_oled(DisplayInterface& d, HistoryManager& history, int type, int 
     
     // Drawing loop with gap detection
     for (int i = startIndex + 1; i < count; i++) {
-        // If gap is > 90 seconds, don't draw the connecting line
-        if (records[i].timestamp - records[i-1].timestamp > 90) {
+        // Si trou > 90s, ne pas relier
+        if (records_2h[i].timestamp - records_2h[i-1].timestamp > 90) {
             continue;
         }
 
         float val1, val2;
-        if (type == 0) { val1 = records[i-1].t; val2 = records[i].t; }
-        else if (type == 1) { val1 = records[i-1].h; val2 = records[i].h; }
-        else { val1 = records[i-1].p; val2 = records[i].p; }
+        if (type == 0) { val1 = records_2h[i-1].t; val2 = records_2h[i].t; }
+        else if (type == 1) { val1 = records_2h[i-1].h; val2 = records_2h[i].h; }
+        else { val1 = records_2h[i-1].p; val2 = records_2h[i].p; }
 
         int localIndex1 = (i - 1) - startIndex;
         int localIndex2 = i - startIndex;
