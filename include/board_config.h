@@ -30,8 +30,8 @@
 // Module SD (SPI secondaire SAFE)
 // ------------------------------------
 #define SD_CS_PIN    10
-#define SD_SCK_PIN   12
 #define SD_MOSI_PIN  11
+#define SD_SCK_PIN   12
 #define SD_MISO_PIN  13
 
 
