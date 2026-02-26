@@ -19,7 +19,7 @@ namespace {
  // Fréquences SPI à tester pour le montage (du plus rapide au plus lent)
  constexpr int SD_INIT_FREQUENCIES[] = {8000000, 4000000, 1000000, 400000};
  // Fréquences SPI à tester pour le formatage (plus conservateur)
- constexpr int SD_FORMAT_FREQUENCIES[] = {4000000, 1000000, 400000};
+ constexpr int SD_FORMAT_FREQUENCIES[] = {400000, 1000000, 4000000};
  
  // Délais pour la gestion de l'alimentation du module SD
  constexpr int SD_POWER_OFF_DELAY_MS = 50;
@@ -123,9 +123,10 @@ namespace {
      // Envoi de >74 cycles d'horloge avec CS=HIGH pour mettre la carte en mode SPI natif.
      // C'est une étape cruciale pour la compatibilité avec certaines cartes.
      digitalWrite(SD_CS_PIN, HIGH);
-     for (int i = 0; i < 16; i++) { // 16 * 8 = 128 cycles
+     for (int i = 0; i < 20; i++) { // 20 * 8 = 160 cycles (marge de sécurité)
          SPI.transfer(0xFF);
      }
+     delay(10); // Stabilisation
  
      // 1. Initialisation bas niveau de la carte
      // Le bus SPI est déjà initialisé par la fonction appelante (format)
@@ -283,11 +284,15 @@ namespace {
      }
  
      powerCycleSdModule();
-     initializeSpiBus(); // Configure pins, drive strength, and call SPI.begin()
  
      bool format_success = false;
      for (int i = 0; i < (sizeof(SD_FORMAT_FREQUENCIES) / sizeof(int)); ++i) {
          int frequency_hz = SD_FORMAT_FREQUENCIES[i];
+         
+         // Réinitialisation complète du bus SPI à chaque tentative
+         SPI.end();
+         initializeSpiBus();
+
          LOG_INFO("SD format attempt #" + std::to_string(i + 1) + " at " + std::to_string(frequency_hz / 1000) + " kHz...");
          if (tryLowLevelFormat(frequency_hz)) {
              LOG_INFO("SD format successful!");
