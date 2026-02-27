@@ -1,3 +1,9 @@
+# [1.0.174] – 2026-02-27
+- Hardened SD card management for ESP32-S3 3.3V modules with adaptive SPI mount retries and improved recovery flow.
+- Added periodic SD health checks and safer reconnect backoff to reduce unstable card states.
+- Improved history CSV writes with guarded directory creation, flush, and retry after remount.
+- Minimum valid version: 1.0.174
+
 # [1.0.173] – 2026-02-26
 - Added OLED diagnostics API (FPS, render time, I2C errors) exposed in `/api/system`.
 - System page in web UI now displays live OLED diagnostics.

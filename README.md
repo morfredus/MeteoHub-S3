@@ -1,6 +1,6 @@
 # MeteoHub S3
 
-> **Minimum valid version: 1.0.172**
+> **Minimum valid version: 1.0.174**
 
 ## Full Documentation
 - [Documentation Index](docs/index.md)
@@ -34,6 +34,7 @@ MeteoHub S3 is an ESP32-S3 PlatformIO project focused on an OLED dashboard (SH11
 - Control scale mode and expansion percentage on web UI
 - Automatic parameter synchronization between config.h and web UI
 - Contextual help below the graph (mode explanations)
+- Robust SD management for ESP32-S3 3.3V modules: adaptive SPI frequency, automatic remount, health checks, and safe history writes
 
 ## Usage
 

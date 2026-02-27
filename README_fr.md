@@ -1,6 +1,6 @@
 # MeteoHub S3
 
-> **Version minimale valide : 1.0.172**
+> **Version minimale valide : 1.0.174**
 
 ## Documentation complète
 - [Index de la documentation](docs/index_fr.md)
@@ -34,6 +34,7 @@ MeteoHub S3 est un projet PlatformIO pour ESP32-S3 centré sur un tableau de bor
 - Contrôle du mode et du pourcentage d'élargissement sur l'UI web
 - Synchronisation automatique des paramètres entre config.h et l'UI web
 - Aide contextuelle sous le graphique (explication des modes)
+- Gestion SD robuste pour modules ESP32-S3 3.3V : fréquence SPI adaptative, remontage automatique, vérifications d’état et écritures sécurisées de l’historique
 
 ## Utilisation
 
