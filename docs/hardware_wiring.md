@@ -1,6 +1,6 @@
 # Hardware Wiring
 
-Minimum valid version: 1.0.170
+Minimum valid version: 1.0.174
 
 This project targets an OLED setup only.
 
@@ -14,3 +14,11 @@ Connected peripherals:
 - AHT20 + BMP280 (I2C)
 - NeoPixel
 - Optional SD card (SPI)
+
+
+## SD Card Reliability (ESP32-S3 3.3V modules)
+1. Keep SPI wires short and common ground stable.
+2. Use a 3.3V-compatible SD module (no 5V-only level shifter).
+3. Firmware now performs adaptive SPI mount retries (8MHz to 400kHz).
+4. Runtime health checks and automatic remount protect long logging sessions.
+5. History writes are retried safely after remount to reduce data loss.

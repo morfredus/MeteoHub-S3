@@ -1,3 +1,9 @@
+# [1.0.174] – 2026-02-27
+- Renforcement de la gestion de la carte SD pour modules ESP32-S3 3.3V avec tentatives de montage SPI adaptatives et reprise améliorée.
+- Ajout de vérifications périodiques d’état SD et d’un backoff de reconnexion plus sûr pour réduire les états instables.
+- Amélioration des écritures CSV d’historique avec création contrôlée du dossier, flush et nouvelle tentative après remontage.
+- Version minimale valide : 1.0.174
+
 # [1.0.173] – 2026-02-26
 - Ajout de l'API diagnostic OLED (FPS, durée de rendu, erreurs I2C) exposée dans `/api/system`.
 - La page système de l'UI web affiche désormais les diagnostics OLED en temps réel.
