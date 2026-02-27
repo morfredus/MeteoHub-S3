@@ -1,10 +1,3 @@
-# [1.2.0] – 2026-02-26
-### Modifié
-- L’affichage des graphes sur l’OLED est désormais limité aux 2 dernières heures de données.
-- L’échelle de l’axe Y sur l’OLED est maintenant dynamique, calculée selon les valeurs min/max de la fenêtre affichée.
-- Aucun changement sur l’affichage des graphes de l’interface web.
-Version minimale valide : 1.2.0
-
 # [1.0.173] – 2026-02-26
 - Ajout de l'API diagnostic OLED (FPS, durée de rendu, erreurs I2C) exposée dans `/api/system`.
 - La page système de l'UI web affiche désormais les diagnostics OLED en temps réel.

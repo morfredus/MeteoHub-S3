@@ -1,10 +1,3 @@
-# [1.2.0] – 2026-02-26
-### Changed
-- OLED graph display now limited to the last 2 hours of data.
-- OLED graph Y-axis is now dynamically scaled based on the min/max values of the displayed window.
-- No change to web UI graph display.
-Minimum valid version: 1.2.0
-
 # [1.0.173] – 2026-02-26
 - Added OLED diagnostics API (FPS, render time, I2C errors) exposed in `/api/system`.
 - System page in web UI now displays live OLED diagnostics.
