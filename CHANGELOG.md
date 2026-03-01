@@ -1,3 +1,8 @@
+# [1.0.177] – 2026-03-01
+1. Changed `esp32-dev-oled` partition table from `default.csv` to `huge_app.csv` to provide enough flash space for the firmware binary.
+2. Kept existing project functionality unchanged; only build memory layout for ESP32 Dev Module was adjusted.
+- Minimum valid version: 1.0.177
+
 # [1.0.176] – 2026-03-01
 1. Fixed `esp32-dev-oled` build failure by enabling OLED display symbols for ESP32 Dev Module compile path.
 2. Unified OLED compile guards so `main`, `ui_manager`, and OLED pages are built for both `esp32-s3-oled` and `esp32-dev-oled`.
