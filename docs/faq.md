@@ -11,6 +11,7 @@ Only OLED (SH1106/SSD1306).
 Use the environment that matches your board:
 - `esp32-s3-oled` for ESP32-S3 DevKitC-1
 - `esp32-dev-oled` for ESP32 Dev Module
+- `esp32-dev-oled-ultra-safe` for deep SD debugging on ESP32 Dev Module
 
 ## Is SD card mandatory?
 No, it is optional for long-term archival.

@@ -1,6 +1,6 @@
 # MeteoHub S3
 
-> **Version minimale valide : 1.0.177**
+> **Version minimale valide : 1.0.178**
 
 ## Documentation complète
 - [Index de la documentation](docs/index_fr.md)
@@ -23,6 +23,7 @@ MeteoHub S3 est un projet PlatformIO pour ESP32-S3 centré sur un tableau de bor
 - Installer PlatformIO dans VS Code
 - Sélectionner l’environnement : `esp32-s3-oled` (ESP32-S3 DevKitC-1)
 - Sélectionner l’environnement : `esp32-dev-oled` (ESP32 Dev Module)
+- Sélectionner l’environnement : `esp32-dev-oled-ultra-safe` (ESP32 Dev Module mode debug SD ultra-safe)
 - Build : `platformio run`
 - Upload : `platformio run --target upload`
 

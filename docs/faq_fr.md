@@ -11,6 +11,7 @@ Uniquement OLED (SH1106/SSD1306).
 Utilisez l’environnement correspondant à votre carte :
 - `esp32-s3-oled` pour ESP32-S3 DevKitC-1
 - `esp32-dev-oled` pour ESP32 Dev Module
+- `esp32-dev-oled-ultra-safe` pour le diagnostic SD approfondi sur ESP32 Dev Module
 
 ## La carte SD est-elle obligatoire ?
 Non, elle est optionnelle pour l’archivage long terme.

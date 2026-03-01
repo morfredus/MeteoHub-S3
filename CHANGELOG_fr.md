@@ -1,3 +1,9 @@
+# [1.0.178] – 2026-03-01
+1. Mise à jour du mapping SD ESP32 Dev Module avec une broche CS plus sûre (`GPIO13`) pour éviter les instabilités liées au strap de `GPIO5`.
+2. Ajout de diagnostics SD détaillés (type de carte, états des broches SPI, fréquence/index par tentative, logs d’initialisation SPI).
+3. Ajout de l’environnement PlatformIO `esp32-dev-oled-ultra-safe` activant `SD_ULTRA_SAFE_DEBUG` (SPI très basse vitesse et drive strength conservateur) pour le diagnostic SD.
+- Version minimale valide : 1.0.178
+
 # [1.0.177] – 2026-03-01
 1. Changement de la table de partitions `esp32-dev-oled` de `default.csv` vers `huge_app.csv` afin de fournir assez d’espace flash pour le binaire firmware.
 2. Fonctionnalité projet inchangée ; seul le layout mémoire de build pour ESP32 Dev Module a été ajusté.

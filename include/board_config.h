@@ -72,7 +72,7 @@
     // ------------------------------------
     // Module SD (VSPI classique et compatible)
     // ------------------------------------
-    #define SD_CS_PIN    5
+    #define SD_CS_PIN    13
     #define SD_MOSI_PIN  23
     #define SD_SCK_PIN   18
     #define SD_MISO_PIN  19

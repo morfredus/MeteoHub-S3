@@ -1,6 +1,6 @@
 # Câblage matériel
 
-Version minimale valide : 1.0.177
+Version minimale valide : 1.0.178
 
 Ce projet cible uniquement une configuration OLED.
 
@@ -18,6 +18,7 @@ Périphériques connectés :
 Environnements PlatformIO :
 1. `esp32-s3-oled` pour ESP32-S3 DevKitC-1
 2. `esp32-dev-oled` pour ESP32 Dev Module
+3. `esp32-dev-oled-ultra-safe` pour le diagnostic SD (SPI très basse vitesse + logs détaillés)
 
 
 ## Fiabilité de la carte SD (modules ESP32-S3 3.3V)
