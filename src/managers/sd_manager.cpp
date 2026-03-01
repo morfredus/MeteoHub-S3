@@ -18,7 +18,7 @@ namespace {
 // 1) Constantes de robustesse SD (init, format, supervision)
 // =================================================================
 #if defined(SD_ULTRA_SAFE_DEBUG)
-constexpr int SD_INIT_FREQUENCIES[] = {400000, 250000};
+constexpr int SD_INIT_FREQUENCIES[] = {400000, 250000, 100000};
 constexpr int SD_FORMAT_FREQUENCIES[] = {250000, 400000};
 #else
 constexpr int SD_INIT_FREQUENCIES[] = {8000000, 4000000, 1000000, 400000};
@@ -48,8 +48,25 @@ bool hasSdOffControl() {
     return SD_OFF_PIN >= 0;
 }
 
+SPIClass* getSdSpi() {
+#if defined(ESP32_DEV_MODULE_OLED)
+    static SPIClass vspi(VSPI);
+    return &vspi;
+#else
+    return &SPI;
+#endif
+}
+
+const char* sdSpiBusName() {
+#if defined(ESP32_DEV_MODULE_OLED)
+    return "VSPI";
+#else
+    return "SPI(default)";
+#endif
+}
 
 const char* sdCardTypeToString(uint8_t card_type) {
+
     switch (card_type) {
         case CARD_MMC: return "MMC";
         case CARD_SD: return "SDSC";
@@ -105,8 +122,8 @@ void initializeSpiBus() {
     gpio_set_drive_capability(static_cast<gpio_num_t>(SD_CS_PIN), GPIO_DRIVE_CAP_3);
 #endif
 
-    SPI.begin(SD_SCK_PIN, SD_MISO_PIN, SD_MOSI_PIN, SD_CS_PIN);
-    LOG_INFO("SD SPI bus initialized (CS=" + std::to_string(SD_CS_PIN) +
+    getSdSpi()->begin(SD_SCK_PIN, SD_MISO_PIN, SD_MOSI_PIN, -1);
+    LOG_INFO("SD SPI bus initialized [" + std::string(sdSpiBusName()) + "] (CS=" + std::to_string(SD_CS_PIN) +
              ", SCK=" + std::to_string(SD_SCK_PIN) +
              ", MISO=" + std::to_string(SD_MISO_PIN) +
              ", MOSI=" + std::to_string(SD_MOSI_PIN) + ")");
@@ -115,7 +132,7 @@ void initializeSpiBus() {
 void sendWakeupClocks() {
     digitalWrite(SD_CS_PIN, HIGH);
     for (int i = 0; i < SD_WAKEUP_CLOCK_BYTES; ++i) {
-        SPI.transfer(0xFF);
+        getSdSpi()->transfer(0xFF);
     }
     delay(10);
 }
@@ -126,7 +143,7 @@ void powerCycleSdModule() {
     }
 
     SD.end();
-    SPI.end();
+    getSdSpi()->end();
     floatSdLines();
 
     setSdModulePower(false);
@@ -163,7 +180,7 @@ bool tryMountAtFrequency(int frequency_hz, int attempt_index, int total_attempts
              " at " + std::to_string(frequency_hz / 1000) + " kHz");
     logSdDebugPinsState();
 
-    if (!SD.begin(SD_CS_PIN, SPI, frequency_hz)) {
+    if (!SD.begin(SD_CS_PIN, *getSdSpi(), frequency_hz)) {
         LOG_WARNING("SD mount failed at " + std::to_string(frequency_hz / 1000) + " kHz");
         return false;
     }
@@ -185,7 +202,7 @@ bool tryMountAtFrequency(int frequency_hz, int attempt_index, int total_attempts
 bool tryLowLevelFormat(int frequency_hz) {
     sendWakeupClocks();
 
-    uint8_t pdrv = sdcard_init(SD_CS_PIN, &SPI, frequency_hz);
+    uint8_t pdrv = sdcard_init(SD_CS_PIN, getSdSpi(), frequency_hz);
     if (pdrv == 0xFF) {
         LOG_WARNING("SD format: low-level init failed at " + std::to_string(frequency_hz / 1000) + " kHz");
         return false;
@@ -240,7 +257,7 @@ bool SdManager::begin() {
 
 bool SdManager::mountWithRetries() {
     SD.end();
-    SPI.end();
+    getSdSpi()->end();
     _available = false;
 
     powerCycleSdModule();
@@ -358,7 +375,7 @@ bool SdManager::format() {
     LOG_WARNING("Formatting SD Card... This will erase all data!");
 
     SD.end();
-    SPI.end();
+    getSdSpi()->end();
     _available = false;
 
     powerCycleSdModule();
@@ -369,7 +386,7 @@ bool SdManager::format() {
     for (size_t i = 0; i < attempts; ++i) {
         const int frequency_hz = SD_FORMAT_FREQUENCIES[i];
 
-        SPI.end();
+        getSdSpi()->end();
         initializeSpiBus();
 
         LOG_INFO("SD format attempt #" + std::to_string(i + 1) + " at " + std::to_string(frequency_hz / 1000) + " kHz...");
@@ -381,7 +398,7 @@ bool SdManager::format() {
         delay(200);
     }
 
-    SPI.end();
+    getSdSpi()->end();
 
     if (!format_success) {
         LOG_ERROR("SD format failed after all retries.");
