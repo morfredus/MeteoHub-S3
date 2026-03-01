@@ -10,3 +10,5 @@
 - [FAQ](faq.md)
 - [Project Architecture](project_architecture.md)
 - [TODO](todo.md)
+
+- [External History Collector](external_collector.md)
