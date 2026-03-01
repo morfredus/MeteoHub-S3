@@ -1,3 +1,9 @@
+# [1.0.176] – 2026-03-01
+1. Fixed `esp32-dev-oled` build failure by enabling OLED display symbols for ESP32 Dev Module compile path.
+2. Unified OLED compile guards so `main`, `ui_manager`, and OLED pages are built for both `esp32-s3-oled` and `esp32-dev-oled`.
+3. Kept runtime functionality unchanged while restoring successful cross-environment compilation intent.
+- Minimum valid version: 1.0.176
+
 # [1.0.175] – 2026-03-01
 1. Added a second PlatformIO environment `esp32-dev-oled` for ESP32 Dev Module builds with `default.csv` partition mapping for flash compatibility.
 2. Added safe ESP32 Dev Module pin mapping in `include/board_config.h` while preserving existing ESP32-S3 mapping and runtime behavior.
