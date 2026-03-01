@@ -1,6 +1,6 @@
 # Câblage matériel
 
-Version minimale valide : 1.0.174
+Version minimale valide : 1.0.175
 
 Ce projet cible uniquement une configuration OLED.
 
@@ -14,6 +14,10 @@ Périphériques connectés :
 - AHT20 + BMP280 (I2C)
 - NeoPixel
 - Carte SD optionnelle (SPI)
+
+Environnements PlatformIO :
+1. `esp32-s3-oled` pour ESP32-S3 DevKitC-1
+2. `esp32-dev-oled` pour ESP32 Dev Module
 
 
 ## Fiabilité de la carte SD (modules ESP32-S3 3.3V)
