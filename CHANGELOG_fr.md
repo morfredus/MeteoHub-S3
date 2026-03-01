@@ -1,3 +1,9 @@
+# [1.0.179] – 2026-03-01
+1. Refonte de la gestion du bus SPI SD avec une instance VSPI dédiée sur ESP32 Dev Module afin de réduire les effets de bord de bus et améliorer la stabilité des commandes SD.
+2. Alignement des appels bas niveau d’initialisation/formatage SD sur la même instance SPI sélectionnée avec nom de bus explicite dans les diagnostics.
+3. Extension du mode SD ultra-safe avec un fallback 100kHz pour les modules/câblages difficiles.
+- Version minimale valide : 1.0.179
+
 # [1.0.178] – 2026-03-01
 1. Mise à jour du mapping SD ESP32 Dev Module avec une broche CS plus sûre (`GPIO13`) pour éviter les instabilités liées au strap de `GPIO5`.
 2. Ajout de diagnostics SD détaillés (type de carte, états des broches SPI, fréquence/index par tentative, logs d’initialisation SPI).

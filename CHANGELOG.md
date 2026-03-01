@@ -1,3 +1,9 @@
+# [1.0.179] – 2026-03-01
+1. Reworked SD SPI bus handling to use a dedicated VSPI instance on ESP32 Dev Module, reducing bus-side side effects and improving SD command stability.
+2. Aligned SD init/format low-level calls on the same selected SPI instance and added explicit SPI bus naming in diagnostics.
+3. Extended ultra-safe SD init to include 100kHz fallback for difficult modules/wiring.
+- Minimum valid version: 1.0.179
+
 # [1.0.178] – 2026-03-01
 1. Updated ESP32 Dev Module SD pin mapping to a safer CS pin (`GPIO13`) to avoid strap-related instability on `GPIO5`.
 2. Added detailed SD diagnostics (card type, SPI pin states, per-attempt frequency/index, SPI bus init logs).
