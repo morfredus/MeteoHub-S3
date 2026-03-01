@@ -1,3 +1,9 @@
+# [1.0.175] – 2026-03-01
+1. Ajout d’un second environnement PlatformIO `esp32-dev-oled` pour les builds ESP32 Dev Module avec mapping de partition `default.csv` compatible flash.
+2. Ajout d’un mapping de broches sûr pour ESP32 Dev Module dans `include/board_config.h` en conservant le mapping ESP32-S3 existant et le comportement runtime.
+3. Mise à jour de la documentation EN/FR pour décrire les deux environnements carte et les étapes de sélection.
+- Version minimale valide : 1.0.175
+
 # [1.0.174] – 2026-02-27
 - Renforcement de la gestion de la carte SD pour modules ESP32-S3 3.3V avec tentatives de montage SPI adaptatives et reprise améliorée.
 - Ajout de vérifications périodiques d’état SD et d’un backoff de reconnexion plus sûr pour réduire les états instables.
