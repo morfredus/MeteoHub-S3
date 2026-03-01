@@ -1,5 +1,5 @@
 #include "display_interface.h"
-#if defined(ESP32_S3_OLED)
+#if defined(ESP32_S3_OLED) || defined(ESP32_DEV_MODULE_OLED)
 #include <U8g2lib.h>
 #include <Wire.h>
 #include <algorithm>

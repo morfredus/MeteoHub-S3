@@ -17,8 +17,13 @@ namespace {
 // =================================================================
 // 1) Constantes de robustesse SD (init, format, supervision)
 // =================================================================
+#if defined(SD_ULTRA_SAFE_DEBUG)
+constexpr int SD_INIT_FREQUENCIES[] = {400000, 250000};
+constexpr int SD_FORMAT_FREQUENCIES[] = {250000, 400000};
+#else
 constexpr int SD_INIT_FREQUENCIES[] = {8000000, 4000000, 1000000, 400000};
 constexpr int SD_FORMAT_FREQUENCIES[] = {400000, 1000000, 4000000};
+#endif
 
 constexpr unsigned long SD_RECONNECT_COOLDOWN_DEFAULT_MS = 15000;
 constexpr unsigned long SD_RECONNECT_COOLDOWN_MAX_MS = 120000;
@@ -26,7 +31,11 @@ constexpr unsigned long SD_HEALTH_CHECK_PERIOD_MS = 5000;
 
 constexpr int SD_POWER_OFF_DELAY_MS = 50;
 constexpr int SD_POWER_ON_STABILIZE_MS = 200;
+#if defined(SD_ULTRA_SAFE_DEBUG)
+constexpr int SD_WAKEUP_CLOCK_BYTES = 64; // 64 * 8 = 512 cycles SPI
+#else
 constexpr int SD_WAKEUP_CLOCK_BYTES = 20; // 20 * 8 = 160 cycles SPI
+#endif
 
 #ifndef SD_OFF_PIN
 #define SD_OFF_PIN -1
@@ -37,6 +46,30 @@ constexpr int SD_WAKEUP_CLOCK_BYTES = 20; // 20 * 8 = 160 cycles SPI
 // =================================================================
 bool hasSdOffControl() {
     return SD_OFF_PIN >= 0;
+}
+
+
+const char* sdCardTypeToString(uint8_t card_type) {
+    switch (card_type) {
+        case CARD_MMC: return "MMC";
+        case CARD_SD: return "SDSC";
+        case CARD_SDHC: return "SDHC/SDXC";
+        case CARD_NONE: return "NONE";
+        default: return "UNKNOWN";
+    }
+}
+
+void logSdDebugPinsState() {
+    const int cs_state = digitalRead(SD_CS_PIN);
+    const int sck_state = digitalRead(SD_SCK_PIN);
+    const int mosi_state = digitalRead(SD_MOSI_PIN);
+    const int miso_state = digitalRead(SD_MISO_PIN);
+
+    LOG_DEBUG(
+        "SD pin states (pre-mount): CS=" + std::to_string(cs_state) +
+        ", SCK=" + std::to_string(sck_state) +
+        ", MOSI=" + std::to_string(mosi_state) +
+        ", MISO=" + std::to_string(miso_state));
 }
 
 void setSdModulePower(bool power_on) {
@@ -62,11 +95,21 @@ void initializeSpiBus() {
     pinMode(SD_MISO_PIN, INPUT_PULLUP);
     digitalWrite(SD_CS_PIN, HIGH);
 
+#if defined(SD_ULTRA_SAFE_DEBUG)
+    gpio_set_drive_capability(static_cast<gpio_num_t>(SD_SCK_PIN), GPIO_DRIVE_CAP_0);
+    gpio_set_drive_capability(static_cast<gpio_num_t>(SD_MOSI_PIN), GPIO_DRIVE_CAP_0);
+    gpio_set_drive_capability(static_cast<gpio_num_t>(SD_CS_PIN), GPIO_DRIVE_CAP_0);
+#else
     gpio_set_drive_capability(static_cast<gpio_num_t>(SD_SCK_PIN), GPIO_DRIVE_CAP_3);
     gpio_set_drive_capability(static_cast<gpio_num_t>(SD_MOSI_PIN), GPIO_DRIVE_CAP_3);
     gpio_set_drive_capability(static_cast<gpio_num_t>(SD_CS_PIN), GPIO_DRIVE_CAP_3);
+#endif
 
-    SPI.begin(SD_SCK_PIN, SD_MISO_PIN, SD_MOSI_PIN, -1);
+    SPI.begin(SD_SCK_PIN, SD_MISO_PIN, SD_MOSI_PIN, SD_CS_PIN);
+    LOG_INFO("SD SPI bus initialized (CS=" + std::to_string(SD_CS_PIN) +
+             ", SCK=" + std::to_string(SD_SCK_PIN) +
+             ", MISO=" + std::to_string(SD_MISO_PIN) +
+             ", MOSI=" + std::to_string(SD_MOSI_PIN) + ")");
 }
 
 void sendWakeupClocks() {
@@ -102,6 +145,12 @@ void logSdPinMapping() {
         ", MISO=" + std::to_string(SD_MISO_PIN) +
         ", MOSI=" + std::to_string(SD_MOSI_PIN));
 
+#if defined(SD_ULTRA_SAFE_DEBUG)
+    LOG_WARNING("SD ultra-safe debug mode enabled (very low SPI speeds + stronger diagnostics)");
+#else
+    LOG_INFO("SD normal mode enabled");
+#endif
+
     if (hasSdOffControl()) {
         LOG_INFO("SD power control enabled on GPIO " + std::to_string(SD_OFF_PIN));
     } else {
@@ -109,8 +158,10 @@ void logSdPinMapping() {
     }
 }
 
-bool tryMountAtFrequency(int frequency_hz) {
-    LOG_INFO("[1/4] SD mount attempt at " + std::to_string(frequency_hz / 1000) + " kHz");
+bool tryMountAtFrequency(int frequency_hz, int attempt_index, int total_attempts) {
+    LOG_INFO("[1/4] SD mount attempt #" + std::to_string(attempt_index) + "/" + std::to_string(total_attempts) +
+             " at " + std::to_string(frequency_hz / 1000) + " kHz");
+    logSdDebugPinsState();
 
     if (!SD.begin(SD_CS_PIN, SPI, frequency_hz)) {
         LOG_WARNING("SD mount failed at " + std::to_string(frequency_hz / 1000) + " kHz");
@@ -118,6 +169,8 @@ bool tryMountAtFrequency(int frequency_hz) {
     }
 
     const uint8_t card_type = SD.cardType();
+    LOG_INFO("SD card type after begin: " + std::string(sdCardTypeToString(card_type)) +
+             " (" + std::to_string(card_type) + ")");
     if (card_type == CARD_NONE) {
         LOG_WARNING("SD mount reported OK but card type is NONE. Unmounting.");
         SD.end();
@@ -193,10 +246,12 @@ bool SdManager::mountWithRetries() {
     powerCycleSdModule();
     initializeSpiBus();
 
-    for (int frequency_hz : SD_INIT_FREQUENCIES) {
+    const int total_attempts = static_cast<int>(sizeof(SD_INIT_FREQUENCIES) / sizeof(SD_INIT_FREQUENCIES[0]));
+    for (int index = 0; index < total_attempts; ++index) {
+        const int frequency_hz = SD_INIT_FREQUENCIES[index];
         sendWakeupClocks();
 
-        if (tryMountAtFrequency(frequency_hz)) {
+        if (tryMountAtFrequency(frequency_hz, index + 1, total_attempts)) {
             _available = true;
             return true;
         }
@@ -213,7 +268,8 @@ bool SdManager::healthCheck() {
         return false;
     }
 
-    if (SD.cardType() == CARD_NONE) {
+    const uint8_t card_type = SD.cardType();
+    if (card_type == CARD_NONE) {
         LOG_WARNING("SD health check failed: cardType is NONE.");
         _available = false;
         SD.end();
@@ -232,6 +288,7 @@ bool SdManager::healthCheck() {
     }
 
     root.close();
+    LOG_DEBUG("SD health check OK (type=" + std::string(sdCardTypeToString(card_type)) + ")");
     return true;
 }
 
