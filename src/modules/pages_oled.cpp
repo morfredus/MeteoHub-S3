@@ -1,4 +1,4 @@
-#if defined(ESP32_S3_OLED)
+#if defined(ESP32_S3_OLED) || defined(ESP32_DEV_MODULE_OLED)
 #include "display_interface.h"
 #include "oled_display.h"
 #include <algorithm>
