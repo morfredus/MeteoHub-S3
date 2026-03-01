@@ -1,6 +1,6 @@
 # Hardware Wiring
 
-Minimum valid version: 1.0.174
+Minimum valid version: 1.0.180
 
 This project targets an OLED setup only.
 
@@ -14,6 +14,12 @@ Connected peripherals:
 - AHT20 + BMP280 (I2C)
 - NeoPixel
 - Optional SD card (SPI)
+
+PlatformIO environments:
+1. `esp32-s3-oled` for ESP32-S3 DevKitC-1
+2. `esp32-dev-oled` for ESP32 Dev Module
+3. `esp32-dev-oled-ultra-safe` for SD troubleshooting (very low SPI speed + detailed logs)
+4. `esp32-dev-oled-hspi-debug` for HSPI fallback debugging on ESP32 Dev Module
 
 
 ## SD Card Reliability (ESP32-S3 3.3V modules)

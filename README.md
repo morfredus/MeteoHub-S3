@@ -1,6 +1,6 @@
 # MeteoHub S3
 
-> **Minimum valid version: 1.0.174**
+> **Minimum valid version: 1.0.180**
 
 ## Full Documentation
 - [Documentation Index](docs/index.md)
@@ -21,7 +21,10 @@ MeteoHub S3 is an ESP32-S3 PlatformIO project focused on an OLED dashboard (SH11
 
 ## Build
 - Install PlatformIO in VS Code
-- Select environment: `esp32-s3-oled`
+- Select environment: `esp32-s3-oled` (ESP32-S3 DevKitC-1)
+- Select environment: `esp32-dev-oled` (ESP32 Dev Module)
+- Select environment: `esp32-dev-oled-ultra-safe` (ESP32 Dev Module SD debug mode)
+- Select environment: `esp32-dev-oled-hspi-debug` (ESP32 Dev Module HSPI debug mode)
 - Build: `platformio run`
 - Upload: `platformio run --target upload`
 

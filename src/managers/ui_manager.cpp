@@ -3,7 +3,7 @@
 #include <Arduino.h>
 #include "board_config.h"
 #include "config.h"
-#if defined(ESP32_S3_OLED)
+#if defined(ESP32_S3_OLED) || defined(ESP32_DEV_MODULE_OLED)
 #include "modules/pages_oled.h"
 #endif
 
@@ -68,7 +68,7 @@ void UiManager::update() {
         
         // La logique de l'encodeur est inversée sur l'OLED.
         // Nous normalisons ici : une rotation horaire donne toujours un diff positif.
-#if defined(ESP32_S3_OLED)
+#if defined(ESP32_S3_OLED) || defined(ESP32_DEV_MODULE_OLED)
         diff = -diff;
 #endif
 
@@ -77,7 +77,7 @@ void UiManager::update() {
             if (menuIndex < 0) menuIndex = MENU_COUNT - 1;
             if (menuIndex >= MENU_COUNT) menuIndex = 0;
 
-            #if defined(ESP32_S3_OLED)
+            #if defined(ESP32_S3_OLED) || defined(ESP32_DEV_MODULE_OLED)
             const int MENU_VISIBLE_ITEMS = 4;
             if (menuIndex < menuScrollOffset) {
                 menuScrollOffset = menuIndex;
@@ -343,7 +343,7 @@ void UiManager::drawPage() {
     }
 
     int pCount = PAGE_COUNT;
-#if defined(ESP32_S3_OLED)
+#if defined(ESP32_S3_OLED) || defined(ESP32_DEV_MODULE_OLED)
     switch(page) {
         case PAGE_WEATHER: pageWeather_oled(*d, *sensors, *forecast, page + 1, pCount); break;
         case PAGE_FORECAST: pageForecast_oled(*d, *forecast, forecastViewIndex, page + 1, pCount); break;
