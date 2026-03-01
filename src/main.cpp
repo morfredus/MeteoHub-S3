@@ -14,7 +14,7 @@
 #include "modules/neopixel_status.h"
 #include "modules/sensors.h"
 #include "config.h"
-#if defined(ESP32_S3_OLED)
+#if defined(ESP32_S3_OLED) || defined(ESP32_DEV_MODULE_OLED)
 #include "modules/oled_display.h"
 #include "modules/pages_oled.h"
 #endif
@@ -33,7 +33,7 @@ bool ota_started = false;
 void setup() {
     Serial.begin(115200);
 
-#if defined(ESP32_S3_OLED)
+#if defined(ESP32_S3_OLED) || defined(ESP32_DEV_MODULE_OLED)
     static OledDisplay oled;
     display = &oled;
 #endif
@@ -108,21 +108,21 @@ void setup() {
     sdCard.begin();
 
     // Etape 1 : Splash Screen (MORFREDUS + Projet)
-#if defined(ESP32_S3_OLED)
+#if defined(ESP32_S3_OLED) || defined(ESP32_DEV_MODULE_OLED)
     drawSplashScreen_oled(*display);
 #endif
 
     LOG_INFO("System Boot");
 
     // Etape 2 : Capteurs
-#if defined(ESP32_S3_OLED)
+#if defined(ESP32_S3_OLED) || defined(ESP32_DEV_MODULE_OLED)
     drawBootProgress_oled(*display, 1, 5, "Init Capteurs...");
 #endif
     sensors.begin();
     delay(200); // Petit delai visuel
 
     // Etape 3 : WiFi
-#if defined(ESP32_S3_OLED)
+#if defined(ESP32_S3_OLED) || defined(ESP32_DEV_MODULE_OLED)
     drawBootProgress_oled(*display, 2, 5, "Connexion WiFi...");
 #endif
     wifi.begin();
@@ -144,7 +144,7 @@ void setup() {
     }
 
     // Etape 4 : Heure
-#if defined(ESP32_S3_OLED)
+#if defined(ESP32_S3_OLED) || defined(ESP32_DEV_MODULE_OLED)
     drawBootProgress_oled(*display, 3, 5, "Sync Heure...");
 #endif
     configTime(3600, 3600, "pool.ntp.org");
@@ -164,12 +164,12 @@ void setup() {
     }
 
     // Etape 5 : Pret
-#if defined(ESP32_S3_OLED)
+#if defined(ESP32_S3_OLED) || defined(ESP32_DEV_MODULE_OLED)
     drawBootProgress_oled(*display, 4, 5, "Chargement Historique...");
 #endif
     
     // Etape 6 : Lancement
-#if defined(ESP32_S3_OLED)
+#if defined(ESP32_S3_OLED) || defined(ESP32_DEV_MODULE_OLED)
     drawBootProgress_oled(*display, 5, 5, "Systeme Pret");
 #endif
     delay(800);
