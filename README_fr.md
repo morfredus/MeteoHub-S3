@@ -1,9 +1,10 @@
 # MeteoHub S3
 
-> **Version minimale valide : 1.0.172**
+> **Version minimale valide : 1.0.174**
 
 ## Documentation complète
 - [Index de la documentation](docs/index_fr.md)
+- [Stratégie de collecteur externe](docs/external_collector_fr.md)
 
 ## Documentation Débutant
 - [Guide Débutant (Français)](docs/beginner/index_fr.md)

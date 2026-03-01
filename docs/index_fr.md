@@ -12,3 +12,5 @@ Version minimale valide : 1.0.170
 - [FAQ](faq_fr.md)
 - [Architecture du projet](project_architecture_fr.md)
 - [TODO](todo_fr.md)
+
+- [Collecteur externe d'historique](external_collector_fr.md)

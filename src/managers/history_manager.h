@@ -63,10 +63,9 @@ public:
 private:
     std::vector<HistoryRecord> _recentHistory;
     SdManager* _sd = nullptr;
-    unsigned long _lastSave = 0;
-
     void loadRecent();
     void saveRecent(const HistoryRecord& record);
+    void rewriteRecentCache();
     
     // Helpers SD
     void saveToSd(const HistoryRecord& record);
