@@ -1,3 +1,9 @@
+# [1.0.173] – 2026-03-01
+- Ajout d'un script de collecteur externe (`scripts/history_collector.py`) qui interroge `/api/history?window=...&interval=...` et pousse les données vers InfluxDB.
+- Mise à jour de la politique de cache historique : LittleFS conservé comme cache glissant borné à 72h (pas une archive infinie).
+- Ajout de la documentation EN/FR sur la collecte externe, la stratégie de rétention et l'intégration dashboard (Grafana/Home Assistant).
+- Version minimale valide : 1.0.173
+
 # [1.0.172] – 2026-02-25
 - Ajout et liens croisés de la documentation débutant (EN/FR) dans tous les documents utilisateur.
 - Tous les guides, FAQ, configuration et index référencent désormais l'onboarding débutant.

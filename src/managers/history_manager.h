@@ -67,6 +67,7 @@ private:
 
     void loadRecent();
     void saveRecent(const HistoryRecord& record);
+    void rewriteRecentCache();
     
     // Helpers SD
     void saveToSd(const HistoryRecord& record);

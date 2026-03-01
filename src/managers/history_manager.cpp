@@ -67,7 +67,8 @@ MeteoTrend HistoryManager::getTrend() const {
 #include <Arduino.h>
 
 #define HISTORY_FILE "/history/recent.dat"
-#define MAX_RECENT_RECORDS 1440 // 24h à 1 point/min
+#define MAX_RECENT_RECORDS 4320 // 72h à 1 point/min (cache local)
+#define CACHE_REWRITE_INTERVAL_MS 3600000UL // 1h
 
 void HistoryManager::begin(SdManager* sd) {
     _sd = sd;
@@ -106,6 +107,13 @@ void HistoryManager::add(float t, float h, float p) {
 
     // 2. Sauvegarde LittleFS (Append)
     saveRecent(record);
+
+    // Réécriture périodique du cache pour garantir une fenêtre glissante bornée
+    unsigned long now_ms = millis();
+    if (_lastSave == 0 || (now_ms - _lastSave) >= CACHE_REWRITE_INTERVAL_MS) {
+        rewriteRecentCache();
+        _lastSave = now_ms;
+    }
 
     // 3. Sauvegarde SD (Append CSV)
     if (_sd && _sd->isAvailable()) {
@@ -167,6 +175,23 @@ void HistoryManager::saveRecent(const HistoryRecord& record) {
     } else {
         LOG_ERROR("Failed to append history to LittleFS");
     }
+}
+
+
+void HistoryManager::rewriteRecentCache() {
+    File f = LittleFS.open(HISTORY_FILE, "w");
+    if (!f) {
+        LOG_ERROR("Failed to rewrite LittleFS history cache");
+        return;
+    }
+
+    size_t records_written = 0;
+    for (const auto& record : _recentHistory) {
+        f.write((uint8_t*)&record, sizeof(HistoryRecord));
+        records_written++;
+        COOPERATIVE_YIELD_EVERY(records_written, 256);
+    }
+    f.close();
 }
 
 void HistoryManager::saveToSd(const HistoryRecord& record) {
