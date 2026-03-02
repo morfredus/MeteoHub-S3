@@ -26,6 +26,12 @@
 #define OLED_I2C_ADDRESS         0x3C
 
 // ===============
+// Paramètres NeoPixel
+// ===============
+// Intensité de la NeoPixel (0 = éteint, 255 = maximum)
+#define NEOPIXEL_BRIGHTNESS     15
+
+// ===============
 // Paramètres réseau
 // ===============
 #define WEB_MDNS_HOSTNAME        "meteohub" // Accessible via http://meteohub.local
