@@ -1,32 +1,48 @@
 #include "logs.h"
-#include <vector>
+#include <array>
 #include <string>
 
-// Utilisation d'un vecteur pour stocker les logs en mémoire
-static std::vector<std::string> logs;
+namespace {
+// Correction 1: buffer circulaire statique pour éviter les allocations/erasures
+// répétées qui fragmentent le tas et peuvent provoquer des freezes intermittents.
+std::array<std::string, LOG_BUFFER_SIZE> logs;
+int log_count = 0;
+int log_head = 0;
+
+int physicalIndexFromLogical(int index) {
+    if (log_count == 0) {
+        return 0;
+    }
+    return (log_head + index) % LOG_BUFFER_SIZE;
+}
+}
 
 void addLog(const std::string& msg) {
-    // Si le buffer est plein, on retire le plus ancien
-    if (logs.size() >= LOG_BUFFER_SIZE) {
-        logs.erase(logs.begin());
+    if (log_count < LOG_BUFFER_SIZE) {
+        logs[physicalIndexFromLogical(log_count)] = msg;
+        log_count++;
+        return;
     }
-    logs.push_back(msg);
+
+    logs[log_head] = msg;
+    log_head = (log_head + 1) % LOG_BUFFER_SIZE;
 }
 
 std::string getLog(int index) {
-    if (index >= 0 && index < logs.size()) {
-        return logs[index];
+    if (index >= 0 && index < log_count) {
+        return logs[physicalIndexFromLogical(index)];
     }
     return "";
 }
 
 int getLogCount() {
-    return logs.size();
+    return log_count;
 }
 
 void clearLogs() {
-    logs.clear();
+    for (int i = 0; i < log_count; i++) {
+        logs[physicalIndexFromLogical(i)].clear();
+    }
+    log_count = 0;
+    log_head = 0;
 }
-
-// Ajout d'une ligne vide pour forcer la modification
-// (logs.cpp)
