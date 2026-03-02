@@ -1,3 +1,8 @@
+# [1.0.174] – 2026-03-02
+- Correction des freezes/artefacts restants lors de la rotation de l'encodeur en limitant la cadence de redraw OLED.
+- Réduction de la contention I2C via mise en cache courte des lectures capteurs pour éviter des sondages répétés pendant les changements de page rapides.
+- Version minimale valide : 1.0.174
+
 # [1.0.173] – 2026-03-02
 - Correction des freezes intermittents en réduisant les écritures NeoPixel bloquantes (mise en cache de la couleur) et en ajoutant une cession coopérative dans la boucle principale.
 - Réduction du risque de fragmentation mémoire en remplaçant le vector de logs avec erase/push par un buffer circulaire fixe.
