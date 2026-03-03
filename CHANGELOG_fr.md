@@ -1,3 +1,8 @@
+# [1.0.178] – 2026-03-03
+- Correction de l'erreur de compilation encodeur en regroupant la constante de debounce rotation en une seule déclaration dans `encoder.h`.
+- Conservation des valeurs de debounce par matériel (SH1106/EC11 : 8ms, SSD1306/KY-040 : 4ms) avec un cran par changement de page/ligne.
+- Version minimale valide : 1.0.178
+
 # [1.0.177] – 2026-03-03
 - Correction du mapping des crans encodeur selon le profil matériel : SH1106+EC11 et SSD1306+KY-040 passent désormais d'une page/ligne par cran.
 - La sélection du profil encodeur suit maintenant la configuration du contrôleur OLED (SH1106 vs SSD1306).

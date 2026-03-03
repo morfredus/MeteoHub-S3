@@ -1,3 +1,8 @@
+# [1.0.178] – 2026-03-03
+- Fixed encoder compile error by consolidating rotation debounce constant into a single declaration in `encoder.h`.
+- Kept per-hardware debounce values (SH1106/EC11: 8ms, SSD1306/KY-040: 4ms) with one notch per page/line change.
+- Minimum valid version: 1.0.178
+
 # [1.0.177] – 2026-03-03
 - Fixed encoder detent mapping per hardware profile so both SH1106+EC11 and SSD1306+KY-040 now change page/line on a single detent.
 - Encoder profile selection now follows OLED controller configuration (SH1106 vs SSD1306).
