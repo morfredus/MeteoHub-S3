@@ -71,6 +71,7 @@ private:
     unsigned long transientMessageUntilMs = 0;
     bool pendingFormatResult = false;
     bool pendingFormatResultSuccess = false;
+    unsigned long lastDrawMs = 0;
 
     void showTransientMessage(UiTransientMessageType messageType, unsigned long durationMs);
     bool processTransientMessage();
