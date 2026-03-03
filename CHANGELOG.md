@@ -1,3 +1,8 @@
+# [1.0.180] – 2026-03-03
+- Switched SD support from legacy SPI module to microSD Sniffer (SD_MMC 1-bit mode).
+- Added SD_MMC pin mapping (CLK/CMD/DAT0/CD) and migrated SD manager/history/system info to SD_MMC APIs.
+- Minimum valid version: 1.0.180
+
 # [1.0.179] – 2026-03-03
 - Fixed encoder build issue robustly by replacing rotation debounce member constant with a single constexpr helper method (no duplicate declaration path).
 - Kept one detent = one page/line change and per-controller debounce values (SH1106: 8ms, SSD1306: 4ms).

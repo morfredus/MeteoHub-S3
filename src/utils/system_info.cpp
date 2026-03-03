@@ -1,7 +1,7 @@
 #include "system_info.h"
 #include <ArduinoJson.h>
 #include <LittleFS.h>
-#include <SD.h>
+#include <SD_MMC.h>
 #include <WiFi.h>
 #include "config.h"
 #include "managers/sd_manager.h"
@@ -33,9 +33,9 @@ std::string getSystemInfoJson(SdManager* sd) {
 
     if (sd && sd->isAvailable()) {
         JsonObject fs_sd = doc.createNestedObject("sd_card");
-        fs_sd["total_b"] = SD.totalBytes();
-        fs_sd["used_b"] = SD.usedBytes();
-        fs_sd["size_mb"] = (uint32_t)(SD.cardSize() / (1024 * 1024));
+        fs_sd["total_b"] = SD_MMC.totalBytes();
+        fs_sd["used_b"] = SD_MMC.usedBytes();
+        fs_sd["size_mb"] = (uint32_t)(SD_MMC.cardSize() / (1024 * 1024));
     } else {
         doc["sd_card"] = "not_mounted";
     }

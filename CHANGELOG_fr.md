@@ -1,3 +1,8 @@
+# [1.0.180] – 2026-03-03
+- Migration du support SD de l'ancien module SPI vers le module microSD Sniffer (mode SD_MMC 1-bit).
+- Ajout du mapping SD_MMC (CLK/CMD/DAT0/CD) et migration du gestionnaire SD, de l'historique et des infos système vers les APIs SD_MMC.
+- Version minimale valide : 1.0.180
+
 # [1.0.179] – 2026-03-03
 - Correction robuste de la compilation encodeur en remplaçant la constante membre de debounce rotation par une méthode constexpr unique (plus de chemin de double déclaration).
 - Comportement conservé : un cran = un changement de page/ligne, avec debounce par contrôleur (SH1106 : 8ms, SSD1306 : 4ms).
