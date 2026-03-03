@@ -1,3 +1,7 @@
+# [1.0.176] – 2026-03-03
+- Tuned encoder step scaling per hardware profile: EC11 keeps existing behavior, KY-040 now requires only one detent to change one page/line.
+- Minimum valid version: 1.0.176
+
 # [1.0.175] – 2026-03-03
 - Added EC11-specific hardening (HalfQuad mode + strong encoder filter) to reduce interrupt storms seen on SH1106 all-in-one modules.
 - Added software debounce/rate-limit for encoder rotation events to prevent OLED/UI overload and freezes during knob manipulation.

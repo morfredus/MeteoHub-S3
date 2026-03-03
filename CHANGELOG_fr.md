@@ -1,3 +1,7 @@
+# [1.0.176] – 2026-03-03
+- Ajustement de l'échelle des pas encodeur selon le matériel : EC11 conserve le comportement actuel, KY-040 passe à un seul cran pour changer une page/ligne.
+- Version minimale valide : 1.0.176
+
 # [1.0.175] – 2026-03-03
 - Ajout d'un durcissement spécifique EC11 (mode HalfQuad + filtre encodeur renforcé) pour réduire les tempêtes d'interruptions observées sur les modules SH1106 tout-en-un.
 - Ajout d'un anti-rebond / limitation logicielle des événements de rotation pour éviter la surcharge OLED/UI et les freezes pendant la manipulation du bouton rotatif.
