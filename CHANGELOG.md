@@ -1,3 +1,8 @@
+# [1.0.175] – 2026-03-03
+- Added EC11-specific hardening (HalfQuad mode + strong encoder filter) to reduce interrupt storms seen on SH1106 all-in-one modules.
+- Added software debounce/rate-limit for encoder rotation events to prevent OLED/UI overload and freezes during knob manipulation.
+- Minimum valid version: 1.0.175
+
 # [1.0.174] – 2026-03-02
 - Fixed remaining UI freezes/artifacts while turning the rotary encoder by throttling OLED redraw cadence.
 - Reduced I2C contention by caching sensor reads for a short interval, avoiding repeated sensor polling during rapid page changes.

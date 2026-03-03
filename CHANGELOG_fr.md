@@ -1,3 +1,8 @@
+# [1.0.175] – 2026-03-03
+- Ajout d'un durcissement spécifique EC11 (mode HalfQuad + filtre encodeur renforcé) pour réduire les tempêtes d'interruptions observées sur les modules SH1106 tout-en-un.
+- Ajout d'un anti-rebond / limitation logicielle des événements de rotation pour éviter la surcharge OLED/UI et les freezes pendant la manipulation du bouton rotatif.
+- Version minimale valide : 1.0.175
+
 # [1.0.174] – 2026-03-02
 - Correction des freezes/artefacts restants lors de la rotation de l'encodeur en limitant la cadence de redraw OLED.
 - Réduction de la contention I2C via mise en cache courte des lectures capteurs pour éviter des sondages répétés pendant les changements de page rapides.
