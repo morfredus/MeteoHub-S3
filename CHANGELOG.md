@@ -1,3 +1,8 @@
+# [1.0.177] – 2026-03-03
+- Fixed encoder detent mapping per hardware profile so both SH1106+EC11 and SSD1306+KY-040 now change page/line on a single detent.
+- Encoder profile selection now follows OLED controller configuration (SH1106 vs SSD1306).
+- Minimum valid version: 1.0.177
+
 # [1.0.176] – 2026-03-03
 - Tuned encoder step scaling per hardware profile: EC11 keeps existing behavior, KY-040 now requires only one detent to change one page/line.
 - Minimum valid version: 1.0.176

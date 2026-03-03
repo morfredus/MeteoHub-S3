@@ -1,5 +1,6 @@
 #include "encoder.h"
 #include "board_config.h"
+#include "config.h"
 
 int Encoder::getStepCount() const {
     return stepQueue;
@@ -10,14 +11,13 @@ void Encoder::begin() {
 
     ESP32Encoder::useInternalWeakPullResistors = puType::up;
 
-#if defined(ENCODER_MODEL_EC11)
-    // Correction 8: EC11 sur module SH1106 "all-in-one" = bruit mécanique élevé.
-    // HalfQuad + filtre IRQ plus fort pour limiter les tempêtes d'interruptions.
+#if OLED_CONTROLLER == OLED_CTRL_SH1106
+    // Correction 10: profil SH1106+EC11 dédié (module intégré), anti-bruit renforcé.
     rotary.attachHalfQuad(ENCODER_A_PIN, ENCODER_B_PIN);
     rotary.setFilter(1023);
 #else
     rotary.attachFullQuad(ENCODER_A_PIN, ENCODER_B_PIN);
-    rotary.setFilter(200);
+    rotary.setFilter(120);
 #endif
     rotary.clearCount();
 
@@ -35,7 +35,7 @@ void Encoder::update() {
     if (delta != 0) {
         const unsigned long now = millis();
 
-        // Correction 9: anti-rafale logiciel des impulsions encodeur pour éviter
+        // Correction 11: anti-rafale logiciel des impulsions encodeur pour éviter
         // les bonds parasites qui saturent l'UI/OLED sur le module EC11+SH1106.
         if (lastStepEventMs != 0 && (now - lastStepEventMs) < ROTATION_EVENT_DEBOUNCE_MS) {
             delta = 0;

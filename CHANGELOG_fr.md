@@ -1,3 +1,8 @@
+# [1.0.177] – 2026-03-03
+- Correction du mapping des crans encodeur selon le profil matériel : SH1106+EC11 et SSD1306+KY-040 passent désormais d'une page/ligne par cran.
+- La sélection du profil encodeur suit maintenant la configuration du contrôleur OLED (SH1106 vs SSD1306).
+- Version minimale valide : 1.0.177
+
 # [1.0.176] – 2026-03-03
 - Ajustement de l'échelle des pas encodeur selon le matériel : EC11 conserve le comportement actuel, KY-040 passe à un seul cran pour changer une page/ligne.
 - Version minimale valide : 1.0.176
