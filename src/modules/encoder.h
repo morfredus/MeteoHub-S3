@@ -18,6 +18,7 @@ private:
     static constexpr int8_t COUNTS_PER_DETENT = 4;
     static constexpr uint16_t CLICK_DEBOUNCE_MS = 120;
     static constexpr int16_t STEP_QUEUE_LIMIT = 20;
+    static constexpr uint16_t ROTATION_EVENT_DEBOUNCE_MS = 8;
 
     ESP32Encoder rotary;
     int64_t lastCount = 0;
@@ -27,4 +28,5 @@ private:
     bool lastBtn = false;
     bool clickFlag = false;
     unsigned long lastClickMs = 0;
+    unsigned long lastStepEventMs = 0;
 };
