@@ -1,3 +1,8 @@
+# [1.0.179] – 2026-03-03
+- Fixed encoder build issue robustly by replacing rotation debounce member constant with a single constexpr helper method (no duplicate declaration path).
+- Kept one detent = one page/line change and per-controller debounce values (SH1106: 8ms, SSD1306: 4ms).
+- Minimum valid version: 1.0.179
+
 # [1.0.178] – 2026-03-03
 - Fixed encoder compile error by consolidating rotation debounce constant into a single declaration in `encoder.h`.
 - Kept per-hardware debounce values (SH1106/EC11: 8ms, SSD1306/KY-040: 4ms) with one notch per page/line change.

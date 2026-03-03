@@ -1,3 +1,8 @@
+# [1.0.179] – 2026-03-03
+- Correction robuste de la compilation encodeur en remplaçant la constante membre de debounce rotation par une méthode constexpr unique (plus de chemin de double déclaration).
+- Comportement conservé : un cran = un changement de page/ligne, avec debounce par contrôleur (SH1106 : 8ms, SSD1306 : 4ms).
+- Version minimale valide : 1.0.179
+
 # [1.0.178] – 2026-03-03
 - Correction de l'erreur de compilation encodeur en regroupant la constante de debounce rotation en une seule déclaration dans `encoder.h`.
 - Conservation des valeurs de debounce par matériel (SH1106/EC11 : 8ms, SSD1306/KY-040 : 4ms) avec un cran par changement de page/ligne.

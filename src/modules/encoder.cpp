@@ -37,7 +37,7 @@ void Encoder::update() {
 
         // Correction 11: anti-rafale logiciel des impulsions encodeur pour éviter
         // les bonds parasites qui saturent l'UI/OLED sur le module EC11+SH1106.
-        if (lastStepEventMs != 0 && (now - lastStepEventMs) < ROTATION_EVENT_DEBOUNCE_MS) {
+        if (lastStepEventMs != 0 && (now - lastStepEventMs) < rotationEventDebounceMs()) {
             delta = 0;
         }
 
