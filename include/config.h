@@ -22,7 +22,7 @@
 #define OLED_CONTRAST            180
 #define OLED_CTRL_SH1106         1
 #define OLED_CTRL_SSD1306        2
-#define OLED_CONTROLLER          OLED_CTRL_SH1106
+#define OLED_CONTROLLER          OLED_CTRL_SSD1306
 #define OLED_I2C_ADDRESS         0x3C
 
 // ===============
