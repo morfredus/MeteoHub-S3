@@ -10,6 +10,7 @@
 namespace {
 constexpr unsigned long UI_MESSAGE_SHORT_MS = 1000;
 constexpr unsigned long UI_MESSAGE_LONG_MS = 2000;
+constexpr unsigned long UI_MIN_DRAW_INTERVAL_MS = 40;
 }
 
 void UiManager::showTransientMessage(UiTransientMessageType messageType, unsigned long durationMs) {
@@ -57,6 +58,7 @@ void UiManager::begin(DisplayInterface& display, WifiManager& wifiMgr, SensorMan
     last_rendered_page = -1;
     last_rendered_menu_mode = false;
     last_rendered_confirm_mode = false;
+    lastDrawMs = 0;
 }
 
 void UiManager::update() {
@@ -91,8 +93,11 @@ void UiManager::update() {
             if (page >= PAGE_COUNT) page = 0;
             logScrollLine = 0; // Reset scroll logs au changement de page
         }
-        drawPage();
-        lastRefresh = millis();
+        const unsigned long now = millis();
+        if (now - lastDrawMs >= UI_MIN_DRAW_INTERVAL_MS) {
+            drawPage();
+        }
+        lastRefresh = now;
     }
 
     if (processTransientMessage()) {
@@ -103,8 +108,11 @@ void UiManager::update() {
 
     // Rafraîchissement auto
     if (millis() - lastRefresh > DASHBOARD_REFRESH_MS) {
-        drawPage();
-        lastRefresh = millis();
+        const unsigned long now = millis();
+        if (now - lastDrawMs >= UI_MIN_DRAW_INTERVAL_MS) {
+            drawPage();
+        }
+        lastRefresh = now;
     }
     
     // Défilement auto Prévisions
@@ -112,7 +120,9 @@ void UiManager::update() {
         if (millis() - lastForecastViewSwitch > 5000) {
             forecastViewIndex = (forecastViewIndex + 1) % 3;
             lastForecastViewSwitch = millis();
-            drawPage();
+            if (millis() - lastDrawMs >= UI_MIN_DRAW_INTERVAL_MS) {
+                drawPage();
+            }
         }
     }
 }
@@ -259,6 +269,7 @@ void UiManager::handleButtons() {
 }
 
 void UiManager::drawPage() {
+    lastDrawMs = millis();
     const bool current_confirm_mode = confirmClearLogsMode || confirmClearHistMode || confirmFormatMode;
     const bool screen_context_changed = (page != last_rendered_page) ||
         (menuMode != last_rendered_menu_mode) ||

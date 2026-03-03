@@ -19,6 +19,7 @@
 #include "modules/pages_oled.h"
 #endif
 #include "utils/logs.h"
+#include "utils/cooperative_yield.h"
 
 DisplayInterface* display = nullptr;
 WifiManager wifi;
@@ -189,7 +190,9 @@ void loop() {
 
     wifi.update();
 
-    if (!ota_started && wifi.ip() != "0.0.0.0") {
+    const bool wifi_connected = (wifi.ip() != "0.0.0.0");
+
+    if (!ota_started && wifi_connected) {
         ArduinoOTA.begin();
         ota_started = true;
         LOG_INFO(std::string("OTA ready (late): ") + WEB_MDNS_HOSTNAME + ".local");
@@ -214,7 +217,7 @@ void loop() {
             else if (forecast.alert.severity == 2) neoAlertOrange();
             else neoAlertYellow();
         } else {
-            if (wifi.ip() != "0.0.0.0") neoWifiOK();
+            if (wifi_connected) neoWifiOK();
             else { if (blink) neoWifiLost(); else neoOff(); }
         }
     }
@@ -237,4 +240,9 @@ void loop() {
             }
         }
     }
+
+    // Correction 6: cession coopérative CPU pour éviter le watchdog freeze sous charge.
+    static size_t loop_iteration = 0;
+    COOPERATIVE_YIELD_EVERY(loop_iteration, 4);
+    loop_iteration++;
 }
