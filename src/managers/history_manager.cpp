@@ -61,6 +61,7 @@ MeteoTrend HistoryManager::getTrend() const {
 }
 #include "history_manager.h"
 #include <LittleFS.h>
+#include <SD_MMC.h>
 #include "../utils/logs.h"
 #include <time.h>
 #include <inttypes.h>
@@ -180,15 +181,15 @@ void HistoryManager::saveToSd(const HistoryRecord& record) {
     strftime(filename, sizeof(filename), "/history/%Y-%m-%d.csv", &timeinfo);
 
     // Vérifier et créer le dossier /history avec log explicite en cas d'échec
-    if (!SD.exists("/history")) {
-        if (!SD.mkdir("/history")) {
+    if (!SD_MMC.exists("/history")) {
+        if (!SD_MMC.mkdir("/history")) {
             LOG_WARNING("SD Save: mkdir failed for /history (cannot write " + std::string(filename) + ")");
             return;
         }
         LOG_INFO("SD Save: created /history directory");
     }
 
-    bool file_exists = SD.exists(filename);
+    bool file_exists = SD_MMC.exists(filename);
 
     auto writeRecord = [&](File& f) -> bool {
         if (!file_exists) {
@@ -214,7 +215,7 @@ void HistoryManager::saveToSd(const HistoryRecord& record) {
         return true;
     };
 
-    File f = SD.open(filename, FILE_APPEND);
+    File f = SD_MMC.open(filename, FILE_APPEND);
     if (!f) {
         LOG_WARNING("SD Save: open failed for " + std::string(filename) + " (append). Trying immediate remount...");
 
@@ -223,13 +224,13 @@ void HistoryManager::saveToSd(const HistoryRecord& record) {
             return;
         }
 
-        if (!SD.exists("/history") && !SD.mkdir("/history")) {
+        if (!SD_MMC.exists("/history") && !SD_MMC.mkdir("/history")) {
             LOG_WARNING("SD Save: mkdir failed after remount for /history");
             return;
         }
 
-        file_exists = SD.exists(filename);
-        f = SD.open(filename, FILE_APPEND);
+        file_exists = SD_MMC.exists(filename);
+        f = SD_MMC.open(filename, FILE_APPEND);
         if (!f) {
             LOG_WARNING("SD Save: open failed after remount for " + std::string(filename));
             return;
@@ -247,8 +248,8 @@ void HistoryManager::saveToSd(const HistoryRecord& record) {
 }
 
 void HistoryManager::createSdStructure() {
-    if (!SD.exists("/history")) {
-        if (SD.mkdir("/history")) {
+    if (!SD_MMC.exists("/history")) {
+        if (SD_MMC.mkdir("/history")) {
             LOG_INFO("Created /history directory on SD card.");
         } else {
             LOG_ERROR("Failed to create /history directory on SD card.");
@@ -262,11 +263,11 @@ void HistoryManager::clearHistory() {
 
     if (_sd && _sd->isAvailable()) {
         LOG_INFO("Clearing history from SD card...");
-        File root = SD.open("/history");
+        File root = SD_MMC.open("/history");
         if (root) {
             File file = root.openNextFile();
             while(file) {
-                SD.remove(file.name());
+                SD_MMC.remove(file.name());
                 file = root.openNextFile();
             }
         }

@@ -29,9 +29,14 @@ bool OledDisplay::begin() {
     }
 
     Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN);
+    // Correction 4: cadence I2C maîtrisée pour stabiliser l'OLED lors des charges CPU/IO.
+    Wire.setClock(400000);
     d->setI2CAddress(static_cast<uint8_t>(OLED_I2C_ADDRESS << 1));
     d->begin();
     d->setContrast(OLED_CONTRAST);
+    // Correction 5: forcer une orientation non inversée après init/réinit.
+    d->setDisplayRotation(U8G2_R0);
+    d->setFlipMode(0);
     d->setFont(u8g2_font_6x10_tf);
     d->clearBuffer();
     d->sendBuffer();

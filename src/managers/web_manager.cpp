@@ -2,6 +2,7 @@
 #include "managers/forecast_manager.h"
 #include <ESPmDNS.h>
 #include <LittleFS.h>
+#include <SD_MMC.h>
 #include <Update.h>
 #include <cctype>
 #include <string>
@@ -497,7 +498,7 @@ void WebManager::_setupApi() {
         fs::FS* pFs = &LittleFS;
         if (fsName == "sd") {
             if (_sd && _sd->isAvailable()) {
-                pFs = &SD;
+                pFs = &SD_MMC;
             } else {
                 request->send(503, "text/plain", "SD Card not available");
                 return;
@@ -546,7 +547,7 @@ void WebManager::_setupApi() {
         fs::FS* pFs = &LittleFS;
         if (fsName == "sd") {
             if (_sd && _sd->isAvailable()) {
-                pFs = &SD;
+                pFs = &SD_MMC;
             } else {
                 request->send(503, "text/plain", "SD Card not available");
                 return;
@@ -576,7 +577,7 @@ void WebManager::_setupApi() {
         fs::FS* pFs = &LittleFS;
         if (fsName == "sd") {
             if (_sd && _sd->isAvailable()) {
-                pFs = &SD;
+                pFs = &SD_MMC;
             } else {
                 request->send(503, "text/plain", "SD Card not available");
                 return;
@@ -659,7 +660,7 @@ void WebManager::_setupApi() {
             }
             pFsUpload = &LittleFS;
             if (fsName == "sd" && _sd && _sd->isAvailable()) {
-                pFsUpload = &SD;
+                pFsUpload = &SD_MMC;
             } else if (fsName == "sd") {
                 // Cannot send error here, but upload will fail
                 return;
