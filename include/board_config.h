@@ -27,12 +27,16 @@
 #define ENCODER_BTN_PIN    6
 
 // ------------------------------------
-// Module SD (SPI secondaire SAFE)
+// Module microSD Sniffer (SD_MMC 1-bit)
+// Broches module: DAT1 DAT0 CLK VCC GND CMD CD DAT2
 // ------------------------------------
-#define SD_CS_PIN    10
-#define SD_SCK_PIN   12
-#define SD_MOSI_PIN  11
-#define SD_MISO_PIN  13
+#define SDMMC_CLK_PIN   12   // module CLK
+#define SDMMC_CMD_PIN   11   // module CMD
+#define SDMMC_D0_PIN    13   // module DAT0
+#define SDMMC_CD_PIN    10   // module CD (card detect optionnel)
+#define SDMMC_D1_PIN    -1   // module DAT1 (non utilisé en 1-bit)
+#define SDMMC_D2_PIN    -1   // module DAT2 (non utilisé en 1-bit)
+#define SDMMC_D3_PIN    -1   // DAT3/CS non câblé sur ce module
 
 
 // -------------------------------------------------------------------
