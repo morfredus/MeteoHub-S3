@@ -27,12 +27,15 @@
 #define ENCODER_BTN_PIN    6
 
 // ------------------------------------
-// Module SD (SPI secondaire SAFE)
+// Module SD (interface native SDMMC 4-bit, 3.3V)
+// CD du module = DAT3 (détection carte + données)
 // ------------------------------------
-#define SD_CS_PIN    10
-#define SD_SCK_PIN   12
-#define SD_MOSI_PIN  11
-#define SD_MISO_PIN  13
+#define SD_CLK_PIN   12   // CLK
+#define SD_CMD_PIN   11   // CMD
+#define SD_DAT0_PIN  13   // DAT0
+#define SD_DAT1_PIN  14   // DAT1
+#define SD_DAT2_PIN  10   // DAT2
+#define SD_DAT3_PIN   9   // DAT3 / CD
 
 
 // -------------------------------------------------------------------
