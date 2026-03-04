@@ -3,7 +3,7 @@
 #include "board_config.h"
 
 #include <algorithm>
-#include "esp_vfs_fat.h"
+#include "ff.h"
 
 // Valeurs par défaut si non définies dans board_config.h
 #ifndef SD_CLK_PIN
@@ -227,7 +227,13 @@ bool SdManager::ensureMounted() {
 
 // ---------------------------------------------------------------------------
 // format — formatage explicite (déclenché par l'utilisateur via l'UI)
-// Utilise esp_vfs_fat_sdcard_format (ESP-IDF 5.x / Arduino ESP32 3.x)
+//
+// Stratégie : monter la carte via SD_MMC pour initialiser le driver SDMMC et
+// enregistrer le diskio FatFS sur le drive "0:". Démonter ensuite uniquement la
+// couche FatFS (f_mount NULL) sans toucher au host SDMMC, puis appeler f_mkfs.
+// Enfin SD_MMC.end() libère le host et on remont normalement.
+//
+// Compatibilité : fonctionne avec toutes les versions Arduino ESP32 / ESP-IDF.
 // ---------------------------------------------------------------------------
 bool SdManager::format() {
     LOG_WARNING("Formatage SD Card (SDMMC)...");
@@ -237,14 +243,14 @@ bool SdManager::format() {
         _available = false;
     }
 
-    // Tenter le montage à basse fréquence pour obtenir le handle interne
+    // Monter à basse fréquence pour initialiser le driver et l'enregistrement diskio
     bool mounted = false;
     for (int i = 0; i < SD_FORMAT_FREQS_COUNT && !mounted; i++) {
         int freq = SD_FORMAT_FREQS[i];
-        LOG_INFO("SD format : montage @ " + std::to_string(freq) + " Hz (4-bit)");
+        LOG_INFO("SD format : montage 4-bit @ " + std::to_string(freq) + " Hz");
         mounted = tryMount(true, freq);
         if (!mounted) {
-            LOG_INFO("SD format : tentative 1-bit @ " + std::to_string(freq) + " Hz");
+            LOG_INFO("SD format : repli 1-bit @ " + std::to_string(freq) + " Hz");
             mounted = tryMount(false, freq);
         }
         if (!mounted) {
@@ -253,24 +259,36 @@ bool SdManager::format() {
     }
 
     if (!mounted) {
-        LOG_ERROR("SD format : impossible de monter la carte pour le formatage");
+        LOG_ERROR("SD format : impossible de monter la carte");
         return false;
     }
 
-    sdmmc_card_t* card = SD_MMC.get_card();
-    if (!card) {
-        LOG_ERROR("SD format : handle de carte indisponible");
-        SD_MMC.end();
-        return false;
+    // Démonter uniquement la couche FatFS (drive "0:" = premier SDMMC monté).
+    // Le host SDMMC et l'enregistrement diskio restent actifs : f_mkfs peut écrire.
+    FRESULT res_umount = f_mount(NULL, "0:", 0);
+    if (res_umount != FR_OK) {
+        LOG_WARNING("SD format : f_mount(NULL) code=" + std::to_string(res_umount) + " (ignoré)");
     }
 
-    esp_err_t err = esp_vfs_fat_sdcard_format("/sdcard", card);
+    uint8_t* work_buf = static_cast<uint8_t*>(malloc(FF_MAX_SS));
+    bool format_ok = false;
+    if (work_buf) {
+        FRESULT res = f_mkfs("0:", FM_ANY, 0, work_buf, FF_MAX_SS);
+        format_ok = (res == FR_OK);
+        if (!format_ok) {
+            LOG_WARNING("SD format : f_mkfs code=" + std::to_string(res));
+        }
+        free(work_buf);
+    } else {
+        LOG_ERROR("SD format : allocation work_buf échouée");
+    }
+
+    // Libérer le host SDMMC (dés-enregistrement diskio + deinit host)
     SD_MMC.end();
     _available = false;
 
-    if (err != ESP_OK) {
-        LOG_ERROR("SD format échoué (esp_err=" +
-                  std::to_string(static_cast<int>(err)) + ")");
+    if (!format_ok) {
+        LOG_ERROR("SD format échoué");
         return false;
     }
 
