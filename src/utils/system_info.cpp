@@ -1,7 +1,7 @@
 #include "system_info.h"
 #include <ArduinoJson.h>
 #include <LittleFS.h>
-#include <SD.h>
+#include <SD_MMC.h>
 #include <WiFi.h>
 #include "config.h"
 #include "managers/sd_manager.h"

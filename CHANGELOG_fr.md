@@ -1,3 +1,12 @@
+# [1.0.173] – 2026-03-04
+- Remplacement du module SD SPI par un module SD natif SDMMC 4-bit 3.3V (broches : CLK, CMD, DAT0, DAT1, DAT2, DAT3/CD).
+- Mise à jour de `board_config.h` : remplacement des broches SD_CS/SCK/MOSI/MISO par SD_CLK/CMD/DAT0/DAT1/DAT2/DAT3 (GPIO 9, 10, 11, 12, 13, 14).
+- Réécriture complète de `sd_manager` pour utiliser le pilote SDMMC natif ESP32 (`SD_MMC.h`) à la place de SPI (`SD.h`).
+- Ajout d'un repli robuste 4-bit → 1-bit avec tentatives multi-fréquences pour les modules de qualité moyenne.
+- Utilisation de `esp_vfs_fat_sdcard_format` pour le formatage explicite déclenché par l'utilisateur.
+- Mise à jour de `system_info.cpp` pour utiliser l'include `SD_MMC.h`.
+- Version minimale valide : 1.0.173
+
 # [1.0.172] – 2026-02-25
 - Ajout et liens croisés de la documentation débutant (EN/FR) dans tous les documents utilisateur.
 - Tous les guides, FAQ, configuration et index référencent désormais l'onboarding débutant.

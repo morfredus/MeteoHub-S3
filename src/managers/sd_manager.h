@@ -1,19 +1,18 @@
 #pragma once
 #include <FS.h>
-#include <SD.h>
-#include <SPI.h>
+#include <SD_MMC.h>
 #include <string>
- 
+
+// Alias SD → SD_MMC : assure la compatibilité de tous les fichiers utilisant SD.xxx()
+// (history_manager, system_info, web_manager, etc.) sans les modifier.
+#define SD SD_MMC
+
 class SdManager {
 public:
     bool begin();
     bool format();
     bool isAvailable();
     bool ensureMounted();
-    
-    // Méthodes futures pour logs/historique
-    // bool appendLog(const std::string& message);
-    // bool saveHistory(const std::string& filename, const std::string& data);
 
 private:
     bool _available = false;
