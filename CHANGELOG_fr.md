@@ -1,3 +1,10 @@
+# [1.0.175] – 2026-03-04
+- Tous les états d'alerte font désormais clignoter la Neopixel (rouge, orange, jaune).
+- Seul l'état sans alerte laisse la Neopixel fixe.
+- Amélioration des couleurs orange (255,140,0) et jaune vif (255,220,0) pour une meilleure visibilité.
+- La luminosité de la Neopixel est maintenant configurable dans config.h (défaut : 15%).
+- Version minimale valide : 1.0.175
+
 # [1.0.173] – 2026-03-04
 - Remplacement du module SD SPI par un module SD natif SDMMC 4-bit 3.3V (broches : CLK, CMD, DAT0, DAT1, DAT2, DAT3/CD).
 - Mise à jour de `board_config.h` : remplacement des broches SD_CS/SCK/MOSI/MISO par SD_CLK/CMD/DAT0/DAT1/DAT2/DAT3 (GPIO 9, 10, 11, 12, 13, 14).

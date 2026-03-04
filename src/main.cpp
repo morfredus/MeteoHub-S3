@@ -211,8 +211,8 @@ void loop() {
 
         if (forecast.alert_active) {
             if (forecast.alert.severity >= 3) { if (blink) neoAlertRed(); else neoOff(); }
-            else if (forecast.alert.severity == 2) neoAlertOrange();
-            else neoAlertYellow();
+            else if (forecast.alert.severity == 2) { if (blink) neoAlertOrange(); else neoOff(); }
+            else { if (blink) neoAlertYellow(); else neoOff(); }
         } else {
             if (wifi.ip() != "0.0.0.0") neoWifiOK();
             else { if (blink) neoWifiLost(); else neoOff(); }

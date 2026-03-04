@@ -37,3 +37,8 @@
 // ===============
 #define DASHBOARD_REFRESH_MS     1000
 #define BUTTON_GUARD_MS          200
+
+// ===============
+// Paramètres Neopixel
+// ===============
+#define NEOPIXEL_BRIGHTNESS_PCT  15   // Luminosité Neopixel (0-100%), défaut 15%

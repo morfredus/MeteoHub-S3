@@ -1,3 +1,10 @@
+# [1.0.175] – 2026-03-04
+- All alert states now make the Neopixel blink (red, orange, yellow).
+- Only the 'no alert' state leaves the Neopixel steady.
+- Improved orange (255,140,0) and vivid yellow (255,220,0) colors for better visibility.
+- Neopixel brightness is now configurable in config.h (default: 15%).
+- Minimum valid version: 1.0.175
+
 # [1.0.173] – 2026-03-04
 - Replaced SPI SD card module with native SDMMC 4-bit 3.3V module (pins: CLK, CMD, DAT0, DAT1, DAT2, DAT3/CD).
 - Updated `board_config.h`: replaced SD_CS/SCK/MOSI/MISO pins with SD_CLK/CMD/DAT0/DAT1/DAT2/DAT3 (GPIOs 9, 10, 11, 12, 13, 14).

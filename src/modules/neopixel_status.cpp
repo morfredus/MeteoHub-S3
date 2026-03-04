@@ -1,4 +1,6 @@
+
 #include "board_config.h"        // doit être en premier
+#include "config.h"              // pour NEOPIXEL_BRIGHTNESS_PCT
 #include "neopixel_status.h"
 #include <Adafruit_NeoPixel.h>
 
@@ -6,7 +8,11 @@ static Adafruit_NeoPixel neo(1, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
 void neoInit() {
     neo.begin();
-    neo.setBrightness(40);
+    // Calcul de la luminosité à partir du pourcentage défini dans config.h
+    int brightness = (NEOPIXEL_BRIGHTNESS_PCT * 255) / 100;
+    if (brightness < 0) brightness = 0;
+    if (brightness > 255) brightness = 255;
+    neo.setBrightness(brightness);
     neo.show();
 }
 
@@ -31,12 +37,14 @@ void neoOff() {
 }
 
 void neoAlertYellow() {
-    neo.setPixelColor(0, neo.Color(255, 255, 0)); // jaune très vif
+    // Jaune vif (RGB: 255, 220, 0)
+    neo.setPixelColor(0, neo.Color(255, 220, 0));
     neo.show();
 }
 
 void neoAlertOrange() {
-    neo.setPixelColor(0, neo.Color(255, 100, 0)); // orange soutenu
+    // Orange franc (RGB: 255, 140, 0)
+    neo.setPixelColor(0, neo.Color(255, 140, 0));
     neo.show();
 }
 
