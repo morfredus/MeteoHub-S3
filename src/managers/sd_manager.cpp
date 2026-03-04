@@ -30,28 +30,28 @@ namespace {
 constexpr unsigned long SD_RECONNECT_COOLDOWN_DEFAULT_MS = 15000;
 constexpr unsigned long SD_RECONNECT_COOLDOWN_MAX_MS     = 120000;
 
-// Fréquences d'initialisation (Hz), du plus conservateur au plus rapide.
-// Les modules de qualité moyenne bénéficient d'un démarrage à basse fréquence.
+// Fréquences d'initialisation en kHz (SD_MMC.begin attend des kHz, pas des Hz).
+// SDMMC_FREQ_PROBING=400, SDMMC_FREQ_DEFAULT=20000, SDMMC_FREQ_HIGHSPEED=40000.
 constexpr int SD_INIT_FREQS_4BIT[] = {
-    SDMMC_FREQ_PROBING,   // 400 kHz — toujours tenté en premier
-    1000000,              // 1 MHz
-    4000000,              // 4 MHz
-    SDMMC_FREQ_DEFAULT,   // 20 MHz
-    SDMMC_FREQ_HIGHSPEED  // 40 MHz
+    SDMMC_FREQ_PROBING,   //   400 kHz — toujours tenté en premier
+    1000,                 //  1000 kHz =  1 MHz
+    4000,                 //  4000 kHz =  4 MHz
+    SDMMC_FREQ_DEFAULT,   // 20000 kHz = 20 MHz
+    SDMMC_FREQ_HIGHSPEED  // 40000 kHz = 40 MHz
 };
 constexpr int SD_INIT_FREQS_4BIT_COUNT = 5;
 
 constexpr int SD_INIT_FREQS_1BIT[] = {
-    SDMMC_FREQ_PROBING,   // 400 kHz
-    1000000,              // 1 MHz
-    4000000               // 4 MHz
+    SDMMC_FREQ_PROBING,   //  400 kHz
+    1000,                 // 1000 kHz = 1 MHz
+    4000                  // 4000 kHz = 4 MHz
 };
 constexpr int SD_INIT_FREQS_1BIT_COUNT = 3;
 
 constexpr int SD_FORMAT_FREQS[] = {
-    SDMMC_FREQ_PROBING,   // 400 kHz
-    1000000,              // 1 MHz
-    4000000               // 4 MHz
+    SDMMC_FREQ_PROBING,   //  400 kHz
+    1000,                 // 1000 kHz = 1 MHz
+    4000                  // 4000 kHz = 4 MHz
 };
 constexpr int SD_FORMAT_FREQS_COUNT = 3;
 
