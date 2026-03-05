@@ -8,6 +8,16 @@
 #include "board_config.h"
 #include "sd_manager.h"
 
+// Le macro SD de sd_manager.h sert aux autres fichiers du projet.
+// On le désactive ici pour pouvoir utiliser explicitement l'instance ::SD (SPI).
+#ifdef SD
+#undef SD
+#endif
+
+#include "../utils/logs.h"
+#include "board_config.h"
+#include "sd_manager.h"
+
 // Valeurs par défaut si non définies dans board_config.h
 #ifndef SD_CLK_PIN
 #define SD_CLK_PIN 12
@@ -35,12 +45,7 @@ namespace {
 constexpr unsigned long SD_RECONNECT_COOLDOWN_DEFAULT_MS = 15000;
 constexpr unsigned long SD_RECONNECT_COOLDOWN_MAX_MS = 120000;
 
-constexpr int SD_INIT_FREQS_SPI[] = {
-    1000000,
-    4000000,
-    10000000,
-    20000000
-};
+constexpr int SD_INIT_FREQS_SPI[] = {1000000, 4000000, 10000000, 20000000};
 constexpr int SD_INIT_FREQS_SPI_COUNT = 4;
 
 // SD_MMC.begin attend des kHz.
@@ -53,21 +58,17 @@ constexpr int SD_INIT_FREQS_4BIT[] = {
 };
 constexpr int SD_INIT_FREQS_4BIT_COUNT = 5;
 
-constexpr int SD_INIT_FREQS_1BIT[] = {
-    SDMMC_FREQ_PROBING,
-    1000,
-    4000
-};
+constexpr int SD_INIT_FREQS_1BIT[] = {SDMMC_FREQ_PROBING, 1000, 4000};
 constexpr int SD_INIT_FREQS_1BIT_COUNT = 3;
 
-constexpr int SD_FORMAT_FREQS[] = {
-    SDMMC_FREQ_PROBING,
-    1000,
-    4000
-};
+constexpr int SD_FORMAT_FREQS[] = {SDMMC_FREQ_PROBING, 1000, 4000};
 constexpr int SD_FORMAT_FREQS_COUNT = 3;
 
 SPIClass sd_spi(FSPI);
+
+fs::FS& activeFs() {
+    return *g_sd_fs;
+}
 
 void configurePins4bit() {
     SD_MMC.setPins(SD_CLK_PIN, SD_CMD_PIN, SD_DAT0_PIN, SD_DAT1_PIN, SD_DAT2_PIN, SD_DAT3_PIN);
@@ -102,8 +103,8 @@ void logSdioPinMapping(bool mode_4bit) {
 }
 
 void ensureHistoryDir() {
-    if (!SD.exists("/history")) {
-        SD.mkdir("/history");
+    if (!activeFs().exists("/history")) {
+        activeFs().mkdir("/history");
     }
 }
 
@@ -127,6 +128,36 @@ bool SdManager::cardIsPresent() const {
         return SD_MMC.cardType() != CARD_NONE;
     }
     return false;
+}
+
+uint64_t SdManager::cardSizeBytes() const {
+    if (_backend == Backend::spi) {
+        return ::SD.cardSize();
+    }
+    if (_backend == Backend::sdmmc) {
+        return SD_MMC.cardSize();
+    }
+    return 0;
+}
+
+uint64_t SdManager::totalBytes() const {
+    if (_backend == Backend::spi) {
+        return ::SD.totalBytes();
+    }
+    if (_backend == Backend::sdmmc) {
+        return SD_MMC.totalBytes();
+    }
+    return 0;
+}
+
+uint64_t SdManager::usedBytes() const {
+    if (_backend == Backend::spi) {
+        return ::SD.usedBytes();
+    }
+    if (_backend == Backend::sdmmc) {
+        return SD_MMC.usedBytes();
+    }
+    return 0;
 }
 
 bool SdManager::mountWithRetries() {
@@ -214,7 +245,7 @@ bool SdManager::begin() {
         return false;
     }
 
-    LOG_INFO("SD Card OK. Taille : " + std::to_string(SD.cardSize() / (1024ULL * 1024ULL)) + " MB");
+    LOG_INFO("SD Card OK. Taille : " + std::to_string(cardSizeBytes() / (1024ULL * 1024ULL)) + " MB");
     _last_reconnect_attempt_ms = millis();
     _consecutive_reconnect_failures = 0;
     _reconnect_cooldown_ms = SD_RECONNECT_COOLDOWN_DEFAULT_MS;
@@ -337,7 +368,7 @@ bool SdManager::format() {
         return false;
     }
 
-    if (!SD.exists("/history") && !SD.mkdir("/history")) {
+    if (!activeFs().exists("/history") && !activeFs().mkdir("/history")) {
         LOG_WARNING("SD format : échec création dossier /history");
     }
 
