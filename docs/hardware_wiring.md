@@ -1,6 +1,6 @@
 # Hardware Wiring
 
-Minimum valid version: 1.0.173
+Minimum valid version: 1.0.176
 
 This project targets an OLED setup only.
 
@@ -13,40 +13,43 @@ Connected peripherals:
 - Rotary encoder + buttons
 - AHT20 + BMP280 (I2C)
 - NeoPixel
-- Optional SD card (native SDMMC 4-bit, 3.3V)
+- Optional SD card (3.3V module, SPI + SDIO compatible)
 
-## SD Card Module (Native SDMMC 4-bit, 3.3V)
+## SD Card Module (3.3V, SPI + SDIO compatible)
 
-The SD card uses the ESP32-S3 native SDMMC interface (not SPI).
-This provides better performance and reliability than SPI mode.
+The SD manager now tries SPI first (for D0/SO, CMD/S1 and D3/CS modules), then falls back to native SDIO if needed.
 
 | Module pin | GPIO | Description             |
 |------------|------|-------------------------|
 | CLK        | 12   | Clock                   |
-| CMD        | 11   | Command                 |
-| DAT0       | 13   | Data line 0             |
-| DAT1       | 14   | Data line 1             |
-| DAT2       | 10   | Data line 2             |
-| CD / DAT3  | 9    | Card detect / Data line 3 |
+| CMD / S1   | 11   | SDIO CMD / SPI MOSI (DI) |
+| D0 / SO    | 13   | SDIO DAT0 / SPI MISO (DO) |
+| D1         | 14   | SDIO DAT1               |
+| DAT2       | 10   | SDIO DAT2               |
+| D3 / CS    | 9    | SDIO DAT3 / SPI CS      |
 | VCC        | 3.3V | Power supply            |
 | GND        | GND  | Ground                  |
 
-> **Note:** The module's CD pin corresponds to DAT3 in the SDMMC 4-bit protocol.
-> Connect it to GPIO 9 as shown above.
+> **Note:** The same GPIO mapping is reused for both buses.
+> In SPI mode, D3/CS is the chip-select pin.
 
 ### Compatibility and robustness
 
 The driver attempts mounting in the following order:
-1. 4-bit mode at 400 kHz (most conservative)
-2. 4-bit mode at 1 MHz
-3. 4-bit mode at 4 MHz
-4. 4-bit mode at 20 MHz
-5. 4-bit mode at 40 MHz
-6. 1-bit fallback at 400 kHz (for noisy or lower-quality wiring)
-7. 1-bit fallback at 1 MHz
-8. 1-bit fallback at 4 MHz
+1. SPI at 1 MHz
+2. SPI at 4 MHz
+3. SPI at 10 MHz
+4. SPI at 20 MHz
+5. SDIO 4-bit at 400 kHz
+6. SDIO 4-bit at 1 MHz
+7. SDIO 4-bit at 4 MHz
+8. SDIO 4-bit at 20 MHz
+9. SDIO 4-bit at 40 MHz
+10. SDIO 1-bit fallback at 400 kHz
+11. SDIO 1-bit fallback at 1 MHz
+12. SDIO 1-bit fallback at 4 MHz
 
-This strategy ensures compatibility with average-quality SD modules and short-trace breakout boards.
+This strategy keeps broad compatibility with SPI-labeled SD modules while still benefiting from SDIO when all data lines are wired.
 
 ## Other peripherals
 
