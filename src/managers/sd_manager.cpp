@@ -14,6 +14,10 @@
 #undef SD
 #endif
 
+#include "../utils/logs.h"
+#include "board_config.h"
+#include "sd_manager.h"
+
 // Valeurs par défaut si non définies dans board_config.h
 #ifndef SD_CLK_PIN
 #define SD_CLK_PIN 12
