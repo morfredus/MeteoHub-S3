@@ -33,9 +33,9 @@ std::string getSystemInfoJson(SdManager* sd) {
 
     if (sd && sd->isAvailable()) {
         JsonObject fs_sd = doc.createNestedObject("sd_card");
-        fs_sd["total_b"] = SD.totalBytes();
-        fs_sd["used_b"] = SD.usedBytes();
-        fs_sd["size_mb"] = (uint32_t)(SD.cardSize() / (1024 * 1024));
+        fs_sd["total_b"] = sd->totalBytes();
+        fs_sd["used_b"] = sd->usedBytes();
+        fs_sd["size_mb"] = (uint32_t)(sd->cardSizeBytes() / (1024 * 1024));
     } else {
         doc["sd_card"] = "not_mounted";
     }
