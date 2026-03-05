@@ -27,15 +27,15 @@
 #define ENCODER_BTN_PIN    6
 
 // ------------------------------------
-// Module SD (interface native SDMMC 4-bit, 3.3V)
-// CD du module = DAT3 (détection carte + données)
+// Module SD 3.3V (brochage compatible SPI + SDIO)
+// Labels module : CLK, D0/SO, CMD/S1, D3/CS, D1, DAT2, DET
 // ------------------------------------
-#define SD_CLK_PIN   12   // CLK
-#define SD_CMD_PIN   11   // CMD
-#define SD_DAT0_PIN  13   // DAT0
+#define SD_CLK_PIN   12   // CLK / SCK
+#define SD_CMD_PIN   11   // CMD / MOSI (DI)
+#define SD_DAT0_PIN  13   // DAT0 / MISO (DO)
 #define SD_DAT1_PIN  14   // DAT1
 #define SD_DAT2_PIN  10   // DAT2
-#define SD_DAT3_PIN   9   // DAT3 / CD
+#define SD_DAT3_PIN   9   // DAT3 / CS
 
 
 // -------------------------------------------------------------------

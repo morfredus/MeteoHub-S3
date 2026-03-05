@@ -1,6 +1,6 @@
 # Câblage matériel
 
-Version minimale valide : 1.0.173
+Version minimale valide : 1.0.176
 
 Ce projet cible uniquement une configuration OLED.
 
@@ -13,40 +13,43 @@ Périphériques connectés :
 - Encodeur rotatif + boutons
 - AHT20 + BMP280 (I2C)
 - NeoPixel
-- Carte SD optionnelle (interface native SDMMC 4-bit, 3.3V)
+- Carte SD optionnelle (module 3.3V compatible SPI + SDIO)
 
-## Module carte SD (SDMMC natif 4-bit, 3.3V)
+## Module carte SD (3.3V, compatible SPI + SDIO)
 
-La carte SD utilise l'interface SDMMC native de l'ESP32-S3 (et non le bus SPI).
-Cela offre de meilleures performances et une meilleure fiabilité que le mode SPI.
+Le gestionnaire SD tente maintenant d'abord le bus SPI (pour les modules D0/SO, CMD/S1 et D3/CS), puis bascule sur SDIO natif si nécessaire.
 
 | Broche module | GPIO | Description               |
 |---------------|------|---------------------------|
 | CLK           | 12   | Horloge                   |
-| CMD           | 11   | Commande                  |
-| DAT0          | 13   | Ligne de données 0        |
-| DAT1          | 14   | Ligne de données 1        |
-| DAT2          | 10   | Ligne de données 2        |
-| CD / DAT3     | 9    | Détection carte / données 3 |
+| CMD / S1      | 11   | SDIO CMD / SPI MOSI (DI)  |
+| D0 / SO       | 13   | SDIO DAT0 / SPI MISO (DO) |
+| D1            | 14   | SDIO DAT1                 |
+| DAT2          | 10   | SDIO DAT2                 |
+| D3 / CS       | 9    | SDIO DAT3 / SPI CS        |
 | VCC           | 3.3V | Alimentation              |
 | GND           | GND  | Masse                     |
 
-> **Note :** La broche CD du module correspond à DAT3 dans le protocole SDMMC 4-bit.
-> Elle doit être connectée au GPIO 9 comme indiqué ci-dessus.
+> **Note :** Le même mapping GPIO est réutilisé pour les deux bus.
+> En mode SPI, D3/CS est la broche de sélection de puce.
 
 ### Compatibilité et robustesse
 
 Le pilote tente le montage dans l'ordre suivant :
-1. Mode 4-bit à 400 kHz (le plus conservateur)
-2. Mode 4-bit à 1 MHz
-3. Mode 4-bit à 4 MHz
-4. Mode 4-bit à 20 MHz
-5. Mode 4-bit à 40 MHz
-6. Repli 1-bit à 400 kHz (pour les câblages bruyants ou modules de qualité moyenne)
-7. Repli 1-bit à 1 MHz
-8. Repli 1-bit à 4 MHz
+1. SPI à 1 MHz
+2. SPI à 4 MHz
+3. SPI à 10 MHz
+4. SPI à 20 MHz
+5. SDIO 4-bit à 400 kHz
+6. SDIO 4-bit à 1 MHz
+7. SDIO 4-bit à 4 MHz
+8. SDIO 4-bit à 20 MHz
+9. SDIO 4-bit à 40 MHz
+10. Repli SDIO 1-bit à 400 kHz
+11. Repli SDIO 1-bit à 1 MHz
+12. Repli SDIO 1-bit à 4 MHz
 
-Cette stratégie assure la compatibilité avec des modules SD de qualité moyenne et des cartes breakout à courtes pistes.
+Cette stratégie maximise la compatibilité avec les modules SD marqués SPI tout en profitant du SDIO quand toutes les lignes de données sont câblées.
 
 ## Autres périphériques
 
