@@ -27,12 +27,25 @@
 #define ENCODER_BTN_PIN    6
 
 // ------------------------------------
-// Module SD (SPI secondaire SAFE)
+// Nouveau module SD 3.3V (SPI ou SDIO)
+// Broches module: 3V, GND, CLK, D0/SO, CMD/SI, D3/CS, D1, DAT2, DET4
 // ------------------------------------
-#define SD_CS_PIN    10
-#define SD_SCK_PIN   12
-#define SD_MOSI_PIN  11
-#define SD_MISO_PIN  13
+// Mapping SPI (mode principal)
+#define SD_SPI_SCK_PIN   12   // CLK
+#define SD_SPI_MISO_PIN  13   // D0/SO
+#define SD_SPI_MOSI_PIN  11   // CMD/SI
+#define SD_SPI_CS_PIN    10   // D3/CS
+
+// Mapping SDIO 1-bit (repli)
+#define SDMMC_CLK_PIN    12   // CLK
+#define SDMMC_CMD_PIN    11   // CMD/SI
+#define SDMMC_D0_PIN     13   // D0/SO
+#define SDMMC_D1_PIN     -1   // D1 non utilisé
+#define SDMMC_D2_PIN     -1   // DAT2 non utilisé
+#define SDMMC_D3_PIN     -1   // D3 non utilisé en 1-bit
+
+// Détection carte (DET4) optionnelle
+#define SD_DET_PIN       -1
 
 
 // -------------------------------------------------------------------

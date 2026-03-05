@@ -3,6 +3,10 @@
 #include "sensors.h"
 #include "../utils/logs.h"
 
+namespace {
+constexpr unsigned long SENSOR_READ_MIN_INTERVAL_MS = 250;
+}
+
 bool SensorManager::begin() {
     Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN);
 
@@ -28,12 +32,22 @@ bool SensorManager::begin() {
         LOG_WARNING("Sensors Missing");
     }
 
+    cachedData = {0, 0, 0, false};
+    lastReadMs = 0;
     return ahtFound || bmpFound;
 }
 
 SensorData SensorManager::read() {
+    const unsigned long now = millis();
+
+    // Correction 7: limitation du taux de lecture I2C pour éviter les artefacts
+    // OLED/freezes quand la navigation UI déclenche des rafraîchissements rapides.
+    if (cachedData.valid && (now - lastReadMs) < SENSOR_READ_MIN_INTERVAL_MS) {
+        return cachedData;
+    }
+
     SensorData data = {0, 0, 0, false};
-    
+
     if (ahtFound) {
         sensors_event_t humidity, temp;
         aht.getEvent(&humidity, &temp);
@@ -51,7 +65,9 @@ SensorData SensorManager::read() {
         }
     }
 
-    return data;
+    cachedData = data;
+    lastReadMs = now;
+    return cachedData;
 }
 
 //

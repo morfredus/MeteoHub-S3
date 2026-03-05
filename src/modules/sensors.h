@@ -1,4 +1,6 @@
 #pragma once
+
+#include <Arduino.h>
 #include <Adafruit_AHTX0.h>
 #include <Adafruit_BMP280.h>
 
@@ -19,6 +21,6 @@ private:
     Adafruit_BMP280 bmp;
     bool ahtFound = false;
     bool bmpFound = false;
+    SensorData cachedData {0, 0, 0, false};
+    unsigned long lastReadMs = 0;
 };
-
-//

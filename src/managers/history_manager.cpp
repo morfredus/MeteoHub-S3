@@ -179,16 +179,22 @@ void HistoryManager::saveToSd(const HistoryRecord& record) {
     char filename[32];
     strftime(filename, sizeof(filename), "/history/%Y-%m-%d.csv", &timeinfo);
 
+    fs::FS* sd_fs = (_sd ? _sd->fs() : nullptr);
+    if (!sd_fs) {
+        LOG_WARNING("SD Save: filesystem unavailable");
+        return;
+    }
+
     // Vérifier et créer le dossier /history avec log explicite en cas d'échec
-    if (!SD.exists("/history")) {
-        if (!SD.mkdir("/history")) {
+    if (!sd_fs->exists("/history")) {
+        if (!sd_fs->mkdir("/history")) {
             LOG_WARNING("SD Save: mkdir failed for /history (cannot write " + std::string(filename) + ")");
             return;
         }
         LOG_INFO("SD Save: created /history directory");
     }
 
-    bool file_exists = SD.exists(filename);
+    bool file_exists = sd_fs->exists(filename);
 
     auto writeRecord = [&](File& f) -> bool {
         if (!file_exists) {
@@ -214,7 +220,7 @@ void HistoryManager::saveToSd(const HistoryRecord& record) {
         return true;
     };
 
-    File f = SD.open(filename, FILE_APPEND);
+    File f = sd_fs->open(filename, FILE_APPEND);
     if (!f) {
         LOG_WARNING("SD Save: open failed for " + std::string(filename) + " (append). Trying immediate remount...");
 
@@ -223,13 +229,19 @@ void HistoryManager::saveToSd(const HistoryRecord& record) {
             return;
         }
 
-        if (!SD.exists("/history") && !SD.mkdir("/history")) {
+        sd_fs = (_sd ? _sd->fs() : nullptr);
+        if (!sd_fs) {
+            LOG_WARNING("SD Save: filesystem unavailable after remount");
+            return;
+        }
+
+        if (!sd_fs->exists("/history") && !sd_fs->mkdir("/history")) {
             LOG_WARNING("SD Save: mkdir failed after remount for /history");
             return;
         }
 
-        file_exists = SD.exists(filename);
-        f = SD.open(filename, FILE_APPEND);
+        file_exists = sd_fs->exists(filename);
+        f = sd_fs->open(filename, FILE_APPEND);
         if (!f) {
             LOG_WARNING("SD Save: open failed after remount for " + std::string(filename));
             return;
@@ -247,8 +259,13 @@ void HistoryManager::saveToSd(const HistoryRecord& record) {
 }
 
 void HistoryManager::createSdStructure() {
-    if (!SD.exists("/history")) {
-        if (SD.mkdir("/history")) {
+    fs::FS* sd_fs = (_sd ? _sd->fs() : nullptr);
+    if (!sd_fs) {
+        return;
+    }
+
+    if (!sd_fs->exists("/history")) {
+        if (sd_fs->mkdir("/history")) {
             LOG_INFO("Created /history directory on SD card.");
         } else {
             LOG_ERROR("Failed to create /history directory on SD card.");
@@ -261,12 +278,18 @@ void HistoryManager::clearHistory() {
     LittleFS.remove(HISTORY_FILE);
 
     if (_sd && _sd->isAvailable()) {
+        fs::FS* sd_fs = _sd->fs();
+        if (!sd_fs) {
+            LOG_WARNING("SD clear: filesystem unavailable");
+            return;
+        }
+
         LOG_INFO("Clearing history from SD card...");
-        File root = SD.open("/history");
+        File root = sd_fs->open("/history");
         if (root) {
             File file = root.openNextFile();
             while(file) {
-                SD.remove(file.name());
+                sd_fs->remove(file.name());
                 file = root.openNextFile();
             }
         }

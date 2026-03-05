@@ -496,8 +496,8 @@ void WebManager::_setupApi() {
 
         fs::FS* pFs = &LittleFS;
         if (fsName == "sd") {
-            if (_sd && _sd->isAvailable()) {
-                pFs = &SD;
+            if (_sd && _sd->isAvailable() && _sd->fs()) {
+                pFs = _sd->fs();
             } else {
                 request->send(503, "text/plain", "SD Card not available");
                 return;
@@ -545,8 +545,8 @@ void WebManager::_setupApi() {
 
         fs::FS* pFs = &LittleFS;
         if (fsName == "sd") {
-            if (_sd && _sd->isAvailable()) {
-                pFs = &SD;
+            if (_sd && _sd->isAvailable() && _sd->fs()) {
+                pFs = _sd->fs();
             } else {
                 request->send(503, "text/plain", "SD Card not available");
                 return;
@@ -575,8 +575,8 @@ void WebManager::_setupApi() {
 
         fs::FS* pFs = &LittleFS;
         if (fsName == "sd") {
-            if (_sd && _sd->isAvailable()) {
-                pFs = &SD;
+            if (_sd && _sd->isAvailable() && _sd->fs()) {
+                pFs = _sd->fs();
             } else {
                 request->send(503, "text/plain", "SD Card not available");
                 return;
@@ -658,8 +658,8 @@ void WebManager::_setupApi() {
                 fsName = request->getParam("fs")->value();
             }
             pFsUpload = &LittleFS;
-            if (fsName == "sd" && _sd && _sd->isAvailable()) {
-                pFsUpload = &SD;
+            if (fsName == "sd" && _sd && _sd->isAvailable() && _sd->fs()) {
+                pFsUpload = _sd->fs();
             } else if (fsName == "sd") {
                 // Cannot send error here, but upload will fail
                 return;
