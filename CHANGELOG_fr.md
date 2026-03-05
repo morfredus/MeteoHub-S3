@@ -1,3 +1,16 @@
+# [1.0.177] – 2026-03-05
+- Correction des erreurs de compilation introduites par l'alias backend SD hybride (`SD`) en isolant l'usage SPI `::SD` dans `sd_manager.cpp`.
+- Ajout d'accesseurs de métriques de stockage spécifiques au backend dans `SdManager` (`cardSizeBytes`, `totalBytes`, `usedBytes`).
+- Mise à jour de `system_info.cpp` pour utiliser les métriques de `SdManager` au lieu des méthodes `fs::FS` indisponibles sur l'interface FS générique.
+- Version minimale valide : 1.0.177
+
+# [1.0.176] – 2026-03-05
+- Ajout de la sélection automatique du backend SD : tentative SPI en premier, puis SDIO (4-bit puis repli 1-bit).
+- Mise à jour interne du gestionnaire SD pour exposer un alias de système de fichiers `SD` unifié sur les backends SPI et SDIO.
+- Mise à jour de la documentation de câblage SD pour décrire les labels de broches des modules 3.3V SPI/SDIO et la stratégie complète de tentatives.
+- Mise à jour des commentaires SD dans `board_config.h` pour refléter l'usage hybride SPI/SDIO.
+- Version minimale valide : 1.0.176
+
 # [1.0.175] – 2026-03-04
 - Tous les états d'alerte font désormais clignoter la Neopixel (rouge, orange, jaune).
 - Seul l'état sans alerte laisse la Neopixel fixe.

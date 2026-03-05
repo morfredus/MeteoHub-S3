@@ -1,3 +1,16 @@
+# [1.0.177] – 2026-03-05
+- Fixed compilation errors introduced by the hybrid SD backend alias (`SD`) by isolating SPI `::SD` usage in `sd_manager.cpp`.
+- Added backend-specific storage metric accessors in `SdManager` (`cardSizeBytes`, `totalBytes`, `usedBytes`).
+- Updated `system_info.cpp` to use `SdManager` metrics instead of `fs::FS` methods unavailable on the generic FS interface.
+- Minimum valid version: 1.0.177
+
+# [1.0.176] – 2026-03-05
+- Added automatic SD backend selection: SPI is now attempted first, then SDIO (4-bit then 1-bit fallback).
+- Updated SD manager internals to expose a unified `SD` filesystem alias over both SPI and SDIO backends.
+- Updated SD wiring docs to describe pin labels used by 3.3V SPI/SDIO modules and the complete retry strategy.
+- Updated `board_config.h` SD comments to match hybrid SPI/SDIO pin usage.
+- Minimum valid version: 1.0.176
+
 # [1.0.175] – 2026-03-04
 - All alert states now make the Neopixel blink (red, orange, yellow).
 - Only the 'no alert' state leaves the Neopixel steady.
