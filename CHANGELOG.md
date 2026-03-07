@@ -1,3 +1,10 @@
+# [1.0.174] – 2026-03-07
+- Rewrote SdManager to use SPIClass(FSPI) at 40 MHz with format_if_fail=true, matching the validated reference implementation.
+- Removed complex multi-frequency retry loop, low-level sdcard_init/sdcard_uninit FatFS calls, and manual GPIO drive-strength configuration.
+- Replaced raw SPIClass pointer with std::unique_ptr<SPIClass> member in SdManager.
+- Simplified format() to use SD.begin with format_if_fail=true instead of low-level f_mkfs.
+- Minimum valid version: 1.0.174
+
 # [1.0.173] – 2026-03-07
 - Updated SD card SPI pin mapping to match physical wiring: CLK=9, MISO=10, MOSI=11, CS=12, DET=14.
 - Added SD_DET_PIN support in SdManager: physical card presence detection via pull-up input (LOW = card inserted).
