@@ -1,3 +1,26 @@
+# [1.0.176] – 2026-03-07
+- Réécriture complète du `SdManager` sur la méthode validée “mode stable 10MHz” : instance `FSPI` dédiée recréée avant chaque montage et `SD.begin(..., format_if_fail=...)`.
+- Suppression de la dépendance bloquante à la broche DET dans la logique de montage pour éviter les faux négatifs de détection.
+- Formatage robuste aligné sur le code de référence: remount à 10MHz avec `format_if_fail=true` puis test d'écriture critique.
+- Conservation des fonctionnalités projet liées à la SD (historique `/history`, sauvegarde, lecture, upload/suppression via APIs existantes).
+
+# [1.0.175] – 2026-03-07
+- Renforcement du montage SD sur ESP32-S3: ajout d’essais à 1MHz et 400kHz en plus des fréquences rapides.
+- Préparation explicite du bus SPI avant `SD.begin` (CS HIGH, MISO pull-up, clocks d'amorçage) pour améliorer la compatibilité des cartes/modules sensibles.
+- Ajustement `max_files` lors du montage SD à 10 pour limiter les échecs liés aux ouvertures de fichiers simultanées.
+
+# [1.0.174] – 2026-03-07
+- Correction SD_DET: la détection de carte n'est plus bloquante pour le montage (certains modules ont une polarité inversée ou un signal bruité).
+- Ajout d'un échantillonnage multi-lectures de la broche DET avec logs détaillés (LOW/HIGH) pour diagnostiquer le câblage réel.
+- Ajout du paramètre `SD_DET_ACTIVE_LEVEL` (LOW/HIGH) dans `board_config.h` pour s'adapter aux lecteurs à polarité inversée.
+- Si la carte est déjà montée, un état DET incohérent n'entraîne plus de démontage forcé; seule la vérification `SD.cardType()` décide de la disponibilité.
+
+# [1.0.173] – 2026-03-07
+- Refonte du gestionnaire SD pour s’aligner sur la méthode validée (SPI FSPI dédié + `SD.begin(..., format_if_fail=true)`).
+- Respect strict du mapping défini dans `board_config.h` (CLK=9, D0/MISO=10, CMD/MOSI=11, D3/CS=12, DET=14).
+- Ajout d’une détection de présence carte via `SD_DET_PIN` (LOW=présente) avant montage/réessais.
+- Conservation des fonctionnalités SD existantes: lecture/écriture, incrémentation quotidienne des fichiers CSV d’historique, suppression/upload web et formatage.
+
 # [1.0.172] – 2026-02-25
 - Ajout et liens croisés de la documentation débutant (EN/FR) dans tous les documents utilisateur.
 - Tous les guides, FAQ, configuration et index référencent désormais l'onboarding débutant.
