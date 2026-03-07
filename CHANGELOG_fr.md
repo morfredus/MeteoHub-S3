@@ -1,3 +1,9 @@
+# [1.0.176] – 2026-03-07
+- Réécriture complète du `SdManager` sur la méthode validée “mode stable 10MHz” : instance `FSPI` dédiée recréée avant chaque montage et `SD.begin(..., format_if_fail=...)`.
+- Suppression de la dépendance bloquante à la broche DET dans la logique de montage pour éviter les faux négatifs de détection.
+- Formatage robuste aligné sur le code de référence: remount à 10MHz avec `format_if_fail=true` puis test d'écriture critique.
+- Conservation des fonctionnalités projet liées à la SD (historique `/history`, sauvegarde, lecture, upload/suppression via APIs existantes).
+
 # [1.0.175] – 2026-03-07
 - Renforcement du montage SD sur ESP32-S3: ajout d’essais à 1MHz et 400kHz en plus des fréquences rapides.
 - Préparation explicite du bus SPI avant `SD.begin` (CS HIGH, MISO pull-up, clocks d'amorçage) pour améliorer la compatibilité des cartes/modules sensibles.
