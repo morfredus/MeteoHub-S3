@@ -1,3 +1,8 @@
+# [1.0.175] – 2026-03-07
+- Renforcement du montage SD sur ESP32-S3: ajout d’essais à 1MHz et 400kHz en plus des fréquences rapides.
+- Préparation explicite du bus SPI avant `SD.begin` (CS HIGH, MISO pull-up, clocks d'amorçage) pour améliorer la compatibilité des cartes/modules sensibles.
+- Ajustement `max_files` lors du montage SD à 10 pour limiter les échecs liés aux ouvertures de fichiers simultanées.
+
 # [1.0.174] – 2026-03-07
 - Correction SD_DET: la détection de carte n'est plus bloquante pour le montage (certains modules ont une polarité inversée ou un signal bruité).
 - Ajout d'un échantillonnage multi-lectures de la broche DET avec logs détaillés (LOW/HIGH) pour diagnostiquer le câblage réel.

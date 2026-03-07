@@ -34,14 +34,31 @@
 #endif
 
 namespace {
-constexpr int SD_INIT_RETRY_COUNT = 4;
-constexpr int SD_INIT_FREQUENCIES[] = {40000000, 20000000, 10000000, 4000000};
+constexpr int SD_INIT_FREQUENCIES[] = {40000000, 20000000, 10000000, 4000000, 1000000, 400000};
+constexpr int SD_INIT_RETRY_COUNT = sizeof(SD_INIT_FREQUENCIES) / sizeof(SD_INIT_FREQUENCIES[0]);
 constexpr unsigned long SD_RECONNECT_COOLDOWN_DEFAULT_MS = 15000;
 constexpr unsigned long SD_RECONNECT_COOLDOWN_MAX_MS = 120000;
 constexpr int SD_POWER_OFF_DELAY_MS = 30;
 constexpr int SD_POWER_ON_STABILIZE_MS = 80;
+constexpr int SD_SPI_SETTLE_DELAY_MS = 4;
 constexpr int SD_DETECT_SAMPLE_COUNT = 5;
 constexpr int SD_DETECT_SAMPLE_DELAY_MS = 2;
+
+void prepareSpiBus(SPIClass& spi) {
+    pinMode(SD_CS_PIN, OUTPUT);
+    pinMode(SD_CLK_PIN, OUTPUT);
+    pinMode(SD_MOSI_PIN, OUTPUT);
+    pinMode(SD_MISO_PIN, INPUT_PULLUP);
+    digitalWrite(SD_CS_PIN, HIGH);
+
+    spi.begin(SD_CLK_PIN, SD_MISO_PIN, SD_MOSI_PIN, SD_CS_PIN);
+
+    for (int i = 0; i < 16; i++) {
+        spi.transfer(0xFF);
+    }
+
+    delay(SD_SPI_SETTLE_DELAY_MS);
+}
 }
 
 void SdManager::ensureSpiInstance() {
@@ -119,9 +136,9 @@ bool SdManager::mountWithRetries(bool formatIfFail) {
 
         SD.end();
         powerCycleIfSupported();
-        _sd_spi->begin(SD_CLK_PIN, SD_MISO_PIN, SD_MOSI_PIN, SD_CS_PIN);
+        prepareSpiBus(*_sd_spi);
 
-        bool mounted = SD.begin(SD_CS_PIN, *_sd_spi, frequency_hz, "/sd", 5, formatIfFail);
+        bool mounted = SD.begin(SD_CS_PIN, *_sd_spi, frequency_hz, "/sd", 10, formatIfFail);
         if (!mounted) {
             LOG_WARNING("SD mount failed at " + std::to_string(frequency_hz) + "Hz");
             delay(120);
