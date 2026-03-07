@@ -95,6 +95,7 @@ bool SdManager::verifyWriteAccess() {
             test_file.close();
         }
     }
+}
 
     SD.remove(SD_WRITE_TEST_FILE);
 
@@ -123,6 +124,7 @@ bool SdManager::begin() {
     logPinMapping();
 
     _available = false;
+    SD.end();
 
     if (!mountAtFrequency(SD_PRIMARY_FREQUENCY_HZ, true)) {
         LOG_ERROR("SD mount failed at startup (10MHz)");
@@ -151,6 +153,10 @@ bool SdManager::isAvailable() {
         _available = false;
         SD.end();
         return ensureMounted();
+    }
+
+    if (!isCardDetected()) {
+        LOG_WARNING("SD detect indicates missing card while mounted; keeping SD available (detect likely inverted/noisy)");
     }
 
     return true;
