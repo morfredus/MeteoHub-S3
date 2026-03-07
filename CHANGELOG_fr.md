@@ -1,3 +1,9 @@
+# [1.0.173] – 2026-03-07
+- Refonte du gestionnaire SD pour s’aligner sur la méthode validée (SPI FSPI dédié + `SD.begin(..., format_if_fail=true)`).
+- Respect strict du mapping défini dans `board_config.h` (CLK=9, D0/MISO=10, CMD/MOSI=11, D3/CS=12, DET=14).
+- Ajout d’une détection de présence carte via `SD_DET_PIN` (LOW=présente) avant montage/réessais.
+- Conservation des fonctionnalités SD existantes: lecture/écriture, incrémentation quotidienne des fichiers CSV d’historique, suppression/upload web et formatage.
+
 # [1.0.172] – 2026-02-25
 - Ajout et liens croisés de la documentation débutant (EN/FR) dans tous les documents utilisateur.
 - Tous les guides, FAQ, configuration et index référencent désormais l'onboarding débutant.
