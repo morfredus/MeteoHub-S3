@@ -129,10 +129,26 @@ bool SdManager::verifyWriteAccess() {
     return true;
 }
 
-void SdManager::ensureHistoryDirectory() {
-    if (!SD.exists("/history") && !SD.mkdir("/history")) {
-        LOG_WARNING("SD: failed to create /history");
+bool SdManager::ensureHistoryDirectory() {
+    if (SD.exists("/history")) {
+        return true;
     }
+
+    if (SD.mkdir("/history")) {
+        return true;
+    }
+
+    // Fallback utile selon les comportements de mountpoint
+    if (SD.exists("/sd/history")) {
+        return true;
+    }
+    if (SD.mkdir("/sd/history")) {
+        LOG_WARNING("SD: /history creation failed, using /sd/history fallback");
+        return true;
+    }
+
+    LOG_WARNING("SD: mkdir failed for /history and /sd/history (possible read-only card)");
+    return false;
 }
 
 bool SdManager::begin() {
@@ -148,6 +164,16 @@ bool SdManager::begin() {
 
     if (!mountAtFrequency(SD_PRIMARY_FREQUENCY_HZ, true)) {
         LOG_ERROR("SD mount failed at startup (10MHz)");
+        return false;
+    }
+
+    bool history_ok = ensureHistoryDirectory();
+    bool write_ok = verifyWriteAccess();
+
+    if (!history_ok || !write_ok) {
+        LOG_ERROR("SD mounted but not writable (history/write test failed). Marking SD unavailable.");
+        _available = false;
+        SD.end();
         return false;
     }
 
@@ -197,8 +223,14 @@ bool SdManager::ensureMounted() {
 
     for (int frequency_hz : SD_RECONNECT_FREQUENCIES) {
         if (mountAtFrequency(frequency_hz, false)) {
-            ensureHistoryDirectory();
-            verifyWriteAccess();
+            bool history_ok = ensureHistoryDirectory();
+            bool write_ok = verifyWriteAccess();
+            if (!history_ok || !write_ok) {
+                LOG_WARNING("SD reconnect mounted but write checks failed (possible read-only). Continuing retries...");
+                SD.end();
+                delay(120);
+                continue;
+            }
             _available = true;
             _consecutive_reconnect_failures = 0;
             _reconnect_cooldown_ms = SD_RECONNECT_COOLDOWN_DEFAULT_MS;
@@ -232,12 +264,13 @@ bool SdManager::format() {
         return false;
     }
 
-    ensureHistoryDirectory();
+    bool history_ok = ensureHistoryDirectory();
 
     bool write_ok = verifyWriteAccess();
-    if (!write_ok) {
-        LOG_ERROR("SD format finished but write test failed (possible read-only card)");
+    if (!history_ok || !write_ok) {
+        LOG_ERROR("SD format finished but card is still not writable (history/write test failed)");
         _available = false;
+        SD.end();
         return false;
     }
 
