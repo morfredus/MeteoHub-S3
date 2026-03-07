@@ -27,14 +27,20 @@
 #define ENCODER_BTN_PIN    6
 
 // ------------------------------------
-// Module SD (SPI FSPI — brochage câblé)
-// CLK=9, D0/MISO=10, CMD/MOSI=11, CS=12, DAT2=13 (non utilisé), DET=14 (non câblé)
+// Module SD 3.3V (brochage compatible SPI + SDIO)
+// Labels module : CLK, D0/SO, CMD/S1, D3/CS, D1, DAT2, DET
 // ------------------------------------
-#define SD_CS_PIN    12
-#define SD_SCK_PIN    9
-#define SD_MOSI_PIN  11
-#define SD_MISO_PIN  10
-// SD_DET_PIN non défini : pin DET câblé mais switch absent sur le module — détection désactivée
+#define SD_CLK_PIN   9    // SCK
+#define SD_MISO_PIN  10   // DAT0 / SO
+#define SD_MOSI_PIN  11   // CMD / SI
+#define SD_CS_PIN    12   // DAT3 / CS
+#define SD_DAT2_PIN  13   // DAT2
+// Pin de détection (optionnel, mettez -1 si non câblé)
+// Si câblé : LOW = Carte présente, HIGH = Vide
+#define SD_DET_PIN   14
+// Mode de bus SD :
+// 0 = AUTO (SPI puis SDIO), 1 = SPI uniquement, 2 = SDIO uniquement
+#define SD_BUS_MODE  1
 
 
 // -------------------------------------------------------------------

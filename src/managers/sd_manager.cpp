@@ -9,8 +9,8 @@
 #ifndef SD_CS_PIN
 #define SD_CS_PIN 12
 #endif
-#ifndef SD_SCK_PIN
-#define SD_SCK_PIN 9
+#ifndef SD_CLK_PIN
+#define SD_CLK_PIN 9
 #endif
 #ifndef SD_MISO_PIN
 #define SD_MISO_PIN 10
@@ -52,7 +52,7 @@ bool isCardPhysicallyPresent() {
 void logSdPinMapping() {
     LOG_INFO(
         "SD pin mapping: CS=" + std::to_string(SD_CS_PIN) +
-        " SCK=" + std::to_string(SD_SCK_PIN) +
+        " CLK=" + std::to_string(SD_CLK_PIN) +
         " MISO=" + std::to_string(SD_MISO_PIN) +
         " MOSI=" + std::to_string(SD_MOSI_PIN)
     );
@@ -80,7 +80,7 @@ bool SdManager::mountWithRetries() {
 
     // Initialisation FSPI avec les broches câblées — même approche que le code de référence
     _spi = std::make_unique<SPIClass>(FSPI);
-    _spi->begin(SD_SCK_PIN, SD_MISO_PIN, SD_MOSI_PIN, SD_CS_PIN);
+    _spi->begin(SD_CLK_PIN, SD_MISO_PIN, SD_MOSI_PIN, SD_CS_PIN);
 
     // format_if_fail=true : formate automatiquement si la carte n'est pas reconnue comme valide
     if (!SD.begin(SD_CS_PIN, *_spi, SD_FREQUENCY_HZ, SD_MOUNT_POINT, SD_MAX_FILES, true)) {
@@ -199,7 +199,7 @@ bool SdManager::format() {
 
     // Réinitialisation FSPI puis montage avec format_if_fail=true
     _spi = std::make_unique<SPIClass>(FSPI);
-    _spi->begin(SD_SCK_PIN, SD_MISO_PIN, SD_MOSI_PIN, SD_CS_PIN);
+    _spi->begin(SD_CLK_PIN, SD_MISO_PIN, SD_MOSI_PIN, SD_CS_PIN);
 
     bool ok = SD.begin(SD_CS_PIN, *_spi, SD_FREQUENCY_HZ, SD_MOUNT_POINT, SD_MAX_FILES, true);
 
