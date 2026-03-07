@@ -39,6 +39,12 @@
 // Si câblé : LOW = Carte présente, HIGH = Vide
 #define SD_DET_PIN   14
 
+// Polarité de détection: LOW ou HIGH selon votre lecteur SD
+// Beaucoup de modules sortent LOW=présente, mais certains font l'inverse.
+#ifndef SD_DET_ACTIVE_LEVEL
+#define SD_DET_ACTIVE_LEVEL LOW
+#endif
+
 // -------------------------------------------------------------------
 // Configuration conditionnelle selon l'environnement PlatformIO
 // -------------------------------------------------------------------
