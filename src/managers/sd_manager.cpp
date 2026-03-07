@@ -1,6 +1,7 @@
 #include "sd_manager.h"
 
 #include "board_config.h"
+#include "../utils/logs.h"
 
 #include <Arduino.h>
 #include "../utils/logs.h"
@@ -115,6 +116,7 @@ bool SdManager::begin() {
     logPinMapping();
 
     _available = false;
+    SD.end();
 
     if (!mountAtFrequency(SD_PRIMARY_FREQUENCY_HZ, true)) {
         LOG_ERROR("SD mount failed at startup (10MHz)");
@@ -143,6 +145,10 @@ bool SdManager::isAvailable() {
         _available = false;
         SD.end();
         return ensureMounted();
+    }
+
+    if (!isCardDetected()) {
+        LOG_WARNING("SD detect indicates missing card while mounted; keeping SD available (detect likely inverted/noisy)");
     }
 
     return true;
