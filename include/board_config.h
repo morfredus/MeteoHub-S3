@@ -27,12 +27,14 @@
 #define ENCODER_BTN_PIN    6
 
 // ------------------------------------
-// Module SD (SPI secondaire SAFE)
+// Module SD (SPI FSPI — brochage câblé)
+// CLK=9, D0/MISO=10, CMD/MOSI=11, CS=12, DAT2=13 (non utilisé), DET=14
 // ------------------------------------
-#define SD_CS_PIN    10
-#define SD_SCK_PIN   12
+#define SD_CS_PIN    12
+#define SD_SCK_PIN    9
 #define SD_MOSI_PIN  11
-#define SD_MISO_PIN  13
+#define SD_MISO_PIN  10
+#define SD_DET_PIN   14  // Détection insertion carte (INPUT_PULLUP, LOW = carte présente)
 
 
 // -------------------------------------------------------------------

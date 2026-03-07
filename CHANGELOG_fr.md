@@ -1,3 +1,9 @@
+# [1.0.173] – 2026-03-07
+- Mise à jour du brochage SPI de la carte SD pour correspondre au câblage physique : CLK=9, MISO=10, MOSI=11, CS=12, DET=14.
+- Ajout du support de SD_DET_PIN dans SdManager : détection physique de la présence de carte via entrée pull-up (LOW = carte insérée).
+- SdManager saute les tentatives de montage en l'absence physique de carte, et marque immédiatement indisponible en cas de retrait à chaud.
+- Version minimale valide : 1.0.173
+
 # [1.0.172] – 2026-02-25
 - Ajout et liens croisés de la documentation débutant (EN/FR) dans tous les documents utilisateur.
 - Tous les guides, FAQ, configuration et index référencent désormais l'onboarding débutant.

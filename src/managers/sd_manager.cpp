@@ -8,19 +8,22 @@
  
 // Valeurs par défaut si non définies dans board_config.h
 #ifndef SD_CS_PIN
-#define SD_CS_PIN 10
+#define SD_CS_PIN 12
 #endif
 #ifndef SD_SCK_PIN
-#define SD_SCK_PIN 12
+#define SD_SCK_PIN 9
 #endif
 #ifndef SD_MISO_PIN
-#define SD_MISO_PIN 13
+#define SD_MISO_PIN 10
 #endif
 #ifndef SD_MOSI_PIN
 #define SD_MOSI_PIN 11
 #endif
 #ifndef SD_OFF_PIN
 #define SD_OFF_PIN -1
+#endif
+#ifndef SD_DET_PIN
+#define SD_DET_PIN -1
 #endif
 
 // Déclarations des fonctions internes de la librairie SD (sd_diskio.cpp)
@@ -45,6 +48,25 @@ bool mountSdAtFrequency(int frequency_hz) {
 
 bool hasSdOffControl() {
     return SD_OFF_PIN >= 0;
+}
+
+bool hasSdDetectionPin() {
+    return SD_DET_PIN >= 0;
+}
+
+void initSdDetectionPin() {
+    if (!hasSdDetectionPin()) {
+        return;
+    }
+    pinMode(SD_DET_PIN, INPUT_PULLUP);
+}
+
+bool isCardPhysicallyPresent() {
+    if (!hasSdDetectionPin()) {
+        return true; // Sans pin de détection, on suppose la carte présente
+    }
+    // LOW = carte insérée (contact fermé vers GND)
+    return digitalRead(SD_DET_PIN) == LOW;
 }
 
 void setSdModulePower(bool power_on) {
@@ -112,6 +134,12 @@ void logSdPinMapping() {
     } else {
         LOG_INFO("SD OFF pin not configured (module always ON)");
     }
+
+    if (hasSdDetectionPin()) {
+        LOG_INFO("SD DET pin configured on GPIO " + std::to_string(SD_DET_PIN) + " (LOW=card present)");
+    } else {
+        LOG_INFO("SD DET pin not configured (presence always assumed)");
+    }
 }
 
 bool formatSdOnce(int frequency_hz) {
@@ -155,7 +183,15 @@ bool formatSdOnce(int frequency_hz) {
 bool SdManager::mountWithRetries() {
     delay(10);
 
+    initSdDetectionPin();
     logSdPinMapping();
+
+    if (!isCardPhysicallyPresent()) {
+        LOG_WARNING("SD card not physically present (DET pin HIGH)");
+        _available = false;
+        return false;
+    }
+
     powerCycleSdModuleIfSupported();
     prepareSdSpiBus();
 
@@ -213,6 +249,13 @@ bool SdManager::begin() {
 bool SdManager::isAvailable() {
     if (!_available) {
         return ensureMounted();
+    }
+
+    if (hasSdDetectionPin() && !isCardPhysicallyPresent()) {
+        LOG_WARNING("SD card physically removed (DET pin HIGH)");
+        _available = false;
+        SD.end();
+        return false;
     }
 
     if (SD.cardType() == CARD_NONE) {

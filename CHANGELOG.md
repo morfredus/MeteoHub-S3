@@ -1,3 +1,9 @@
+# [1.0.173] – 2026-03-07
+- Updated SD card SPI pin mapping to match physical wiring: CLK=9, MISO=10, MOSI=11, CS=12, DET=14.
+- Added SD_DET_PIN support in SdManager: physical card presence detection via pull-up input (LOW = card inserted).
+- SdManager now skips mount attempts when no card is physically detected, and immediately marks unavailable on hot removal.
+- Minimum valid version: 1.0.173
+
 # [1.0.172] – 2026-02-25
 - Added and cross-linked beginner documentation (EN/FR) in all user-facing docs.
 - All guides, FAQ, configuration, and index now reference beginner onboarding.
