@@ -29,6 +29,10 @@
 #define SD_OFF_PIN -1
 #endif
 
+#ifndef SD_DET_ACTIVE_LEVEL
+#define SD_DET_ACTIVE_LEVEL LOW
+#endif
+
 namespace {
 constexpr int SD_INIT_RETRY_COUNT = 4;
 constexpr int SD_INIT_FREQUENCIES[] = {40000000, 20000000, 10000000, 4000000};
@@ -36,6 +40,8 @@ constexpr unsigned long SD_RECONNECT_COOLDOWN_DEFAULT_MS = 15000;
 constexpr unsigned long SD_RECONNECT_COOLDOWN_MAX_MS = 120000;
 constexpr int SD_POWER_OFF_DELAY_MS = 30;
 constexpr int SD_POWER_ON_STABILIZE_MS = 80;
+constexpr int SD_DETECT_SAMPLE_COUNT = 5;
+constexpr int SD_DETECT_SAMPLE_DELAY_MS = 2;
 }
 
 void SdManager::ensureSpiInstance() {
@@ -62,7 +68,28 @@ bool SdManager::isCardDetected() const {
     }
 
     pinMode(SD_DET_PIN, INPUT_PULLUP);
-    return digitalRead(SD_DET_PIN) == LOW;
+
+    int low_count = 0;
+    int high_count = 0;
+    for (int i = 0; i < SD_DETECT_SAMPLE_COUNT; i++) {
+        int level = digitalRead(SD_DET_PIN);
+        if (level == SD_DET_ACTIVE_LEVEL) {
+            low_count++;
+        } else {
+            high_count++;
+        }
+        delay(SD_DETECT_SAMPLE_DELAY_MS);
+    }
+
+    bool detected = low_count >= high_count;
+
+    LOG_INFO(
+        "SD detect sample: low=" + std::to_string(low_count) +
+        " high=" + std::to_string(high_count) +
+        " => detected=" + std::string(detected ? "yes" : "no")
+    );
+
+    return detected;
 }
 
 void SdManager::logPinMapping() const {
@@ -74,7 +101,7 @@ void SdManager::logPinMapping() const {
     );
 
     if (SD_DET_PIN >= 0) {
-        LOG_INFO("SD card detect pin: GPIO " + std::to_string(SD_DET_PIN) + " (LOW=present)");
+        LOG_INFO("SD card detect pin: GPIO " + std::to_string(SD_DET_PIN) + " (active=" + std::string(SD_DET_ACTIVE_LEVEL == LOW ? "LOW" : "HIGH") + ", sampled)");
     }
 }
 
@@ -82,10 +109,7 @@ bool SdManager::mountWithRetries(bool formatIfFail) {
     logPinMapping();
 
     if (!isCardDetected()) {
-        LOG_WARNING("SD card detect reports no card inserted");
-        _available = false;
-        SD.end();
-        return false;
+        LOG_WARNING("SD detect indicates no card, but continuing mount attempts (detect can be inverted/noisy)");
     }
 
     ensureSpiInstance();
@@ -150,11 +174,15 @@ bool SdManager::isAvailable() {
         return ensureMounted();
     }
 
-    if (!isCardDetected() || SD.cardType() == CARD_NONE) {
-        LOG_WARNING("SD became unavailable");
+    if (SD.cardType() == CARD_NONE) {
+        LOG_WARNING("SD became unavailable (cardType NONE)");
         _available = false;
         SD.end();
         return ensureMounted();
+    }
+
+    if (!isCardDetected()) {
+        LOG_WARNING("SD detect indicates missing card while mounted; keeping SD available (detect likely inverted/noisy)");
     }
 
     return true;
