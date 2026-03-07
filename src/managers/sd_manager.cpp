@@ -23,6 +23,10 @@
 #define SD_CS_PIN 12
 #endif
 
+#ifndef SD_DET_ACTIVE_LEVEL
+#define SD_DET_ACTIVE_LEVEL LOW
+#endif
+
 namespace {
 constexpr int SD_PRIMARY_FREQUENCY_HZ = 10000000;
 constexpr int SD_RECONNECT_FREQUENCIES[] = {10000000, 4000000, 1000000};
@@ -43,6 +47,26 @@ void SdManager::logPinMapping() const {
         " MOSI/CMD=" + std::to_string(SD_MOSI_PIN) +
         " CS/D3=" + std::to_string(SD_CS_PIN)
     );
+}
+
+
+
+bool SdManager::isCardDetected() const {
+#ifdef SD_DET_PIN
+    if (SD_DET_PIN >= 0) {
+        pinMode(SD_DET_PIN, INPUT_PULLUP);
+        int level = digitalRead(SD_DET_PIN);
+        bool detected = (level == SD_DET_ACTIVE_LEVEL);
+        LOG_INFO(
+            "SD detect pin GPIO" + std::to_string(SD_DET_PIN) +
+            " level=" + std::to_string(level) +
+            " active=" + std::string(SD_DET_ACTIVE_LEVEL == LOW ? "LOW" : "HIGH") +
+            " detected=" + std::string(detected ? "yes" : "no")
+        );
+        return detected;
+    }
+#endif
+    return true;
 }
 
 void SdManager::resetSpiBus() {
@@ -117,6 +141,10 @@ bool SdManager::begin() {
 
     _available = false;
     SD.end();
+
+    if (!isCardDetected()) {
+        LOG_WARNING("SD detect indicates no card (non-blocking check)");
+    }
 
     if (!mountAtFrequency(SD_PRIMARY_FREQUENCY_HZ, true)) {
         LOG_ERROR("SD mount failed at startup (10MHz)");
