@@ -4,6 +4,7 @@
 #include "../utils/logs.h"
 
 #include <algorithm>
+#include <Arduino.h>
 
 #ifndef SD_CLK_PIN
 #define SD_CLK_PIN 9
@@ -83,16 +84,25 @@ bool SdManager::mountAtFrequency(int frequency_hz, bool format_if_fail) {
 }
 
 bool SdManager::verifyWriteAccess() {
-    File test_file = SD.open(SD_WRITE_TEST_FILE, FILE_WRITE);
-    if (!test_file) {
-        LOG_WARNING("SD write test: cannot open temp file (possible read-only card)");
-        return false;
+    size_t written = 0;
+    bool open_ok = false;
+
+    {
+        File test_file = SD.open(SD_WRITE_TEST_FILE, FILE_WRITE);
+        if (test_file) {
+            open_ok = true;
+            written = test_file.println("TEST_OK");
+            test_file.close();
+        }
     }
 }
 
-    const size_t written = test_file.println("TEST_OK");
-    test_file.close();
     SD.remove(SD_WRITE_TEST_FILE);
+
+    if (!open_ok) {
+        LOG_WARNING("SD write test: cannot open temp file (possible read-only card)");
+        return false;
+    }
 
     if (written == 0) {
         LOG_WARNING("SD write test failed: no bytes written");
