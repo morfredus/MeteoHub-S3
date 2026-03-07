@@ -22,6 +22,6 @@ private:
     void resetSpiBus();
     bool mountAtFrequency(int frequency_hz, bool format_if_fail);
     bool verifyWriteAccess();
-    void ensureHistoryDirectory();
+    bool ensureHistoryDirectory();
     void logPinMapping() const;
 };
