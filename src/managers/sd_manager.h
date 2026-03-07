@@ -18,9 +18,9 @@ private:
     int _consecutive_reconnect_failures = 0;
     SPIClass* _sd_spi = nullptr;
 
-    bool mountWithRetries(bool formatIfFail);
-    void ensureSpiInstance();
-    void powerCycleIfSupported();
-    bool isCardDetected() const;
+    void resetSpiBus();
+    bool mountAtFrequency(int frequency_hz, bool format_if_fail);
+    bool verifyWriteAccess();
+    void ensureHistoryDirectory();
     void logPinMapping() const;
 };
