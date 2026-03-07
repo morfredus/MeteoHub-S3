@@ -29,11 +29,15 @@
 // ------------------------------------
 // Module SD (SPI secondaire SAFE)
 // ------------------------------------
-#define SD_CS_PIN    10
-#define SD_SCK_PIN   12
-#define SD_MOSI_PIN  11
-#define SD_MISO_PIN  13
 
+#define SD_CLK_PIN   9    // SCK
+#define SD_MISO_PIN  10   // DAT0 / SO
+#define SD_MOSI_PIN  11   // CMD / SI
+#define SD_CS_PIN    12   // DAT3 / CS
+#define SD_DAT2_PIN  13   // DAT2
+// Pin de détection (optionnel, mettez -1 si non câblé)
+// Si câblé : LOW = Carte présente, HIGH = Vide
+#define SD_DET_PIN   14
 
 // -------------------------------------------------------------------
 // Configuration conditionnelle selon l'environnement PlatformIO
