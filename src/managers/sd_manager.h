@@ -18,6 +18,7 @@ private:
     int _consecutive_reconnect_failures = 0;
     SPIClass* _sd_spi = nullptr;
 
+    bool isCardDetected() const;
     void resetSpiBus();
     bool mountAtFrequency(int frequency_hz, bool format_if_fail);
     bool verifyWriteAccess();

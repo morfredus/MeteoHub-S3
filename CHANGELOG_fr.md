@@ -1,3 +1,11 @@
+# [1.0.180] – 2026-03-07
+- Ajout d'un fallback local `SD_DET_ACTIVE_LEVEL` dans `sd_manager.cpp` pour éviter toute erreur de symbole non défini selon l'ordre d'includes/toolchain.
+- Maintien de `isCardDetected()` déclaré+défini dans `SdManager` avec check non bloquant au boot.
+
+# [1.0.179] – 2026-03-07
+- Réintroduction explicite de `isCardDetected()` dans `SdManager` pour lever l'erreur "identificateur non défini" signalée à la compilation/IDE.
+- Vérification DET conservée non bloquante au démarrage SD (log diagnostic sans empêcher les tentatives de montage).
+
 # [1.0.178] – 2026-03-07
 - Correction supplémentaire de `SdManager::verifyWriteAccess()` pour supprimer définitivement les erreurs de parsing C++ (bloc unique, retours explicites, suppression fichier test centralisée).
 - Réordonnancement des includes dans `sd_manager.cpp` (`Arduino.h` avant les logs) pour éviter les effets de bord de macro selon toolchain.
