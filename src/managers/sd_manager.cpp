@@ -88,6 +88,7 @@ bool SdManager::verifyWriteAccess() {
         LOG_WARNING("SD write test: cannot open temp file (possible read-only card)");
         return false;
     }
+}
 
     const size_t written = test_file.println("TEST_OK");
     test_file.close();
@@ -113,6 +114,7 @@ bool SdManager::begin() {
     logPinMapping();
 
     _available = false;
+    SD.end();
 
     if (!mountAtFrequency(SD_PRIMARY_FREQUENCY_HZ, true)) {
         LOG_ERROR("SD mount failed at startup (10MHz)");
@@ -141,6 +143,10 @@ bool SdManager::isAvailable() {
         _available = false;
         SD.end();
         return ensureMounted();
+    }
+
+    if (!isCardDetected()) {
+        LOG_WARNING("SD detect indicates missing card while mounted; keeping SD available (detect likely inverted/noisy)");
     }
 
     return true;
