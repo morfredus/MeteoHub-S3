@@ -1,6 +1,7 @@
 #include "sd_manager.h"
 
 #include "board_config.h"
+#include "../utils/logs.h"
 
 #include <Arduino.h>
 #include "../utils/logs.h"
@@ -139,6 +140,7 @@ bool SdManager::begin() {
     logPinMapping();
 
     _available = false;
+    SD.end();
 
     if (!isCardDetected()) {
         LOG_WARNING("SD detect indicates no card (non-blocking check)");
@@ -171,6 +173,10 @@ bool SdManager::isAvailable() {
         _available = false;
         SD.end();
         return ensureMounted();
+    }
+
+    if (!isCardDetected()) {
+        LOG_WARNING("SD detect indicates missing card while mounted; keeping SD available (detect likely inverted/noisy)");
     }
 
     return true;
