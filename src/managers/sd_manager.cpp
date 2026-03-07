@@ -1,209 +1,183 @@
 #include "sd_manager.h"
-#include "../utils/logs.h"
+
 #include "board_config.h"
 
+#include <Arduino.h>
+#include "../utils/logs.h"
 #include <algorithm>
-#include <driver/gpio.h>
-#include "ff.h" // For f_mkfs
- 
-// Valeurs par défaut si non définies dans board_config.h
-#ifndef SD_CS_PIN
-#define SD_CS_PIN 10
+
+#ifndef SD_CLK_PIN
+#define SD_CLK_PIN 9
 #endif
-#ifndef SD_SCK_PIN
-#define SD_SCK_PIN 12
-#endif
+
 #ifndef SD_MISO_PIN
-#define SD_MISO_PIN 13
+#define SD_MISO_PIN 10
 #endif
+
 #ifndef SD_MOSI_PIN
 #define SD_MOSI_PIN 11
 #endif
-#ifndef SD_OFF_PIN
-#define SD_OFF_PIN -1
+
+#ifndef SD_CS_PIN
+#define SD_CS_PIN 12
 #endif
 
-// Déclarations des fonctions internes de la librairie SD (sd_diskio.cpp)
-// Nécessaire pour initialiser la carte sans la monter (ce qui échoue si non formatée)
-uint8_t sdcard_init(uint8_t cs, SPIClass * spi, int hz);
-bool sdcard_uninit(uint8_t pdrv);
+#ifndef SD_DET_ACTIVE_LEVEL
+#define SD_DET_ACTIVE_LEVEL LOW
+#endif
 
 namespace {
-constexpr int SD_INIT_RETRY_COUNT = 4;
-constexpr int SD_FORMAT_RETRY_COUNT = 3;
-constexpr int SD_INIT_FREQUENCIES[] = {8000000, 4000000, 1000000, 400000};
-constexpr int SD_FORMAT_FREQUENCIES[] = {4000000, 1000000, 400000};
+constexpr int SD_PRIMARY_FREQUENCY_HZ = 10000000;
+constexpr int SD_RECONNECT_FREQUENCIES[] = {10000000, 4000000, 1000000};
+constexpr int SD_FORMAT_FREQUENCY_HZ = 10000000;
 constexpr unsigned long SD_RECONNECT_COOLDOWN_DEFAULT_MS = 15000;
 constexpr unsigned long SD_RECONNECT_COOLDOWN_MAX_MS = 120000;
-constexpr int SD_POWER_OFF_DELAY_MS = 30;
-constexpr int SD_POWER_ON_STABILIZE_MS = 60;
-
-bool mountSdAtFrequency(int frequency_hz) {
-    return SD.begin(SD_CS_PIN, SPI, frequency_hz);
+constexpr int SD_POWER_DOWN_DELAY_MS = 1000;
+constexpr int SD_POST_BEGIN_DELAY_MS = 40;
+constexpr int SD_MAX_OPEN_FILES = 5;
+constexpr const char* SD_MOUNT_POINT = "/sd";
+constexpr const char* SD_WRITE_TEST_FILE = "/sd_write_test.tmp";
 }
 
-
-bool hasSdOffControl() {
-    return SD_OFF_PIN >= 0;
-}
-
-void setSdModulePower(bool power_on) {
-    if (!hasSdOffControl()) {
-        return;
-    }
-
-    pinMode(SD_OFF_PIN, OUTPUT);
-    // uPesy: HIGH = ON, LOW = OFF
-    digitalWrite(SD_OFF_PIN, power_on ? HIGH : LOW);
-}
-
-void powerCycleSdModuleIfSupported() {
-    if (!hasSdOffControl()) {
-        return;
-    }
-
-    setSdModulePower(false);
-    delay(SD_POWER_OFF_DELAY_MS);
-    setSdModulePower(true);
-    delay(SD_POWER_ON_STABILIZE_MS);
-}
-
-
-void configureSdGpioDriveStrength() {
-    // Strengthen output edges on SPI outputs for long/noisy wires.
-    gpio_set_drive_capability(static_cast<gpio_num_t>(SD_SCK_PIN), GPIO_DRIVE_CAP_3);
-    gpio_set_drive_capability(static_cast<gpio_num_t>(SD_MOSI_PIN), GPIO_DRIVE_CAP_3);
-    gpio_set_drive_capability(static_cast<gpio_num_t>(SD_CS_PIN), GPIO_DRIVE_CAP_3);
-}
-
-void prepareSdSpiBus() {
-    pinMode(SD_SCK_PIN, OUTPUT);
-    pinMode(SD_MOSI_PIN, OUTPUT);
-    pinMode(SD_CS_PIN, OUTPUT);
-    pinMode(SD_MISO_PIN, INPUT_PULLUP);
-    digitalWrite(SD_CS_PIN, HIGH);
-
-    configureSdGpioDriveStrength();
-
-    SPI.begin(SD_SCK_PIN, SD_MISO_PIN, SD_MOSI_PIN, SD_CS_PIN);
-
-    // Idle clocks with CS high to help some cards exit unstable state
-    for (int i = 0; i < 16; i++) {
-        SPI.transfer(0xFF);
-    }
-}
-
-bool lowLevelInit(uint8_t& pdrv, int frequency_hz) {
-    SPI.begin(SD_SCK_PIN, SD_MISO_PIN, SD_MOSI_PIN, -1);
-    pdrv = sdcard_init(SD_CS_PIN, &SPI, frequency_hz);
-    return pdrv != 0xFF;
-}
-
-void logSdPinMapping() {
+void SdManager::logPinMapping() const {
     LOG_INFO(
-        "SD pin mapping: CS=" + std::to_string(SD_CS_PIN) +
-        " SCK=" + std::to_string(SD_SCK_PIN) +
-        " MISO=" + std::to_string(SD_MISO_PIN) +
-        " MOSI=" + std::to_string(SD_MOSI_PIN)
+        "SD pin mapping: CLK=" + std::to_string(SD_CLK_PIN) +
+        " MISO/D0=" + std::to_string(SD_MISO_PIN) +
+        " MOSI/CMD=" + std::to_string(SD_MOSI_PIN) +
+        " CS/D3=" + std::to_string(SD_CS_PIN)
+    );
+}
+
+
+
+bool SdManager::isCardDetected() const {
+#ifdef SD_DET_PIN
+    if (SD_DET_PIN >= 0) {
+        pinMode(SD_DET_PIN, INPUT_PULLUP);
+        int level = digitalRead(SD_DET_PIN);
+        bool detected = (level == SD_DET_ACTIVE_LEVEL);
+        LOG_INFO(
+            "SD detect pin GPIO" + std::to_string(SD_DET_PIN) +
+            " level=" + std::to_string(level) +
+            " active=" + std::string(SD_DET_ACTIVE_LEVEL == LOW ? "LOW" : "HIGH") +
+            " detected=" + std::string(detected ? "yes" : "no")
+        );
+        return detected;
+    }
+#endif
+    return true;
+}
+
+void SdManager::resetSpiBus() {
+    SD.end();
+    delay(SD_POWER_DOWN_DELAY_MS);
+
+    if (_sd_spi) {
+        delete _sd_spi;
+        _sd_spi = nullptr;
+        delay(50);
+    }
+
+    _sd_spi = new SPIClass(FSPI);
+    _sd_spi->begin(SD_CLK_PIN, SD_MISO_PIN, SD_MOSI_PIN, SD_CS_PIN);
+}
+
+bool SdManager::mountAtFrequency(int frequency_hz, bool format_if_fail) {
+    resetSpiBus();
+
+    LOG_INFO(
+        "SD mount attempt: " + std::to_string(frequency_hz) +
+        "Hz, format_if_fail=" + std::string(format_if_fail ? "true" : "false")
     );
 
-    if (hasSdOffControl()) {
-        LOG_INFO("SD OFF pin configured on GPIO " + std::to_string(SD_OFF_PIN) + " (HIGH=ON, LOW=OFF)");
-    } else {
-        LOG_INFO("SD OFF pin not configured (module always ON)");
-    }
-}
+    bool mounted = SD.begin(SD_CS_PIN, *_sd_spi, frequency_hz, SD_MOUNT_POINT, SD_MAX_OPEN_FILES, format_if_fail);
+    delay(SD_POST_BEGIN_DELAY_MS);
 
-bool formatSdOnce(int frequency_hz) {
-    uint8_t pdrv = 0xFF;
-    if (!lowLevelInit(pdrv, frequency_hz)) {
-        LOG_WARNING("SD format: low-level init failed at " + std::to_string(frequency_hz) + "Hz");
-        SPI.end();
+    if (!mounted) {
+        LOG_WARNING("SD.begin failed at " + std::to_string(frequency_hz) + "Hz");
         return false;
     }
 
-    LOG_INFO("SD format: low-level init OK (pdrv=" + std::to_string(pdrv) + ") at " + std::to_string(frequency_hz) + "Hz");
-
-    char drv[4];
-    snprintf(drv, sizeof(drv), "%d:", pdrv);
-
-    uint8_t* work_buffer = static_cast<uint8_t*>(malloc(FF_MAX_SS));
-    if (!work_buffer) {
-        LOG_ERROR("SD format: failed to allocate work buffer");
-        sdcard_uninit(pdrv);
-        SPI.end();
-        return false;
-    }
-
-    // FM_ANY est plus robuste selon la géométrie de la carte et la version FatFS.
-    FRESULT res = f_mkfs(drv, FM_ANY, 0, work_buffer, FF_MAX_SS);
-
-    free(work_buffer);
-    sdcard_uninit(pdrv);
-    SPI.end();
-
-    if (res != FR_OK) {
-        LOG_WARNING("SD format failed with f_mkfs error: " + std::to_string(res));
+    if (SD.cardType() == CARD_NONE) {
+        LOG_WARNING("SD.begin returned true but cardType is NONE");
+        SD.end();
         return false;
     }
 
     return true;
 }
-}
 
-
-bool SdManager::mountWithRetries() {
-    delay(10);
-
-    logSdPinMapping();
-    powerCycleSdModuleIfSupported();
-    prepareSdSpiBus();
-
-    for (int i = 0; i < SD_INIT_RETRY_COUNT; i++) {
-        int frequency_hz = SD_INIT_FREQUENCIES[i];
-        SD.end();
-        powerCycleSdModuleIfSupported();
-        prepareSdSpiBus();
-
-        if (mountSdAtFrequency(frequency_hz)) {
-            LOG_INFO("SD mount OK at " + std::to_string(frequency_hz) + "Hz");
-            uint8_t card_type = SD.cardType();
-            if (card_type != CARD_NONE) {
-                if (!SD.exists("/history")) {
-                    SD.mkdir("/history");
-                }
-                _available = true;
-                return true;
-            }
-
-            LOG_WARNING("SD mount reported OK but card type is NONE");
-            SD.end();
-        } else {
-            LOG_WARNING("SD mount failed at " + std::to_string(frequency_hz) + "Hz");
-        }
-
-        delay(120);
+bool SdManager::verifyWriteAccess() {
+    File test_file = SD.open(SD_WRITE_TEST_FILE, FILE_WRITE);
+    if (!test_file) {
+        LOG_WARNING("SD write test: cannot open temp file (possible read-only card)");
+        SD.remove(SD_WRITE_TEST_FILE);
+        return false;
     }
 
-    _available = false;
+    size_t written = test_file.println("TEST_OK");
+    test_file.close();
+    SD.remove(SD_WRITE_TEST_FILE);
+
+    if (written == 0) {
+        LOG_WARNING("SD write test failed: no bytes written");
+        return false;
+    }
+
+    LOG_INFO("SD write test OK");
+    return true;
+}
+
+bool SdManager::ensureHistoryDirectory() {
+    if (SD.exists("/history")) {
+        return true;
+    }
+
+    if (SD.mkdir("/history")) {
+        return true;
+    }
+
+    // Fallback utile selon les comportements de mountpoint
+    if (SD.exists("/sd/history")) {
+        return true;
+    }
+    if (SD.mkdir("/sd/history")) {
+        LOG_WARNING("SD: /history creation failed, using /sd/history fallback");
+        return true;
+    }
+
+    LOG_WARNING("SD: mkdir failed for /history and /sd/history (possible read-only card)");
     return false;
 }
 
 bool SdManager::begin() {
-    LOG_INFO("Init SD Card...");
+    LOG_INFO("Init SD Card (stable 10MHz mode)...");
+    logPinMapping();
 
-    setSdModulePower(true);
-
-    SD.end();
     _available = false;
 
-    bool ok = mountWithRetries();
-    if (!ok) {
-        LOG_ERROR("SD mount failed on all retries. Check wiring/card integrity or run SD format.");
+    if (!isCardDetected()) {
+        LOG_WARNING("SD detect indicates no card (non-blocking check)");
+    }
+
+    if (!mountAtFrequency(SD_PRIMARY_FREQUENCY_HZ, true)) {
+        LOG_ERROR("SD mount failed at startup (10MHz)");
+        return false;
+    }
+
+    bool history_ok = ensureHistoryDirectory();
+    bool write_ok = verifyWriteAccess();
+
+    if (!history_ok || !write_ok) {
+        LOG_ERROR("SD mounted but not writable (history/write test failed). Marking SD unavailable.");
+        _available = false;
+        SD.end();
         return false;
     }
 
     LOG_INFO("SD Card OK. Size: " + std::to_string(SD.cardSize() / (1024 * 1024)) + "MB");
+
+    _available = true;
     _last_reconnect_attempt_ms = millis();
     _consecutive_reconnect_failures = 0;
     _reconnect_cooldown_ms = SD_RECONNECT_COOLDOWN_DEFAULT_MS;
@@ -216,7 +190,7 @@ bool SdManager::isAvailable() {
     }
 
     if (SD.cardType() == CARD_NONE) {
-        LOG_WARNING("SD became unavailable");
+        LOG_WARNING("SD became unavailable (cardType NONE)");
         _available = false;
         SD.end();
         return ensureMounted();
@@ -230,7 +204,7 @@ bool SdManager::ensureMounted() {
         return true;
     }
 
-    unsigned long now = millis();
+    const unsigned long now = millis();
     if (now - _last_reconnect_attempt_ms < _reconnect_cooldown_ms) {
         return false;
     }
@@ -238,60 +212,63 @@ bool SdManager::ensureMounted() {
     _last_reconnect_attempt_ms = now;
     LOG_INFO("SD reconnect attempt... (cooldown=" + std::to_string(_reconnect_cooldown_ms) + "ms)");
 
-    bool mounted = mountWithRetries();
-    if (mounted) {
-        _consecutive_reconnect_failures = 0;
-        _reconnect_cooldown_ms = SD_RECONNECT_COOLDOWN_DEFAULT_MS;
-        return true;
+    for (int frequency_hz : SD_RECONNECT_FREQUENCIES) {
+        if (mountAtFrequency(frequency_hz, false)) {
+            bool history_ok = ensureHistoryDirectory();
+            bool write_ok = verifyWriteAccess();
+            if (!history_ok || !write_ok) {
+                LOG_WARNING("SD reconnect mounted but write checks failed (possible read-only). Continuing retries...");
+                SD.end();
+                delay(120);
+                continue;
+            }
+            _available = true;
+            _consecutive_reconnect_failures = 0;
+            _reconnect_cooldown_ms = SD_RECONNECT_COOLDOWN_DEFAULT_MS;
+            LOG_INFO("SD reconnect OK at " + std::to_string(frequency_hz) + "Hz");
+            return true;
+        }
+        delay(120);
     }
 
+    _available = false;
     _consecutive_reconnect_failures++;
     _reconnect_cooldown_ms = std::min(
         SD_RECONNECT_COOLDOWN_MAX_MS,
         SD_RECONNECT_COOLDOWN_DEFAULT_MS * static_cast<unsigned long>(_consecutive_reconnect_failures + 1)
     );
 
-    LOG_WARNING("SD reconnect failed (count=" + std::to_string(_consecutive_reconnect_failures) + "), next cooldown=" + std::to_string(_reconnect_cooldown_ms) + "ms");
+    LOG_WARNING(
+        "SD reconnect failed (count=" + std::to_string(_consecutive_reconnect_failures) +
+        "), next cooldown=" + std::to_string(_reconnect_cooldown_ms) + "ms"
+    );
     return false;
 }
 
 bool SdManager::format() {
-    LOG_WARNING("Formatting SD Card...");
+    LOG_WARNING("SD format requested (stable 10MHz mode)...");
 
-    if (_available) {
-        SD.end();
+    _available = false;
+
+    if (!mountAtFrequency(SD_FORMAT_FREQUENCY_HZ, true)) {
+        LOG_ERROR("SD format/remount failed");
+        return false;
+    }
+
+    bool history_ok = ensureHistoryDirectory();
+
+    bool write_ok = verifyWriteAccess();
+    if (!history_ok || !write_ok) {
+        LOG_ERROR("SD format finished but card is still not writable (history/write test failed)");
         _available = false;
-    }
-
-    bool format_success = false;
-    for (int i = 0; i < SD_FORMAT_RETRY_COUNT; i++) {
-        int frequency_hz = SD_FORMAT_FREQUENCIES[i];
-        LOG_INFO("SD format attempt " + std::to_string(i + 1) + " at " + std::to_string(frequency_hz) + "Hz");
-
-        if (formatSdOnce(frequency_hz)) {
-            LOG_INFO("SD format successful at " + std::to_string(frequency_hz) + "Hz");
-            format_success = true;
-            break;
-        }
-
-        delay(120);
-    }
-
-    if (!format_success) {
-        LOG_ERROR("SD format failed after all retries");
+        SD.end();
         return false;
     }
 
-    delay(100);
+    _available = true;
     _last_reconnect_attempt_ms = millis();
-    if (!begin()) {
-        LOG_ERROR("SD formatted but remount failed");
-        return false;
-    }
-
-    if (!SD.exists("/history") && !SD.mkdir("/history")) {
-        LOG_WARNING("SD format: failed to create /history directory");
-    }
-
+    _consecutive_reconnect_failures = 0;
+    _reconnect_cooldown_ms = SD_RECONNECT_COOLDOWN_DEFAULT_MS;
+    LOG_INFO("SD format completed and verified");
     return true;
 }
