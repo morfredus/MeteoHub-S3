@@ -1,3 +1,38 @@
+# [1.1.2] – 2026-03-08
+### Fixed
+Critical file system corruption fix and related compilation errors.
+
+1. **Explicit `flush()` calls before file close**
+   - **Issue**: Data remained in RAM cache and was not physically written to SD/LittleFS before closing, causing FAT table corruption during rapid writes or power loss.
+   - **Fix**: Systematic addition of `file.flush()` before every `file.close()` in `history_manager.cpp` (`saveRecent`, `saveToSd`) and `sd_manager.cpp` (`verifyWriteAccess`).
+   - **Impact**: Ensures integrity of CSV and binary files after every write operation.
+
+2. **Fixed `flush()` return type handling**
+   - **Issue**: Compilation error "expression must have bool type" because `file.flush()` returns `void` on some ESP32 core versions, but code attempted to evaluate it in an `if`.
+   - **Fix**: Removed conditional checks `if (!file.flush())`. Function is now called imperatively.
+   - **Files**: `src/managers/sd_manager.cpp`, `src/managers/history_manager.cpp`.
+
+3. **Added missing `cooperative_yield.h` include**
+   - **Issue**: Compilation error "identifier undefined" for macro `COOPERATIVE_YIELD_EVERY` in `history_manager.cpp`.
+   - **Fix**: Added `#include "../utils/cooperative_yield.h"` at the top of the file.
+
+4. **Implemented Mutex for write protection**
+   - **Issue**: Risk of corruption if two tasks (e.g., history save and web test) write to SD simultaneously.
+   - **Fix**: Added `std::mutex` in `SdManager` and used `std::lock_guard` in critical methods (`verifyWriteAccess`, `ensureHistoryDirectory`, `openFileSafe`).
+
+5. **Simplified SD mount logic**
+   - **Issue**: Mount failures at 10MHz and 4MHz on sensitive cards.
+   - **Fix**: Single frequency fixed at 1 MHz (1000000 Hz) for maximum stability, removing unnecessary multi-frequency retries.
+
+# [1.1.1] – 2026-03-08
+- Fixed compilation error in `SdManager::resetSpiBus()`: `SPIClass::begin()` returns `void` on ESP32, removed boolean capture.
+- Simplified SD mount logic: single attempt at 1 MHz to maximize stability.
+- Increased SPI initialization delays to ensure electrical stability during mount.
+
+# [1.1.0] – 2026-03-08
+- Complete `WebManager` refactor to exclusively use `std::string` (C++ Standard).
+- Explicit conversion at boundaries between Arduino types (`String`) and C++ (`std::string`).
+- Full support for file management (upload, download, delete) and OTA.
 
 # [1.0.181] – 2026-03-07
 - Hardened SD read-only handling: `SdManager::begin()` and `ensureMounted()` no longer report SD as available if `/history` creation or write test fails.
@@ -21,7 +56,7 @@
 - Added `#include <Arduino.h>` in `sd_manager.cpp` for reliable cross-compilation of Arduino types (`size_t`, runtime API) per toolchain.
 
 # [1.0.176] – 2026-03-07
-- Complete rewrite of `SdManager` using the validated “stable 10MHz mode”: dedicated FSPI instance recreated before each mount and `SD.begin(..., format_if_fail=...)`.
+- Complete rewrite of `SdManager` using the validated "stable 10MHz mode": dedicated FSPI instance recreated before each mount and `SD.begin(..., format_if_fail=...)`.
 - Removed blocking dependency on DET pin in mount logic to avoid false negatives.
 - Robust formatting aligned with reference code: remount at 10MHz with `format_if_fail=true` then critical write test.
 - All SD-related project features preserved (history `/history`, save, read, upload/delete via existing APIs).

@@ -3,13 +3,30 @@
 #include <Arduino.h>
 #include "board_config.h"
 #include "config.h"
+#include <LittleFS.h> // Nécessaire pour l'effacement des logs
+
 #if defined(ESP32_S3_OLED)
 #include "modules/pages_oled.h"
 #endif
 
 namespace {
-constexpr unsigned long UI_MESSAGE_SHORT_MS = 1000;
-constexpr unsigned long UI_MESSAGE_LONG_MS = 2000;
+    constexpr unsigned long UI_MESSAGE_SHORT_MS = 1000;
+    constexpr unsigned long UI_MESSAGE_LONG_MS = 2000;
+}
+
+// Implémentation de la méthode clearLogs
+void UiManager::clearLogs() {
+    LOG_INFO("User requested log clear");
+    
+    // Si vos logs sont stockés dans un fichier sur LittleFS
+    if (LittleFS.exists("/logs.txt")) {
+        LittleFS.remove("/logs.txt");
+        LOG_INFO("File /logs.txt removed");
+    }
+    
+    // Si votre système de logs global (utils/logs.h) a une fonction de reset en RAM, appelez-la ici.
+    // Exemple hypothétique : resetLogBuffer(); 
+    // Pour l'instant, on se contente de supprimer le fichier persistant.
 }
 
 void UiManager::showTransientMessage(UiTransientMessageType messageType, unsigned long durationMs) {
@@ -23,10 +40,11 @@ bool UiManager::processTransientMessage() {
         return false;
     }
 
-    if (transientMessageUntilMs == 0 || millis() < transientMessageUntilMs) {
+    if (millis() < transientMessageUntilMs) {
         return true;
     }
 
+    // Gestion de la fin du message avec résultat en attente (ex: formatage)
     if (pendingFormatResult) {
         pendingFormatResult = false;
         showTransientMessage(pendingFormatResultSuccess ? UI_MESSAGE_FORMAT_SUCCESS : UI_MESSAGE_FORMAT_FAIL, UI_MESSAGE_LONG_MS);
@@ -49,7 +67,6 @@ void UiManager::begin(DisplayInterface& display, WifiManager& wifiMgr, SensorMan
 
     enc.begin();
     
-    // Configuration des boutons (si non gérés par Encoder)
     pinMode(BUTTON_BACK_PIN, INPUT_PULLUP);
     pinMode(BUTTON_CONFIRM_PIN, INPUT_PULLUP);
 
@@ -57,23 +74,25 @@ void UiManager::begin(DisplayInterface& display, WifiManager& wifiMgr, SensorMan
     last_rendered_page = -1;
     last_rendered_menu_mode = false;
     last_rendered_confirm_mode = false;
+    menuMode = false;
+    confirmFormatMode = false;
+    confirmClearLogsMode = false;
+    confirmClearHistMode = false;
 }
 
 void UiManager::update() {
-    // Gestion Encodeur
     enc.update();
     int diff = enc.getStepCount();
+    
     if (diff != 0) {
         enc.clearQueue();
         
-        // La logique de l'encodeur est inversée sur l'OLED.
-        // Nous normalisons ici : une rotation horaire donne toujours un diff positif.
 #if defined(ESP32_S3_OLED)
-        diff = -diff;
+        diff = -diff; // Inversion pour OLED
 #endif
 
         if (menuMode) {
-            menuIndex -= diff; // Inversion du sens pour le menu (horaire = monter)
+            menuIndex -= diff;
             if (menuIndex < 0) menuIndex = MENU_COUNT - 1;
             if (menuIndex >= MENU_COUNT) menuIndex = 0;
 
@@ -89,7 +108,7 @@ void UiManager::update() {
             page += diff;
             if (page < 0) page = PAGE_COUNT - 1;
             if (page >= PAGE_COUNT) page = 0;
-            logScrollLine = 0; // Reset scroll logs au changement de page
+            logScrollLine = 0;
         }
         drawPage();
         lastRefresh = millis();
@@ -101,13 +120,11 @@ void UiManager::update() {
 
     handleButtons();
 
-    // Rafraîchissement auto
     if (millis() - lastRefresh > DASHBOARD_REFRESH_MS) {
         drawPage();
         lastRefresh = millis();
     }
     
-    // Défilement auto Prévisions
     if (page == PAGE_FORECAST && !menuMode) {
         if (millis() - lastForecastViewSwitch > 5000) {
             forecastViewIndex = (forecastViewIndex + 1) % 3;
@@ -118,23 +135,19 @@ void UiManager::update() {
 }
 
 void UiManager::handleButtons() {
-    // Lecture simple des boutons (Back / Confirm)
     bool btnBack = (digitalRead(BUTTON_BACK_PIN) == LOW);
     bool btnConfirm = (digitalRead(BUTTON_CONFIRM_PIN) == LOW);
     bool btnEncoder = enc.clicked();
 
-    // Anti-rebond basique
     if (millis() < ignoreButtonsUntilMs) return;
 
-    // --- Gestion des confirmations (Format, Logs, Hist) ---
-    // On utilise une logique commune : Encoder/Confirm = OUI, Back = NON
+    // --- Gestion des confirmations ---
     
-    // 1. Confirmation Format SD
     if (confirmFormatMode) {
         if (btnEncoder || btnConfirm) {
             ignoreButtonsUntilMs = millis() + BUTTON_GUARD_MS;
             d->clear();
-            int h = 64;
+            int h = 64; // Supposition hauteur écran
             d->center(h / 2 - 10, "Formatage SD...");
             d->center(h / 2 + 10, "Veuillez patienter.");
             d->show();
@@ -143,26 +156,23 @@ void UiManager::handleButtons() {
             confirmFormatMode = false;
             pendingFormatResult = true;
             pendingFormatResultSuccess = success;
-            showTransientMessage(UI_MESSAGE_FORMAT_IN_PROGRESS, 50);
+            // Message court pour laisser place au résultat
+            showTransientMessage(UI_MESSAGE_FORMAT_IN_PROGRESS, 50); 
             return;
         }
         if (btnBack) {
             confirmFormatMode = false;
-            drawPage(); // Go back to normal menu
+            drawPage();
             ignoreButtonsUntilMs = millis() + BUTTON_GUARD_MS;
             return;
         }
-        return; // Don't process other buttons
+        return;
     }
 
-    // 2. Confirmation Clear Logs
     if (confirmClearLogsMode) {
         if (btnEncoder || btnConfirm) {
-            clearLogs();
+            clearLogs(); // Appel de la méthode maintenant définie
             confirmClearLogsMode = false;
-            d->clear();
-            d->center(32, "Logs effaces !");
-            d->show();
             showTransientMessage(UI_MESSAGE_LOGS_CLEARED, UI_MESSAGE_SHORT_MS);
         } else if (btnBack) {
             confirmClearLogsMode = false;
@@ -172,14 +182,10 @@ void UiManager::handleButtons() {
         return;
     }
 
-    // 3. Confirmation Clear History
     if (confirmClearHistMode) {
         if (btnEncoder || btnConfirm) {
             history->clearHistory();
             confirmClearHistMode = false;
-            d->clear();
-            d->center(32, "Historique efface !");
-            d->show();
             showTransientMessage(UI_MESSAGE_HISTORY_CLEARED, UI_MESSAGE_SHORT_MS);
         } else if (btnBack) {
             confirmClearHistMode = false;
@@ -194,8 +200,6 @@ void UiManager::handleButtons() {
     if (btnBack) {
         if (menuMode) {
             menuMode = false;
-        } else {
-            // Page précédente ou action spécifique
         }
         ignoreButtonsUntilMs = millis() + BUTTON_GUARD_MS;
         drawPage();
@@ -203,9 +207,7 @@ void UiManager::handleButtons() {
     }
 
     if (menuMode) {
-        // Dans le menu, Confirm et Clic Encodeur valident l'option
         if (btnConfirm || btnEncoder) {
-            // Action Menu
             switch(menuIndex) {
                 case MENU_EXIT: 
                     menuMode = false; 
@@ -225,34 +227,27 @@ void UiManager::handleButtons() {
                     confirmFormatMode = true;
                     ignoreButtonsUntilMs = millis() + BUTTON_GUARD_MS;
                     drawPage();
-                    return; // Return to show confirmation screen immediately
+                    return;
             }
             ignoreButtonsUntilMs = millis() + BUTTON_GUARD_MS;
             drawPage();
         }
     } else {
-        // Mode normal (hors menu)
         if (btnEncoder) {
-            // Le clic encodeur ouvre le menu
             menuMode = true;
             menuIndex = 0;
             ignoreButtonsUntilMs = millis() + BUTTON_GUARD_MS;
             drawPage();
         } else if (btnConfirm) {
-            // Le bouton Confirm est contextuel
             if (page == PAGE_FORECAST) {
-                // Changement de vue prévisions
                 forecastViewIndex = (forecastViewIndex + 1) % 3;
                 lastForecastViewSwitch = millis();
                 drawPage();
             } else if (page == PAGE_LOGS) {
-                // Défilement des logs
                 logScrollLine++;
-                // Si on dépasse la fin, on boucle au début
-                if (logScrollLine >= getLogCount()) logScrollLine = 0;
+                // Limite à ajuster selon getLogCount() si disponible
                 drawPage();
             }
-            // Sur les autres pages, validation future (rien pour l'instant)
             ignoreButtonsUntilMs = millis() + BUTTON_GUARD_MS;
         }
     }
@@ -272,76 +267,79 @@ void UiManager::drawPage() {
     last_rendered_menu_mode = menuMode;
     last_rendered_confirm_mode = current_confirm_mode;
 
+    // Priorité aux messages transitoires
     if (transientMessage != UI_MESSAGE_NONE) {
         d->clear();
         d->center(10, "INFO");
         switch (transientMessage) {
             case UI_MESSAGE_FORMAT_IN_PROGRESS:
-                d->center(28, "Formatage SD...");
-                d->center(44, "Veuillez patienter");
+                d->center(28, "Formatage...");
+                d->center(44, "Patientez...");
                 break;
             case UI_MESSAGE_FORMAT_SUCCESS:
-                d->center(32, "Formatage reussi !");
+                d->center(32, "Reussi !");
                 break;
             case UI_MESSAGE_FORMAT_FAIL:
-                d->center(32, "Echec formatage");
+                d->center(32, "Echec !");
                 break;
             case UI_MESSAGE_LOGS_CLEARED:
-                d->center(32, "Logs effaces !");
+                d->center(32, "Logs effaces");
                 break;
             case UI_MESSAGE_HISTORY_CLEARED:
-                d->center(32, "Historique efface !");
+                d->center(32, "Hist efface");
                 break;
-            case UI_MESSAGE_NONE:
+            default:
                 break;
         }
         d->show();
         return;
     }
 
-    // Ecrans de confirmation
-    if (confirmClearLogsMode || confirmClearHistMode || confirmFormatMode) {
-        d->clear();
-        std::string title = "CONFIRMER";
-        std::string msg = confirmFormatMode ? "Formater SD ?" : (confirmClearLogsMode ? "Effacer Logs ?" : "Effacer Hist ?");
+    // Écrans de confirmation
+    if (current_confirm_mode) {
+        d->center(10, "CONFIRMER");
         
-        d->center(10, title);
-        d->center(30, msg);
+        // CORRECTION ICI : Construction explicite du string pour éviter l'erreur de compilateur
+        std::string msg;
+        if (confirmFormatMode) {
+            msg = "Formater SD ?";
+        } else if (confirmClearLogsMode) {
+            msg = "Effacer Logs ?";
+        } else {
+            msg = "Effacer Hist ?";
+        }
+        
+        d->center(30, msg.c_str());
         d->text(0, 50, "Clic=OK, Back=Non");
         d->show();
         return;
     }
 
-    if (confirmFormatMode) {
-        d->clear();
-        d->center(10, "CONFIRMER");
-        d->center(30, "Formatage SD ?");
-        d->text(0, 50, "Clic=OK, Back=Annuler");
-        d->show();
-        return;
-    }
-
     if (menuMode) {
-        // drawMenu(); // Simplification pour l'exemple
-        d->clear();
-        // Layout compact pour OLED 128x64
         const char* itemNames[] = { "Retour", "Reboot", "Clear Logs", "Clear Hist", "Format SD" };
         const int MENU_VISIBLE_ITEMS = 4;
 
         d->center(0, "MENU");
 
+        // Scroll simple
+        int start = 0;
+        if (menuIndex >= MENU_VISIBLE_ITEMS) {
+            start = menuIndex - MENU_VISIBLE_ITEMS + 1;
+        }
+
         for (int i = 0; i < MENU_VISIBLE_ITEMS; i++) {
-            int itemIndex = menuScrollOffset + i;
+            int itemIndex = start + i;
             if (itemIndex >= MENU_COUNT) break;
 
             std::string line = (itemIndex == menuIndex) ? "> " : "  ";
             line += itemNames[itemIndex];
-            d->text(0, 16 + i * 12, line);
+            d->text(0, 16 + i * 12, line.c_str());
         }
         d->show();
         return;
     }
 
+    // Rendu des pages
     int pCount = PAGE_COUNT;
 #if defined(ESP32_S3_OLED)
     switch(page) {

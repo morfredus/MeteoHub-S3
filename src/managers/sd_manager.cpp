@@ -1,69 +1,34 @@
 #include "sd_manager.h"
-
 #include "board_config.h"
 #include "../utils/logs.h"
-
 #include <Arduino.h>
-#include "../utils/logs.h"
 #include <algorithm>
 
-#ifndef SD_CLK_PIN
-#define SD_CLK_PIN 9
-#endif
-
-#ifndef SD_MISO_PIN
-#define SD_MISO_PIN 10
-#endif
-
-#ifndef SD_MOSI_PIN
-#define SD_MOSI_PIN 11
-#endif
-
-#ifndef SD_CS_PIN
-#define SD_CS_PIN 12
-#endif
-
-#ifndef SD_DET_ACTIVE_LEVEL
-#define SD_DET_ACTIVE_LEVEL LOW
-#endif
-
 namespace {
-constexpr int SD_PRIMARY_FREQUENCY_HZ = 10000000;
-constexpr int SD_RECONNECT_FREQUENCIES[] = {10000000, 4000000, 1000000};
-constexpr int SD_FORMAT_FREQUENCY_HZ = 10000000;
-constexpr unsigned long SD_RECONNECT_COOLDOWN_DEFAULT_MS = 15000;
-constexpr unsigned long SD_RECONNECT_COOLDOWN_MAX_MS = 120000;
-constexpr int SD_POWER_DOWN_DELAY_MS = 1000;
-constexpr int SD_POST_BEGIN_DELAY_MS = 40;
-constexpr int SD_MAX_OPEN_FILES = 5;
-constexpr const char* SD_MOUNT_POINT = "/sd";
-constexpr const char* SD_WRITE_TEST_FILE = "/sd_write_test.tmp";
+    constexpr int SD_TARGET_FREQUENCY_HZ = 1000000;
+    constexpr unsigned long SD_RECONNECT_COOLDOWN_DEFAULT_MS = 30000;
+    constexpr unsigned long SD_RECONNECT_COOLDOWN_MAX_MS = 120000;
+    constexpr int SD_POWER_DOWN_DELAY_MS = 500;
+    constexpr int SD_POST_BEGIN_DELAY_MS = 100;
+    constexpr int SD_MAX_OPEN_FILES = 5;
+    constexpr const char* SD_MOUNT_POINT = "/sd";
+    constexpr const char* SD_WRITE_TEST_FILE = "/sd_write_test.tmp";
 }
 
 void SdManager::logPinMapping() const {
     LOG_INFO(
         "SD pin mapping: CLK=" + std::to_string(SD_CLK_PIN) +
-        " MISO/D0=" + std::to_string(SD_MISO_PIN) +
-        " MOSI/CMD=" + std::to_string(SD_MOSI_PIN) +
-        " CS/D3=" + std::to_string(SD_CS_PIN)
+        " MISO=" + std::to_string(SD_MISO_PIN) +
+        " MOSI=" + std::to_string(SD_MOSI_PIN) +
+        " CS=" + std::to_string(SD_CS_PIN)
     );
 }
-
-
 
 bool SdManager::isCardDetected() const {
 #ifdef SD_DET_PIN
     if (SD_DET_PIN >= 0) {
-        pinMode(SD_DET_PIN, INPUT_PULLUP);
         int level = digitalRead(SD_DET_PIN);
-        bool detected = (level == SD_DET_ACTIVE_LEVEL);
-        LOG_INFO(
-            "SD detect pin GPIO" + std::to_string(SD_DET_PIN) +
-            " level=" + std::to_string(level) +
-            " active=" + std::string(SD_DET_ACTIVE_LEVEL == LOW ? "LOW" : "HIGH") +
-            " detected=" + std::string(detected ? "yes" : "no")
-        );
-        return detected;
+        return (level == SD_DET_ACTIVE_LEVEL);
     }
 #endif
     return true;
@@ -72,116 +37,98 @@ bool SdManager::isCardDetected() const {
 void SdManager::resetSpiBus() {
     SD.end();
     delay(SD_POWER_DOWN_DELAY_MS);
-
     if (_sd_spi) {
         delete _sd_spi;
         _sd_spi = nullptr;
         delay(50);
     }
-
     _sd_spi = new SPIClass(FSPI);
     _sd_spi->begin(SD_CLK_PIN, SD_MISO_PIN, SD_MOSI_PIN, SD_CS_PIN);
+    delay(50);
 }
 
 bool SdManager::mountAtFrequency(int frequency_hz, bool format_if_fail) {
     resetSpiBus();
-
-    LOG_INFO(
-        "SD mount attempt: " + std::to_string(frequency_hz) +
-        "Hz, format_if_fail=" + std::string(format_if_fail ? "true" : "false")
-    );
+    LOG_INFO("SD mount attempt: " + std::to_string(frequency_hz) + "Hz");
 
     bool mounted = SD.begin(SD_CS_PIN, *_sd_spi, frequency_hz, SD_MOUNT_POINT, SD_MAX_OPEN_FILES, format_if_fail);
     delay(SD_POST_BEGIN_DELAY_MS);
 
     if (!mounted) {
-        LOG_WARNING("SD.begin failed at " + std::to_string(frequency_hz) + "Hz");
+        LOG_WARNING("SD.begin failed");
         return false;
     }
 
     if (SD.cardType() == CARD_NONE) {
-        LOG_WARNING("SD.begin returned true but cardType is NONE");
+        LOG_WARNING("SD cardType is NONE");
         SD.end();
         return false;
     }
-
     return true;
 }
 
 bool SdManager::verifyWriteAccess() {
+    std::lock_guard<std::mutex> lock(_sd_mutex);
+
     File test_file = SD.open(SD_WRITE_TEST_FILE, FILE_WRITE);
     if (!test_file) {
-        LOG_WARNING("SD write test: cannot open temp file (possible read-only card)");
+        LOG_WARNING("SD write test: Cannot open file");
+        return false;
+    }
+
+    const char* testContent = "MeteoHub Test";
+    size_t written = test_file.println(testContent);
+    
+    // Correction : flush() appelé sans test de retour (peut être void)
+    test_file.flush(); 
+    test_file.close();
+
+    if (written == 0) {
+        LOG_WARNING("SD write test: 0 bytes");
         SD.remove(SD_WRITE_TEST_FILE);
         return false;
     }
 
-    size_t written = test_file.println("TEST_OK");
-    test_file.close();
     SD.remove(SD_WRITE_TEST_FILE);
-
-    if (written == 0) {
-        LOG_WARNING("SD write test failed: no bytes written");
-        return false;
-    }
-
-    LOG_INFO("SD write test OK");
+    LOG_INFO("SD write test PASSED");
     return true;
 }
 
 bool SdManager::ensureHistoryDirectory() {
-    if (SD.exists("/history")) {
-        return true;
-    }
-
-    if (SD.mkdir("/history")) {
-        return true;
-    }
-
-    // Fallback utile selon les comportements de mountpoint
-    if (SD.exists("/sd/history")) {
-        return true;
-    }
-    if (SD.mkdir("/sd/history")) {
-        LOG_WARNING("SD: /history creation failed, using /sd/history fallback");
-        return true;
-    }
-
-    LOG_WARNING("SD: mkdir failed for /history and /sd/history (possible read-only card)");
+    std::lock_guard<std::mutex> lock(_sd_mutex);
+    if (SD.exists("/history")) return true;
+    if (SD.mkdir("/history")) return true;
+    if (SD.exists("/sd/history")) return true;
+    if (SD.mkdir("/sd/history")) return true;
     return false;
 }
 
 bool SdManager::begin() {
-    LOG_INFO("Init SD Card (stable 10MHz mode)...");
+    LOG_INFO("=== SD Init ===");
     logPinMapping();
-
     _available = false;
     SD.end();
 
-    if (!isCardDetected()) {
-        LOG_WARNING("SD detect indicates no card (non-blocking check)");
+#ifdef SD_DET_PIN
+    if (SD_DET_PIN >= 0) {
+        pinMode(SD_DET_PIN, INPUT_PULLUP);
+        delay(10);
+        if (!isCardDetected()) LOG_WARNING("SD DET: No card");
     }
+#endif
 
-    if (!mountAtFrequency(SD_PRIMARY_FREQUENCY_HZ, true)) {
-        LOG_ERROR("SD mount failed at startup (10MHz)");
+    if (!mountAtFrequency(SD_TARGET_FREQUENCY_HZ, true)) {
+        LOG_ERROR("SD Mount FAILED");
         return false;
     }
 
-    bool history_ok = ensureHistoryDirectory();
-    bool write_ok = verifyWriteAccess();
-
-    if (!history_ok || !write_ok) {
-        LOG_ERROR("SD mounted but not writable (history/write test failed). Marking SD unavailable.");
-        _available = false;
+    if (!ensureHistoryDirectory() || !verifyWriteAccess()) {
+        LOG_ERROR("SD Mount OK but checks failed");
         SD.end();
         return false;
     }
 
-    ensureHistoryDirectory();
-    verifyWriteAccess();
-
-    LOG_INFO("SD Card OK. Size: " + std::to_string(SD.cardSize() / (1024 * 1024)) + "MB");
-
+    LOG_INFO("SD READY: " + std::to_string(SD.cardSize() / (1024 * 1024)) + " MB");
     _available = true;
     _last_reconnect_attempt_ms = millis();
     _consecutive_reconnect_failures = 0;
@@ -190,94 +137,62 @@ bool SdManager::begin() {
 }
 
 bool SdManager::isAvailable() {
-    if (!_available) {
-        return ensureMounted();
-    }
-
+    if (!_available) return ensureMounted();
     if (SD.cardType() == CARD_NONE) {
-        LOG_WARNING("SD became unavailable (cardType NONE)");
         _available = false;
         SD.end();
         return ensureMounted();
     }
-
-    if (!isCardDetected()) {
-        LOG_WARNING("SD detect indicates missing card while mounted; keeping SD available (detect likely inverted/noisy)");
-    }
-
     return true;
 }
 
 bool SdManager::ensureMounted() {
-    if (_available) {
-        return true;
-    }
-
+    if (_available) return true;
     const unsigned long now = millis();
-    if (now - _last_reconnect_attempt_ms < _reconnect_cooldown_ms) {
-        return false;
-    }
+    if (now - _last_reconnect_attempt_ms < _reconnect_cooldown_ms) return false;
 
     _last_reconnect_attempt_ms = now;
-    LOG_INFO("SD reconnect attempt... (cooldown=" + std::to_string(_reconnect_cooldown_ms) + "ms)");
-
-    for (int frequency_hz : SD_RECONNECT_FREQUENCIES) {
-        if (mountAtFrequency(frequency_hz, false)) {
-            bool history_ok = ensureHistoryDirectory();
-            bool write_ok = verifyWriteAccess();
-            if (!history_ok || !write_ok) {
-                LOG_WARNING("SD reconnect mounted but write checks failed (possible read-only). Continuing retries...");
-                SD.end();
-                delay(120);
-                continue;
-            }
+    if (mountAtFrequency(SD_TARGET_FREQUENCY_HZ, false)) {
+        if (ensureHistoryDirectory() && verifyWriteAccess()) {
             _available = true;
             _consecutive_reconnect_failures = 0;
             _reconnect_cooldown_ms = SD_RECONNECT_COOLDOWN_DEFAULT_MS;
-            LOG_INFO("SD reconnect OK at " + std::to_string(frequency_hz) + "Hz");
             return true;
         }
-        delay(120);
+        SD.end();
     }
-
-    _available = false;
+    
     _consecutive_reconnect_failures++;
-    _reconnect_cooldown_ms = std::min(
-        SD_RECONNECT_COOLDOWN_MAX_MS,
-        SD_RECONNECT_COOLDOWN_DEFAULT_MS * static_cast<unsigned long>(_consecutive_reconnect_failures + 1)
-    );
-
-    LOG_WARNING(
-        "SD reconnect failed (count=" + std::to_string(_consecutive_reconnect_failures) +
-        "), next cooldown=" + std::to_string(_reconnect_cooldown_ms) + "ms"
-    );
+    _reconnect_cooldown_ms = std::min(SD_RECONNECT_COOLDOWN_MAX_MS, 
+        (unsigned long)(SD_RECONNECT_COOLDOWN_DEFAULT_MS * (_consecutive_reconnect_failures + 1)));
     return false;
 }
 
 bool SdManager::format() {
-    LOG_WARNING("SD format requested (stable 10MHz mode)...");
-
+    LOG_WARNING("=== SD Format ===");
     _available = false;
-
-    if (!mountAtFrequency(SD_FORMAT_FREQUENCY_HZ, true)) {
-        LOG_ERROR("SD format/remount failed");
-        return false;
-    }
-
-    bool history_ok = ensureHistoryDirectory();
-
-    bool write_ok = verifyWriteAccess();
-    if (!history_ok || !write_ok) {
-        LOG_ERROR("SD format finished but card is still not writable (history/write test failed)");
+    SD.end();
+    delay(500);
+    if (!mountAtFrequency(SD_TARGET_FREQUENCY_HZ, true)) return false;
+    if (!ensureHistoryDirectory() || !verifyWriteAccess()) {
         _available = false;
         SD.end();
         return false;
     }
-
     _available = true;
-    _last_reconnect_attempt_ms = millis();
-    _consecutive_reconnect_failures = 0;
-    _reconnect_cooldown_ms = SD_RECONNECT_COOLDOWN_DEFAULT_MS;
-    LOG_INFO("SD format completed and verified");
     return true;
+}
+
+bool SdManager::openFileSafe(const char* path, const char* mode, File& out_file) {
+    std::lock_guard<std::mutex> lock(_sd_mutex);
+    if (!isAvailable()) return false;
+    out_file = SD.open(path, mode);
+    return (bool)out_file;
+}
+
+void SdManager::closeFileSafe(File& file) {
+    if (file) {
+        file.flush();
+        file.close();
+    }
 }
