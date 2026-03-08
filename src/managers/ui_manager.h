@@ -7,6 +7,7 @@
 #include "managers/history_manager.h"
 #include "managers/sd_manager.h"
 #include "modules/encoder.h"
+#include <string>
  
 enum Page {
     PAGE_WEATHER,
@@ -42,6 +43,7 @@ private:
     HistoryManager* history = nullptr;
     SdManager* sd = nullptr;
     Encoder enc;
+    
     int page = 0;
     bool menuMode = false;
     int menuIndex = 0;
@@ -51,13 +53,18 @@ private:
     unsigned long ignoreButtonsUntilMs = 0;
     int menuScrollOffset = 0;
     int logScrollLine = 0;
+    
+    // États de confirmation
     bool confirmFormatMode = false;
     bool confirmClearLogsMode = false;
     bool confirmClearHistMode = false;
+    
+    // États de rendu pour optimisation
     int last_rendered_page = -1;
     bool last_rendered_menu_mode = false;
     bool last_rendered_confirm_mode = false;
 
+    // Messages transitoires
     enum UiTransientMessageType {
         UI_MESSAGE_NONE,
         UI_MESSAGE_FORMAT_IN_PROGRESS,
@@ -72,9 +79,12 @@ private:
     bool pendingFormatResult = false;
     bool pendingFormatResultSuccess = false;
 
+    // Méthodes privées
     void showTransientMessage(UiTransientMessageType messageType, unsigned long durationMs);
     bool processTransientMessage();
-
     void handleButtons();
     void drawPage();
+    
+    // NOUVEAU : Déclaration de la méthode pour effacer les logs
+    void clearLogs();
 };

@@ -35,9 +35,12 @@
 #define SD_MOSI_PIN  11   // CMD / SI
 #define SD_CS_PIN    12   // DAT3 / CS
 #define SD_DAT2_PIN  13   // DAT2
+
 // Pin de détection (optionnel, mettez -1 si non câblé)
 // Si câblé : LOW = Carte présente, HIGH = Vide
+#ifndef SD_DET_PIN
 #define SD_DET_PIN   14
+#endif
 
 // Polarité de détection: LOW ou HIGH selon votre lecteur SD
 // Beaucoup de modules sortent LOW=présente, mais certains font l'inverse.
@@ -49,7 +52,5 @@
 // Configuration conditionnelle selon l'environnement PlatformIO
 // -------------------------------------------------------------------
 #if defined(ESP32_S3_OLED)
-
     #define ENCODER_MODEL_EC11
-
 #endif

@@ -1,6 +1,6 @@
 # MeteoHub S3
 
-> **Minimum valid version: 1.0.181**
+> **Minimum valid version: 1.1.2**
 
 ## Full Documentation
 - [Documentation Index](docs/index.md)
@@ -17,7 +17,7 @@ MeteoHub S3 is an ESP32-S3 PlatformIO project focused on an OLED dashboard (SH11
 - HW-040 rotary encoder module (encoder + center button)
 - Back and Confirm buttons
 - AHT20 and BMP280 sensors
-- Optional SD card for long-term history
+- Optional SD card for long-term history (Recommended: FAT32 format, 4-32 GB)
 
 ## Build
 - Install PlatformIO in VS Code
@@ -25,19 +25,20 @@ MeteoHub S3 is an ESP32-S3 PlatformIO project focused on an OLED dashboard (SH11
 - Build: `platformio run`
 - Upload: `platformio run --target upload`
 
-## Main features
-- Temperature, humidity, pressure graph display
-- Three scale modes for graphs:
-	1. Fixed: bounds defined in configuration (config.h), ideal for multi-day comparison.
-	2. Dynamic: bounds calculated from displayed data, highlights recent variations.
-	3. Mixed: combines both, expands dynamic scale by a percentage (configurable), but stays within fixed bounds.
-- Control scale mode and expansion percentage on web UI
-- Automatic parameter synchronization between config.h and web UI
-- Contextual help below the graph (mode explanations)
+## Main features (New in v1.1.x)
+- **Enhanced SD Stability (v1.1.2)**: Secure writes with explicit `flush()` and Mutex protection against file corruption.
+- **C++ Standard Engine (v1.1.0)**: Complete web core refactor to use `std::string`, ensuring better memory stability.
+- **Advanced File Management**: Upload, download, and delete files via web interface.
+- **Robust OTA Updates**: Secure Over-The-Air update system.
+- **Advanced Graphing**: Three scale modes (Fixed, Dynamic, Mixed) for temperature, humidity, and pressure.
 
 ## Usage
+See docs/user_guide.md for details on scale modes and file management.
 
-See docs/user_guide.md for details on scale modes.
+### SD Card Note
+To prevent corruption, ensure that:
+1. The card is formatted to **FAT32** (allocation unit size 32 KB).
+2. The system is properly shut down before removing the card (although `flush()` protects data on every write).
 
 ---
 
