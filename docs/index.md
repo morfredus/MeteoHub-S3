@@ -1,6 +1,9 @@
 # Documentation Index
 
+
 **Beginner?** See [Beginner's Guide](../docs/beginner/index.md) or [Guide Débutant](../docs/beginner/index_fr.md)
+
+Minimum valid version: 1.0.181
 
 - [Getting Started](getting_started.md)
 - [Hardware Wiring](hardware_wiring.md)
