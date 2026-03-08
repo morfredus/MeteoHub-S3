@@ -2,7 +2,7 @@
 
 **Débutant ?** Voir le [Guide Débutant](../beginner/index_fr.md) ou [Beginner's Guide](../beginner/index.md)
 
-Version minimale valide : 1.0.155
+Version minimale valide : 1.0.181
 
 ## TODO code
 - [x] Renommer `Sh1106Display` vers un nom neutre (`OledDisplay`) pour refléter correctement le backend U8g2 actuel qui prend en charge SH1106 et SSD1306.
