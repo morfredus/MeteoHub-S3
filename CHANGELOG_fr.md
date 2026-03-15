@@ -1,3 +1,7 @@
+# [1.1.3] – 2026-03-15
+### Fixed
+- **Affichage corrompu du menu lors de la sélection des items** : Ajout d'un `d->clear()` au début du bloc de rendu du menu dans `UiManager::drawPage()`. Lors de la navigation dans le menu, l'écran n'était pas effacé avant le redessin car `screen_context_changed` était `false` (le mode menu n'avait pas changé). Les anciens items se superposaient aux nouveaux, provoquant un affichage corrompu.
+
 # [1.1.2] – 2026-03-08
 ### Fixed
 Correction critique de la corruption du système de fichiers et erreurs de compilation associées.
