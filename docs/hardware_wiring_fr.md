@@ -1,6 +1,6 @@
 # Câblage matériel
 
-Version minimale valide : 1.0.181
+Version minimale valide : 1.1.3
 
 Ce projet cible uniquement une configuration OLED.
 

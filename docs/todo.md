@@ -3,7 +3,7 @@
 **Beginner?** See [Beginner's Guide](../beginner/index.md) or [Guide Débutant](../beginner/index_fr.md)
 
 Minimum valid version: 1.0.155
-Minimum valid version: 1.0.181
+Minimum valid version: 1.1.3
 ## Code TODO
 - [x] Rename `Sh1106Display` to a neutral name (`OledDisplay`) to better reflect the current U8g2 backend that supports both SH1106 and SSD1306.
 - [x] Centralize OLED geometry constants (`width`, `height`, margins) to remove magic numbers in `pages_oled.cpp`.

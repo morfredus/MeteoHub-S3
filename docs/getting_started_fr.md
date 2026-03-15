@@ -2,7 +2,7 @@
 
 **Débutant ?** Voir le [Guide Débutant](../beginner/index_fr.md) ou [Beginner's Guide](../beginner/index.md)
 
-Version minimale valide : 1.0.181
+Version minimale valide : 1.1.3
 
 1. Cloner le projet.
 2. Créer `include/secrets.h` à partir de `include/secrets_example.h`.

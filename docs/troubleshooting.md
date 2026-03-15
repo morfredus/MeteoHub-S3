@@ -1,5 +1,7 @@
 # SD Card Troubleshooting
 
+**Minimum valid version: 1.1.3**
+
 ## SD Card not detected or mount fails
 
 If logs show `SD Mount FAILED` or `cardType is CARD_NONE`:

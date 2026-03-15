@@ -2,7 +2,7 @@
 
 **Beginner?** See [Beginner's Guide](../beginner/index.md) or [Guide Débutant](../beginner/index_fr.md)
 
-Minimum valid version: 1.0.181
+Minimum valid version: 1.1.3
 
 
 ## Editable files

@@ -2,7 +2,7 @@
 
 **Beginner?** See [Beginner's Guide](../beginner/index.md) or [Guide Débutant](../beginner/index_fr.md)
 
-Minimum valid version: 1.0.181
+Minimum valid version: 1.1.3
 
 - If Wi-Fi does not connect, verify credentials in `include/secrets.h`.
 - If forecast is empty, verify API key and network access.

@@ -1,5 +1,7 @@
 # Dépannage Carte SD
 
+**Version minimale valide : 1.1.3**
+
 ## La carte SD n'est pas détectée ou échoue au montage
 
 Si les logs indiquent `SD Mount FAILED` ou `cardType is CARD_NONE` :
