@@ -319,6 +319,7 @@ void UiManager::drawPage() {
         const char* itemNames[] = { "Retour", "Reboot", "Clear Logs", "Clear Hist", "Format SD" };
         const int MENU_VISIBLE_ITEMS = 4;
 
+        d->clear();
         d->center(0, "MENU");
 
         // Scroll simple

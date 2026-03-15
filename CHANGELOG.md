@@ -1,3 +1,7 @@
+# [1.1.3] – 2026-03-15
+### Fixed
+- **Menu display corruption on item selection**: Added `d->clear()` at the start of the menu rendering block in `UiManager::drawPage()`. When navigating menu items, the screen was not cleared before redrawing because `screen_context_changed` was `false` (menu mode had not changed). Old items were drawn on top of new ones, causing a corrupted display.
+
 # [1.1.2] – 2026-03-08
 ### Fixed
 Critical file system corruption fix and related compilation errors.
