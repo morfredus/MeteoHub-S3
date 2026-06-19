@@ -38,11 +38,10 @@ void SdManager::resetSpiBus() {
     SD.end();
     delay(SD_POWER_DOWN_DELAY_MS);
     if (_sd_spi) {
-        delete _sd_spi;
-        _sd_spi = nullptr;
+        _sd_spi.reset();
         delay(50);
     }
-    _sd_spi = new SPIClass(FSPI);
+    _sd_spi = std::make_unique<SPIClass>(FSPI);
     _sd_spi->begin(SD_CLK_PIN, SD_MISO_PIN, SD_MOSI_PIN, SD_CS_PIN);
     delay(50);
 }
