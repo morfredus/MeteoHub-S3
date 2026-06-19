@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fichiers - MeteoHub S3</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="files">
+    <div class="container">
+        <header>
+            <h1>Gestionnaire de Fichiers</h1>
+            <div id="status">Connexion...</div>
+        </header>
+
+        <nav data-shared-menu="true" data-active="/files.html"></nav>
+
+        <div class="card" style="margin-bottom: 20px;">
+            <div style="display: flex; gap: 10px;">
+                <button id="btn-littlefs" onclick="switchFs('littlefs')" class="btn" style="flex:1;">Mémoire Interne</button>
+                <button id="btn-sd" onclick="switchFs('sd')" class="btn" style="flex:1;">Carte SD</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Téléverser un fichier</h2>
+            <div style="display: flex; gap: 10px; justify-content: center; align-items: center; margin-bottom: 20px;">
+                <input type="file" id="fileInput" style="color: var(--text);">
+                <button onclick="uploadFile()" class="btn">Envoyer</button>
+            </div>
+            <div id="uploadStatus"></div>
+        </div>
+
+        <div class="card" style="margin-top: 20px;">
+            <h2 id="fsTitle">Fichiers Système</h2>
+            <div class="breadcrumb">
+                <button onclick="navigateUp()" class="btn-small">⬆️</button>
+                <span id="currentPath">/</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Taille</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="fileList">
+                    <tr><td colspan="3">Chargement...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <footer>
+        </footer>
+    </div>
+    <script src="files.js"></script>
+    <script src="menu.js"></script>
+    <script src="footer.js"></script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+/* Cartouche alerte météo */
+.alert-card {
+	margin: 0 0 30px 0;
+	padding: 18px 20px;
+	border-radius: 12px;
+	background: #232323;
+	color: #fff;
+	font-size: 1.1rem;
+	font-weight: bold;
+	text-align: center;
+	min-height: 48px;
+	max-height: 48px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+	transition: background 0.3s, color 0.3s;
+}
+.alert-yellow {
+	background: #fffbe6;
+	color: #bfa100;
+}
+.alert-orange {
+	background: #fff3e0;
+	color: #d35400;
+}
+.alert-red {
+	background: #ffeaea;
+	color: #c0392b;
+}
+:root { --bg: #1a1a1a; --card: #2d2d2d; --text: #e0e0e0; --accent: #00a8ff; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #444; padding-bottom: 10px; }
+h1 { margin: 0; font-size: 1.5rem; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-bottom: 30px; }
+.card { background: var(--card); padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+.card h2 { margin: 0 0 10px 0; font-size: 1rem; color: #aaa; }
+.value { font-size: 2rem; font-weight: bold; color: var(--accent); }
+.unit { font-size: 1rem; color: #888; }
+.chart-container { background: var(--card); padding: 20px; border-radius: 12px; height: 400px; }
+footer { margin-top: 40px; text-align: center; font-size: 0.8rem; color: #666; }
+#status { font-weight: bold; }
+nav { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; }
+nav a { color: var(--accent); text-decoration: none; font-weight: bold; padding: 5px 10px; border: 1px solid transparent; border-radius: 4px; transition: all 0.2s; }
+nav a:hover, nav a.active { border-color: var(--accent); background: rgba(0, 168, 255, 0.1); }
+table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+th, td { padding: 12px; text-align: left; border-bottom: 1px solid #444; }
+th { color: #aaa; }
+.btn { background: var(--primary-color, #4CAF50); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+.btn:hover { opacity: 0.9; }
+.btn-icon { text-decoration: none; font-size: 1.2rem; margin-right: 10px; cursor: pointer; background: none; border: none; }
+.btn-icon.delete:hover { opacity: 0.7; }
+/* Icone footer */
+.footer-icon { text-decoration: none; color: #666; font-size: 1.1rem; margin-left: 10px; vertical-align: middle; transition: color 0.2s; }
+.footer-icon:hover { color: var(--accent); }
+
+#alertCard {
+    transition: background-color 0.3s, color 0.3s;
+}
+
+
+#alertCard {
+    position: relative;
+    height: 165px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    overflow: hidden;
+}
+
+#alertText {
+    min-height: 44px;
+    max-height: 44px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    padding-right: 34px;
+    padding-bottom: 8px;
+}
+
+#alertValidity {
+    min-height: 18px;
+    max-height: 18px;
+    overflow: hidden;
+    padding-right: 34px;
+}
+
+#alertCard.alert-level-none {
+    background: #1f3a2a;
+    color: #d7ffe4;
+}
+
+#alertCard.alert-level-yellow {
+    background: #ffe082;
+    color: #2f2500;
+}
+
+#alertCard.alert-level-orange {
+    background: #ffb74d;
+    color: #2a1400;
+}
+
+#alertCard.alert-level-red {
+    background: #e57373;
+    color: #2b0000;
+}
+
+#alertCard.alert-level-yellow h2,
+#alertCard.alert-level-orange h2,
+#alertCard.alert-level-red h2,
+#alertCard.alert-level-none h2 {
+    color: inherit;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sensor-badge {
+    background: #ff5252;
+    color: #ffffff;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-weight: 700;
+}
+
+.alert-validity {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    opacity: 0.95;
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.modal.open {
+    display: flex;
+}
+
+.modal-content {
+    width: min(700px, calc(100% - 32px));
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    background: #222;
+    color: #eaeaea;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    right: 12px;
+    top: 8px;
+    border: none;
+    background: transparent;
+    color: #ddd;
+    font-size: 1.8rem;
+    cursor: pointer;
+}
+
+.modal-close:hover {
+    color: #fff;
+}
+
+
+.alert-details-icon {
+    z-index: 3;
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(0, 0, 0, 0.18);
+    color: inherit;
+    font-size: 1rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.alert-details-icon:hover {
+    transform: scale(1.05);
+}
+
+.alert-details-icon:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+.ota-card { display: flex; flex-direction: column; gap: 14px; text-align: left; }
+.ota-progress-wrap { width: 100%; height: 14px; background: #3a3a3a; border-radius: 999px; overflow: hidden; }
+.ota-progress { width: 0%; height: 100%; background: var(--accent); transition: width 0.2s ease; }
+.ota-result { min-height: 56px; max-height: 56px; overflow: hidden; border-radius: 8px; padding: 10px 12px; background: #2a2a2a; display: flex; align-items: center; }
+.ota-result.info { border-left: 4px solid #64b5f6; }
+.ota-result.success { border-left: 4px solid #66bb6a; }
+.ota-result.error { border-left: 4px solid #ef5350; }
