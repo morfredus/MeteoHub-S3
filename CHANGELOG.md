@@ -1,3 +1,15 @@
+# [1.2.0] – 2026-06-21
+### Changed
+- **Nouveau mapping des broches (`board_config.h`)** : réorganisation complète du routage pour refléter les contraintes de montage physique du boîtier.
+  - I²C (capteurs AHT20/BMP280 + OLED) : routage « haut » sur GPIO8 (SDA) / GPIO9 (SCL).
+  - SD (SPI secondaire) : routage « bas » sur GPIO21 (CLK), GPIO47 (MISO), GPIO38 (MOSI), GPIO39 (CS), GPIO40 (détection).
+  - Boutons : BOOT sur GPIO0 (strapping respecté), CONFIRM sur GPIO15 (haut, vers l'écran), BACK sur GPIO1 (bas).
+  - Encodeur rotatif (EC11/HW-040) : GPIO42 (A/TRA), GPIO2 (B/TRB), GPIO41 (bouton/PSH).
+- **Contraintes de montage physique documentées** : le nouveau mapping impose deux règles de placement sur le boîtier, désormais décrites dans `docs/hardware_wiring.md` et `docs/pin_mappnig.md` :
+  1. Le lecteur SD doit être monté physiquement éloigné de l'alimentation (régulateur/convertisseur), pour limiter le bruit électrique sur le bus SPI.
+  2. Le capteur de température/humidité doit disposer d'une zone froide dégagée autour de lui (sans composant chauffant à proximité) afin de ne pas mesurer la chaleur résiduelle de ses voisins.
+- Mise à jour de l'ensemble de la documentation (`README.md`, `README.fr.md`, `docs/*.md`) pour refléter la version minimale 1.2.0 et le nouveau mapping de broches.
+
 # [1.1.3] – 2026-03-15
 ### Fixed
 - **Affichage corrompu du menu lors de la sélection des items** : Ajout d'un `d->clear()` au début du bloc de rendu du menu dans `UiManager::drawPage()`. Lors de la navigation dans le menu, l'écran n'était pas effacé avant le redessin car `screen_context_changed` était `false` (le mode menu n'avait pas changé). Les anciens items se superposaient aux nouveaux, provoquant un affichage corrompu.

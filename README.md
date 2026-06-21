@@ -1,6 +1,6 @@
 # MeteoHub S3
 
-> **Minimum supported version: 1.1.3**
+> **Minimum supported version: 1.2.0**
 
 ## Full Documentation
 
@@ -38,7 +38,10 @@ platformio run
 platformio run --target upload
 ```
 
-## Key Features (v1.1.x Highlights)
+## Key Features (v1.2.x Highlights)
+
+* **Physical mounting constraints (v1.2.0)**
+  New pin mapping enforces a physical layout requirement: the SD reader must be mounted away from the power supply (electrical noise on SPI), and the sensor must have a clear "cold zone" around it to avoid picking up residual heat from neighboring components.
 
 * **Improved SD Card Reliability (v1.1.2)**
   Safe write operations with explicit `flush()` calls and Mutex protection to reduce the risk of file corruption.
