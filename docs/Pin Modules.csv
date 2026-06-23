@@ -5,7 +5,8 @@ AHT20 et BMP280;Pin;Type Electrique
 4;SCL;Bidirectionnel
 ;;
 ;;
-ESP32-S3 DevkitC-1 N16R8;Pin;Type Electrique
+ESP32-S3 DevkitC-1 N16R8;Ligne du haut   (USB's a gauche) de gauche a droite;
+;Pin;Type Electrique
 1;GND;Power input
 2;5V;Power input
 3;IO14;Bidirectionnel
@@ -28,6 +29,7 @@ ESP32-S3 DevkitC-1 N16R8;Pin;Type Electrique
 20;RST;Entrée
 21;3V3;Power input
 22;3V3;Power input
+;Ligne du bas   (USB's a gauche) de gauche a droite;
 23;GND;Power input
 24;GND;Power input
 25;IO19;Bidirectionnel
