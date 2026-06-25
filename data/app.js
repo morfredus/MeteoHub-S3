@@ -101,102 +101,46 @@ function renderSensorValidityBadge(isValid) {
     }
 }
 
-function updateAlertDetailsButton(enabled) {
-    const detailsBtn = document.getElementById('alertDetailsBtn');
-    if (!detailsBtn) return;
-
-    detailsBtn.disabled = !enabled;
-}
-
-function renderAlertCard(data, isDetailed) {
-    const alertText = document.getElementById('alertText');
-    const alertValidity = document.getElementById('alertValidity');
-    if (!alertText || !alertValidity) return;
-
-    if (data.alert_active || data.active) {
-        const level = Number.isFinite(data.alert_severity) ? data.alert_severity : (Number.isFinite(data.severity) ? data.severity : 0);
-        const levelLabel = data.alert_level_label_fr || 'Alerte';
-        const event = data.alert_event_fr || data.event_fr || data.alert_event || data.event || 'Alerte météo';
-        const senderValue = data.alert_sender || data.sender || '';
-        const sender = senderValue ? ` • Source: ${senderValue}` : '';
-        const detailsText = data.description_fr || data.alert_description_fr || "";
-        const details = isDetailed && detailsText ? ` — ${detailsText}` : "";
-
-        alertText.textContent = `${levelLabel} (${level}) - ${event}${sender}${details}`;
-        alertText.style.fontWeight = '700';
-        alertValidity.textContent = formatAlertValidity(data.alert_start_unix || data.start_unix, data.alert_end_unix || data.end_unix);
-        applyAlertCardTheme(level);
-        updateAlertDetailsButton(true);
-    } else {
-        alertText.textContent = 'Aucune alerte météo en cours.';
-        alertText.style.fontWeight = '500';
-        alertValidity.textContent = 'Validité : --';
-        applyAlertCardTheme(0);
-        updateAlertDetailsButton(false);
-    }
-}
-
 function escapeHtmlAndBreakLines(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML.replace(/\n/g, '<br>');
 }
 
-function openAlertModal() {
-    const modal = document.getElementById('alertModal');
-    const body = document.getElementById('alertModalBody');
-    if (!modal || !body) return;
+function renderAlertCard(data) {
+    const alertText = document.getElementById('alertText');
+    const alertValidity = document.getElementById('alertValidity');
+    const detailsBody = document.getElementById('alertDetailsBody');
+    if (!alertText || !alertValidity) return;
 
-    if (!current_alert_payload || !(current_alert_payload.active || current_alert_payload.alert_active)) {
-        body.textContent = 'Aucune alerte active.';
-    } else {
-        const level = Number.isFinite(current_alert_payload.severity) ? current_alert_payload.severity : current_alert_payload.alert_severity;
-        const levelLabel = current_alert_payload.alert_level_label_fr || 'Alerte';
-        const event = current_alert_payload.event_fr || current_alert_payload.alert_event_fr || current_alert_payload.event || current_alert_payload.alert_event || 'Alerte météo';
-        const senderValue = current_alert_payload.sender || current_alert_payload.alert_sender || 'Inconnu';
-        const summary = current_alert_payload.description_fr || current_alert_payload.alert_description_fr || '';
-        const rawDescription = current_alert_payload.description_raw || current_alert_payload.alert_description_raw || '';
-        const validity = formatAlertValidity(current_alert_payload.start_unix || current_alert_payload.alert_start_unix, current_alert_payload.end_unix || current_alert_payload.alert_end_unix);
+    if (data.alert_active || data.active) {
+        const level = Number.isFinite(data.alert_severity) ? data.alert_severity : (Number.isFinite(data.severity) ? data.severity : 0);
+        const levelLabel = data.alert_level_label_fr || 'Alerte';
+        const event = data.alert_event_fr || data.event_fr || data.alert_event || data.event || 'Alerte météo';
+        const senderValue = data.alert_sender || data.sender || 'Inconnu';
+        const summary = data.description_fr || data.alert_description_fr || '';
+        const rawDescription = data.description_raw || data.alert_description_raw || '';
+        const startUnix = data.alert_start_unix || data.start_unix;
+        const endUnix = data.alert_end_unix || data.end_unix;
 
-        const sourceBlock = rawDescription
-            ? `<p><strong>Bulletin source (${escapeHtmlAndBreakLines(senderValue)}, langue d'origine) :</strong></p><p>${escapeHtmlAndBreakLines(rawDescription)}</p>`
-            : '';
+        alertText.textContent = `${levelLabel} (${level}) - ${event}`;
+        alertText.style.fontWeight = '700';
+        alertValidity.textContent = formatAlertValidity(startUnix, endUnix);
+        applyAlertCardTheme(level);
 
-        body.innerHTML = `<p><strong>${escapeHtmlAndBreakLines(levelLabel)} (${level})</strong> — ${escapeHtmlAndBreakLines(event)}</p><p><strong>${escapeHtmlAndBreakLines(validity)}</strong></p><p>${escapeHtmlAndBreakLines(summary)}</p>${sourceBlock}<p><strong>Consigne :</strong> Surveillez l’évolution locale et limitez les déplacements non essentiels.</p>`;
-    }
-
-    modal.classList.add('open');
-    modal.setAttribute('aria-hidden', 'false');
-}
-
-function closeAlertModal() {
-    const modal = document.getElementById('alertModal');
-    if (!modal) return;
-
-    modal.classList.remove('open');
-    modal.setAttribute('aria-hidden', 'true');
-}
-
-function initAlertModal() {
-    const detailsBtn = document.getElementById('alertDetailsBtn');
-    const closeBtn = document.getElementById('alertModalClose');
-    const modal = document.getElementById('alertModal');
-
-    if (detailsBtn) detailsBtn.addEventListener('click', openAlertModal);
-    if (closeBtn) closeBtn.addEventListener('click', closeAlertModal);
-    if (modal) {
-        modal.addEventListener('click', (event) => {
-            if (event.target === modal) {
-                closeAlertModal();
-            }
-        });
-    }
-
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
-            closeAlertModal();
+        if (detailsBody) {
+            const sourceBlock = rawDescription
+                ? `<p><strong>Bulletin source (${escapeHtmlAndBreakLines(senderValue)}, langue d'origine) :</strong></p><p>${escapeHtmlAndBreakLines(rawDescription)}</p>`
+                : '';
+            detailsBody.innerHTML = `<p>${escapeHtmlAndBreakLines(summary)}</p>${sourceBlock}<p><strong>Consigne :</strong> Surveillez l’évolution locale et limitez les déplacements non essentiels.</p>`;
         }
-    });
+    } else {
+        alertText.textContent = 'Aucune alerte météo en cours.';
+        alertText.style.fontWeight = '500';
+        alertValidity.textContent = 'Validité : --';
+        applyAlertCardTheme(0);
+        if (detailsBody) detailsBody.innerHTML = '';
+    }
 }
 
 async function fetchAlert() {
@@ -207,10 +151,9 @@ async function fetchAlert() {
         const res = await fetch('/api/alert');
         const data = await res.json();
         current_alert_payload = data;
-        renderAlertCard(data, true);
+        renderAlertCard(data);
     } catch (e) {
         alertText.textContent = "Erreur lors de la récupération de l'alerte météo.";
-        updateAlertDetailsButton(false);
         applyAlertCardTheme(0);
     }
 }
@@ -225,6 +168,7 @@ const HISTORY_REFRESH_MS = 15000;
 const LIVE_REFRESH_MS = 5000;
 const ALERT_REFRESH_MS = 15 * 60 * 1000;
 const STATS_REFRESH_MS = 15000;
+const FORECAST7_REFRESH_MS = 30 * 60 * 1000;
 
 function getPageName() {
     return document.body?.dataset?.page || 'dashboard';
@@ -397,6 +341,102 @@ async function fetchStats() {
     }
 }
 
+function windDirectionFr(deg) {
+    const directions = ['nord', 'nord-est', 'est', 'sud-est', 'sud', 'sud-ouest', 'ouest', 'nord-ouest'];
+    const index = Math.round((deg % 360) / 45) % 8;
+    return directions[index];
+}
+
+function formatForecastDayLabel(dtUnix, isFirst) {
+    if (isFirst) return 'Demain';
+    const weekday = new Date(dtUnix * 1000).toLocaleDateString('fr-FR', { weekday: 'long' });
+    return weekday.charAt(0).toUpperCase() + weekday.slice(1);
+}
+
+// Génère un court résumé en français pour un jour de prévision, à partir des
+// données brutes OpenWeatherMap (température, probabilité/volume de pluie,
+// vent). Heuristique simple, pas une traduction exacte d'un bulletin officiel.
+function buildForecastDayNarrative(day, prevDay, isFirst) {
+    const tempMax = day.temp_max;
+    const pop = day.pop || 0;
+    const rain = day.rain_mm || 0;
+    const windKmh = (day.wind_speed || 0) * 3.6;
+    const popPct = Math.round(pop * 100);
+
+    let heat;
+    if (tempMax >= 35) heat = 'caniculaire';
+    else if (tempMax >= 30) heat = 'très chaud';
+    else if (tempMax >= 25) heat = 'chaud';
+    else if (tempMax >= 18) heat = 'doux';
+    else heat = 'frais';
+
+    let trendPhrase;
+    if (prevDay) {
+        const delta = tempMax - prevDay.temp_max;
+        if (delta <= -4) {
+            trendPhrase = `Le break météo. Les températures chutent nettement avec un max à ${tempMax.toFixed(1)}°C`;
+        } else if (delta <= -1.5) {
+            trendPhrase = `Légère baisse mais ${heat}. Max à ${tempMax.toFixed(1)}°C`;
+        } else if (delta >= 4) {
+            trendPhrase = `Nette hausse, ${heat}. Max à ${tempMax.toFixed(1)}°C`;
+        } else if (delta >= 1.5) {
+            trendPhrase = `Légère hausse, ${heat}. Max à ${tempMax.toFixed(1)}°C`;
+        } else {
+            trendPhrase = `Stable, ${heat}. Max à ${tempMax.toFixed(1)}°C`;
+        }
+    } else {
+        trendPhrase = `Toujours ${heat}. Max à ${tempMax.toFixed(1)}°C`;
+    }
+
+    let rainPhrase;
+    if (pop >= 0.8 || rain >= 5) {
+        rainPhrase = `C'est la journée la plus pluvieuse de la série : ${popPct}% de chances de précipitations${rain > 0 ? ` avec ${rain.toFixed(1)} mm de pluie` : ''}.`;
+    } else if (pop >= 0.4) {
+        rainPhrase = `Le risque de pluie augmente (${popPct}%).`;
+    } else if (pop >= 0.15) {
+        rainPhrase = `Légère pluie fine prévue (probabilité ${popPct}%)${rain > 0 ? `, ${rain.toFixed(1)} mm attendus` : ''}.`;
+    } else {
+        rainPhrase = 'Beau ciel dégagé, aucune pluie.';
+    }
+
+    let windPhrase = '';
+    if (windKmh >= 15) {
+        windPhrase = ` Le vent souffle du ${windDirectionFr(day.wind_deg || 0)} autour de ${Math.round(windKmh)} km/h.`;
+    }
+
+    return `${trendPhrase}. ${rainPhrase}${windPhrase}`;
+}
+
+async function fetchForecast7() {
+    const container = document.getElementById('forecast7Body');
+    if (!container) return;
+
+    try {
+        const res = await fetch('/api/forecast7');
+        const days = await res.json();
+
+        if (!Array.isArray(days) || days.length === 0) {
+            container.textContent = 'Prévisions indisponibles.';
+            return;
+        }
+
+        let prev = null;
+        const parts = days.map((day, index) => {
+            const label = formatForecastDayLabel(day.dt, index === 0);
+            const narrative = buildForecastDayNarrative(day, prev, index === 0);
+            prev = day;
+            return `<div class="forecast-day">
+                <div class="forecast-day-title">${escapeHtmlAndBreakLines(label)}</div>
+                <div class="forecast-day-text">${escapeHtmlAndBreakLines(narrative)}</div>
+            </div>`;
+        });
+
+        container.innerHTML = parts.join('');
+    } catch (e) {
+        container.textContent = 'Erreur lors de la récupération des prévisions.';
+    }
+}
+
 function updateChart(data) {
     if (!chart) return;
     chart.data.labels = data.map((d) => new Date(d.t * 1000).toLocaleTimeString());
@@ -489,7 +529,6 @@ function initChart() {
 }
 
 window.onload = () => {
-    initAlertModal();
     fetchSystem();
     fetchLive();
     fetchAlert();
@@ -513,6 +552,8 @@ window.onload = () => {
     if (isStatsPage()) {
         fetchStats();
         setInterval(fetchStats, STATS_REFRESH_MS);
+        fetchForecast7();
+        setInterval(fetchForecast7, FORECAST7_REFRESH_MS);
     }
 
     setInterval(fetchLive, LIVE_REFRESH_MS);

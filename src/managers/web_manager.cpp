@@ -310,6 +310,33 @@ void WebManager::_setupApi() {
         request->send(response);
     });
 
+    // API Prévisions 7 jours (pour la page Tendances) : un élément par jour à
+    // venir (J+1 à J+7), index 0 du tableau JSON = demain.
+    _server.on("/api/forecast7", HTTP_GET, [this](AsyncWebServerRequest *request) {
+        AsyncResponseStream *response = request->beginResponseStream("application/json");
+        DynamicJsonDocument doc(2560);
+        JsonArray days = doc.to<JsonArray>();
+
+        if (_forecast) {
+            for (int i = 1; i < _forecast->daily_count; i++) {
+                const DailyForecast& day = _forecast->daily[i];
+                JsonObject item = days.createNestedObject();
+                item["dt"] = day.dt;
+                item["temp_min"] = day.temp_min;
+                item["temp_max"] = day.temp_max;
+                item["description"] = day.description;
+                item["weather_id"] = day.weather_id;
+                item["pop"] = day.pop;
+                item["rain_mm"] = day.rain_mm;
+                item["wind_speed"] = day.wind_speed;
+                item["wind_deg"] = day.wind_deg;
+            }
+        }
+
+        serializeJson(doc, *response);
+        request->send(response);
+    });
+
     // API History (Logique inchangée, déjà compatible)
     _server.on("/api/history", HTTP_GET, [this](AsyncWebServerRequest *request) {
         const auto& full_history = _history->getRecentHistory();

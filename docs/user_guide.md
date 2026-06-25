@@ -37,7 +37,8 @@ Pages principales :
 - Visualisation graphique de l’historique (température, humidité, pression).
 - API : `/api/history` (paramètres `window`, `interval`, `points` pour l’agrégation).
 - Statistiques 24h via `/api/stats` (min, max, moyenne).
-- Page Statistiques (`/stats.html`) : tendances détaillées sur 1h, 12h, 24h et 48h (température, humidité, pression), ainsi qu’une tendance générale qui croise la direction de la pression sur ces fenêtres pour dégager une véritable évolution (amélioration/dégradation durable, stable, ou variable). La fenêtre 48h nécessite une carte SD avec l’historique journalier (fichier CSV de J-2) ; elle s’affiche « N/D » si indisponible.
+- Page Tendances (`/stats.html`) : tendances détaillées sur 1h, 12h, 24h et 48h (température, humidité, pression), ainsi qu’une tendance générale qui croise la direction de la pression sur ces fenêtres pour dégager une véritable évolution (amélioration/dégradation durable, stable, ou variable). La fenêtre 48h nécessite une carte SD avec l’historique journalier (fichier CSV de J-2) ; elle s’affiche « N/D » si indisponible.
+- Page Tendances : résumé court des prévisions à 7 jours (un jour par ligne, en français), basé sur `/api/forecast7` (température, probabilité/quantité de pluie, vent si significatif).
 
 ### Logs et diagnostic
 - Accès aux logs système via l’interface web (onglet Logs) et API `/api/logs`.
@@ -52,8 +53,9 @@ Pages principales :
 - Affichage des alertes météo (niveau, type, description, couleur) sur l’interface et l’OLED.
 - Traduction automatique des alertes (anglais → français).
 - Synthèse de tendance météo (amélioration, pluie, perturbation, etc.).
-- Fenêtre de détail d'alerte (bouton « Détails ») : affiche le résumé en français ainsi que le bulletin source d'OpenWeatherMap (langue d'origine, souvent l'anglais) en complément.
+- Le cartouche d'alerte de la page d'accueil affiche directement le détail complet (résumé en français, bulletin source d'OpenWeatherMap dans sa langue d'origine, souvent l'anglais) ; il n'y a plus de fenêtre ou de bouton séparé.
 - API : `/api/alert` (détail complet : sévérité, émetteur, événement traduit, résumé français, bulletin source brut, horodatages de validité).
+- API : `/api/forecast7` (prévisions des 7 jours suivants : températures min/max, description, probabilité/quantité de pluie, vent).
 
 ### Maintenance avancée
 - Appui long sur le bouton BOOT au démarrage : formatage du système de fichiers interne (LittleFS) et redémarrage.

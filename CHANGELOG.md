@@ -1,4 +1,16 @@
-# [1.1.7] – 2026-06-24
+# [1.1.9] – 2026-06-25
+### Changed
+- **Lisibilité du résumé 7 jours** (page Tendances) : chaque jour s'affiche désormais dans son propre cartouche (titre du jour en évidence, texte en dessous, alignement à gauche) au lieu d'un bloc de texte continu peu lisible. Fichiers : `data/app.js` (`fetchForecast7`), `data/style.css` (nouvelles règles `.forecast-day*`).
+
+# [1.1.8] – 2026-06-25
+### Changed
+- **Cartouche d'alerte météo (page d'accueil)** : suppression de la fenêtre modale de détail d'alerte et du bouton « Détails » associé. Le cartouche affiche désormais directement et en permanence le contenu qui était dans la modale (résumé en français, bulletin source OpenWeatherMap, validité). Fichiers : `data/index.html`, `data/app.js`, `data/style.css` (suppression des règles `.modal*` et `.alert-details-icon*` devenues mortes).
+- **Page Statistiques renommée « Tendances »** (`data/stats.html`, titre, `<h1>`, libellé du menu dans `data/menu.js`). L'identifiant technique `data-page="stats"` et les routes (`/stats.html`) restent inchangés.
+
+### Added
+- **Résumé court des prévisions à 7 jours** sur la page Tendances : nouvelle structure `DailyForecast` et tableau `daily[]` (jusqu'à 8 jours) dans `ForecastManager` (`src/managers/forecast_manager.h/.cpp`), alimentés depuis le tableau `daily` déjà présent dans la réponse OpenWeatherMap (température min/max, description, probabilité et quantité de pluie, vitesse/direction du vent) mais jusqu'ici non exploité au-delà d'aujourd'hui/demain. Nouvelle API `/api/forecast7` (`src/managers/web_manager.cpp`) exposant les 7 jours à venir. Le frontend (`data/app.js`) génère pour chaque jour une courte phrase en français (tendance de température par rapport au jour précédent, risque de pluie, vent si significatif) ; le premier jour à venir est toujours libellé « Demain », les jours suivants reprennent le nom réel du jour de la semaine calculé à partir de la date. Ce texte est un résumé généré par heuristique, pas une traduction du bulletin officiel.
+
+
 ### Removed
 - **Intégration de la vigilance Météo-France** : retirée intégralement (`VigilanceManager`, son branchement dans `WebManager`/`/api/alert`, le bloc d'affichage dédié dans la modal de détail d'alerte). Le portail public utilisé (`vigilance2-api.meteofrance.fr`) ne permet plus l'établissement de connexion (API non officielle, non documentée, dont la disponibilité n'était pas garantie). La fenêtre de détail d'alerte revient à l'affichage du résumé en français et du bulletin source OpenWeatherMap (langue d'origine) déjà en place. `MF_VIGILANCE_ENABLED` et `MF_VIGILANCE_DEPT_CODE` ne sont plus utilisés.
 
